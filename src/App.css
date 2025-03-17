@@ -1,0 +1,49 @@
+*{
+    font-family: DM-Sans;
+}
+
+body{
+    margin: 0;
+}
+
+.logo{
+    width: 10rem;
+}
+
+.navbar{
+    padding: 0.8rem;
+    background-color: red;
+    display: flex;
+    justify-content: space-between;
+}
+
+.navlinks{
+    display: flex;
+    gap: 10rem;
+}
+
+.navlink{
+    line-height: 100%;
+    vertical-align: bottom;
+    text-decoration: none;
+    color: #f0f0f0;
+    font-weight: 500;
+    font-size: 20px;
+}
+
+.navLinkSeparator{
+    color: #f0f0f0bb;
+    font-size: 30px;
+}
+
+.vCentered{
+    display: inline-block;
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+@font-face {
+    font-family: 'DM-Sans';
+    src: url('assets/fonts/DMSans-VariableFont_opsz,wght.woff2') format('woff2'),
+    url('assets/fonts/DMSans-VariableFont_opsz,wght.woff') format('woff');
+}
