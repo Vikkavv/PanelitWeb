@@ -2,44 +2,132 @@
     font-family: DM-Sans;
 }
 
-body{
-    margin: 0;
+html{
+    height: 100vh;
 }
 
-.logo{
-    width: 10rem;
+body{
+    margin: 0;
+    /*background-color: #101010;*/
+    /*background-color: hsl(0, 100%, 36%);*/
+    background-color: rgba(0, 0, 0, 0.93);
+    opacity: 0.9;
+    background-image:  repeating-radial-gradient( circle at 0 0, transparent 0, rgba(0, 0, 0, 0.93) 33px ), repeating-linear-gradient( #00000055, #000000 );
+    background-repeat: no-repeat;
 }
+
+/*LOGO STYLES*/
+
+.logo{
+    width: 2rem;
+    height: 3rem;
+    user-select: none;
+    pointer-events: none;
+    transition: 500ms ease;
+}
+
+.logoContainer{
+    display: flex;
+    gap: 15px;
+    margin-left: 0rem;
+}
+
+.logoSeparator{
+    margin-top: 4%;
+    width: 1px;
+    height: 75%;
+    background-color: #f0f0f046;
+}
+
+.spinningLogo{
+    width: 2rem;
+    height: 3rem;
+    transition: 300ms ease;
+}
+
+.spinningLogo:hover{
+    transform: rotateZ(-360deg);
+    transition: 300ms ease;
+}
+
+body:has(.spinningLogo:hover) .logoHeader{
+    color: #4dc2ff;
+    transition: 200ms ease;
+}
+
+/*NAVBAR STYLES*/
 
 .navbar{
     padding: 0.8rem;
-    background-color: red;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    background-color: #0f0f0f;
+    border-bottom: #242424 1px solid;
     display: flex;
     justify-content: space-between;
 }
 
 .navlinks{
     display: flex;
-    gap: 10rem;
+    gap: 3rem;
 }
 
 .navlink{
-    line-height: 100%;
+    display: inline;
     vertical-align: bottom;
     text-decoration: none;
     color: #f0f0f0;
     font-weight: 500;
-    font-size: 20px;
+    font-size: 15px;
+    padding: 10px;
+    vertical-align: bottom;
+    line-height: 200%;
+    transition: 200ms ease;
+}
+
+.navlink:hover{
+    color: #4dc2ff;
+    transition: 200ms ease;
 }
 
 .navLinkSeparator{
     color: #f0f0f0bb;
-    font-size: 30px;
+    font-size: 25px;
+    user-select: none;
 }
 
-.vCentered{
-    display: inline-block;
-    margin-top: auto;
-    margin-bottom: auto;
+.navLinkSeparator::after{
+    content: "/";
+}
+
+/*UTILS*/
+
+.w-fitContent{
+    width: fit-content;
+}
+
+.h-fitContent{
+    height: fit-content;
+}
+
+.margin-0{
+    margin: 0;
+}
+
+.margin-rigth{
+    margin-left: 3ch;
+}
+
+.text-white{
+    color: white;
+}
+
+.line-height200{
+    line-height: 200%;
+}
+
+.hidden{
+    visibility: hidden;
 }
 
 @font-face {
