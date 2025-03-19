@@ -10,10 +10,19 @@ body{
     margin: 0;
     /*background-color: #101010;*/
     /*background-color: hsl(0, 100%, 36%);*/
-    background-color: rgba(0, 0, 0, 0.93);
+    background-color: #000000ed;
     opacity: 0.9;
     background-image:  repeating-radial-gradient( circle at 0 0, transparent 0, rgba(0, 0, 0, 0.93) 33px ), repeating-linear-gradient( #00000055, #000000 );
     background-repeat: no-repeat;
+}
+
+/*LENGUAGE MODIFICATIONS*/
+html:not([lang="en"]) .header{
+    font-size: 63px;
+}
+
+html:not([lang="en"]) .lenguajeSize{
+    font-size: 50px;
 }
 
 /*LOGO STYLES*/
@@ -101,35 +110,189 @@ body:has(.spinningLogo:hover) .logoHeader{
 }
 
 /*UTILS*/
+    /*Sizes*/
+    .w-fitContent{
+        width: fit-content;
+    }
 
-.w-fitContent{
-    width: fit-content;
-}
+    .h-fitContent{
+        height: fit-content;
+    }
 
-.h-fitContent{
-    height: fit-content;
-}
+    /*Margins*/
+    .margin-0{
+        margin: 0;
+    }
 
-.margin-0{
-    margin: 0;
-}
+    .margin-0-auto{
+        margin: 0 auto;
+    }
 
-.margin-rigth{
-    margin-left: 3ch;
-}
+    .margin-rigth-3ch{
+        margin-left: 3ch;
+    }
 
-.text-white{
-    color: white;
-}
+    .margin-right05{
+        margin-right: 0.5rem;
+    }
+
+    .margin-top-2{
+        margin-top: 2rem;
+    }
+
+    .margin-bottom-1{
+        margin-bottom: 1rem;
+    }
+
+    /*Paddings*/
+
+    .padding-1{
+        padding: 1rem;
+    }
+
+    .padding-2{
+        padding: 2rem;
+    }
+
+    .padding-top-1-25{
+        padding-top: calc(1.85rem + 1px) !important;
+    }
+
+    .padding-left-2{
+        padding-left: 2rem;
+    }
+
+    .padding-1-0-1-2{
+        padding: 1ch 0ch 1ch 2ch !important;
+    }
+
+    /*Text modifiers*/
+    .text-white{
+        color: white;
+    }
+
+    .text-centered{
+        text-align: center;
+    }
+
+    .text-justified-center{
+        text-align: justify;
+        text-justify: distribute;
+    }
+
+    .text-light{
+        font-weight: 100;
+    }
+    .text-bold{
+        font-weight: bold;
+    }
+
+    .cardText{
+        font-size: 23px;
+    }
 
 .line-height200{
     line-height: 200%;
+}
+
+.line-height-fitContent{
+    line-height: 75%;
 }
 
 .hidden{
     visibility: hidden;
 }
 
+.overFlowHidden{
+    overflow: hidden;
+}
+
+/*Containers*/
+
+.container{
+    margin: 0 20vw;
+}
+
+/*WRAPERS*/
+.window{
+    background-color: #10101063;
+    border-radius: 1em;
+    border: #222 solid 1px;
+    padding: 1ch;
+    backdrop-filter: blur(2px);
+}
+
+/*GRIDS*/
+
+.grid{
+    display: grid;
+}
+.col2-1{
+    grid-template-columns: 2fr 1fr;
+}
+.col1-2{
+    grid-template-columns: 1fr 2fr;
+}
+
+.row-gap1{
+    row-gap: 1rem;
+}
+
+.gap1{
+    gap: 1rem;
+}
+
+.gap2{
+    gap: 2rem;
+}
+
+/*FLEXES*/
+
+.flex{
+    display: flex;
+}
+
+.justify-space-bwt{
+    justify-content: space-between;
+}
+
+/*TITLES*/
+
+.header{
+    font-size: 90px;
+}
+
+.cardTitle{
+    font-size: 70px;
+}
+
+/*Positions*/
+
+/*Cards*/
+
+.cardGradient{
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(#4dc1ffb4 0%, #10101000 75%);
+    position: absolute;
+    bottom: -140px;
+    right: -140px;
+    z-index: -1;
+}
+
+.cardHeight{
+    height: 14rem;
+}
+
+.greenGradient{
+    background: radial-gradient(hsla(130, 100%, 65%, 0.706) 0%, #10101000 75%);
+}
+
+.purpleGradient{
+    background: radial-gradient(hsla(278, 100%, 65%, 0.706) 0%, #10101000 75%);
+}
+
+/*FONTS*/
 @font-face {
     font-family: 'DM-Sans';
     src: url('assets/fonts/DMSans-VariableFont_opsz,wght.woff2') format('woff2'),

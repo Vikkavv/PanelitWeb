@@ -33,14 +33,14 @@ function Navbar(props) {
                 <span className="logoSeparator"/>
             </div>
             <div className="navlinks">
-                <div className="navlinks margin-rigth">
+                <div className="navlinks margin-rigth-3ch">
                     {links}
                 </div>
                 <div></div>
                 <div className="logoContainer" id="logContainer">
                     <a href="" className="navlink">Log in</a>
                     <span className="logoSeparator"/>
-                    <a href="" className="navlink">Sing up</a>
+                    <a href="" className="navlink">Sign up</a>
                 </div>
             </div>
         </nav>
