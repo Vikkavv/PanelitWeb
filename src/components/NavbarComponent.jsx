@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import PanelitLogoSvg from "./panelItLogoSvgComponent"
+import LogoContainer from "./LogoContainerComponent";
 
 function createLinksObjects(names, paths){
     let linkarray = [];
@@ -25,22 +26,16 @@ function Navbar(props) {
 
     return (
         <nav className="navbar">
-            <div className="logoContainer">
-                <div className="spinningLogo">
-                    <PanelitLogoSvg color="#f0f0f0" />
-                </div>
-                <h2 className="logoHeader margin-0 text-white line-height200">Panelit</h2>
-                <span className="logoSeparator"/>
-            </div>
+            <LogoContainer hasLogoSeparator="true" isRotatable="true"/>
             <div className="navlinks">
                 <div className="navlinks margin-rigth-3ch">
                     {links}
                 </div>
                 <div></div>
                 <div className="logoContainer" id="logContainer">
-                    <a href="" className="navlink">Log in</a>
+                    <a href="/signIn" className="navlink">Log in</a>
                     <span className="logoSeparator"/>
-                    <a href="" className="navlink">Sign up</a>
+                    <a href="/signUp" className="navlink">Sign up</a>
                 </div>
             </div>
         </nav>

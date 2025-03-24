@@ -6,6 +6,8 @@ document.title = "Welcome! | Panelit"
 
 function Main() {
     useEffect(() => {
+        let html = document.getElementsByTagName("html")[0];
+        html.classList.remove("html100");
         dynamicClasses();
     }, [])
 
@@ -32,7 +34,7 @@ function Main() {
                         </div>
                     </div>
                     <div className="grid col1-2 gap1">
-                        <div className="window padding-1 cardHeight overFlowHidden">
+                        <div className="window padding-1-0-1-2 cardHeight overFlowHidden">
                             <div className="flex justify-space-bwt">
                                 <div>
                                     <h3 className="cardTitle margin-0 text-light">Cards</h3>

@@ -3,6 +3,14 @@
 }
 
 html{
+    height: 120vh;
+}
+
+.html100{
+    height: 100vh;
+}
+
+html:has(noscript#vh100){
     height: 100vh;
 }
 
@@ -25,6 +33,35 @@ html:not([lang="en"]) .lenguajeSize{
     font-size: 50px;
 }
 
+html:not([lang="en"]) .loginTitle{
+    font-size: 32px;
+}
+
+html:not([lang="en"]) :has(label.smallFontLenguages) h2.loginTitle{
+    font-size: 28px !important;
+}
+
+html:not([lang="en"]) :has(label.smallFontLenguages) .margin-bottom-1{
+    margin-bottom: .4rem;
+}
+
+html:not([lang="en"]) :has(label.smallFontLenguages) .errorMessageLabel{
+    bottom: .4rem;
+}
+
+html:not([lang="en"]) :has(label.smallFontLenguages) .loginTitle{
+    margin-bottom: .5rem;
+}
+
+.labelTitle{
+    margin-bottom: .8 !important;
+}
+
+html:not([lang="en"]) .navlink{
+    padding-left: 0 !important;
+    padding-right: .3rem !important;
+    font-size: 11px;
+}
 /*LOGO STYLES*/
 
 .logo{
@@ -89,7 +126,6 @@ body:has(.spinningLogo:hover) .logoHeader{
     font-weight: 500;
     font-size: 15px;
     padding: 10px;
-    vertical-align: bottom;
     line-height: 200%;
     transition: 200ms ease;
 }
@@ -115,8 +151,20 @@ body:has(.spinningLogo:hover) .logoHeader{
         width: fit-content;
     }
 
+    .w100{
+        width: 100%;
+    }
+
+    .w75{
+        width: 75%;
+    }
+
     .h-fitContent{
-        height: fit-content;
+        height: fit-content !important;
+    }
+
+    .h100{
+        height: 100%;
     }
 
     /*Margins*/
@@ -124,8 +172,24 @@ body:has(.spinningLogo:hover) .logoHeader{
         margin: 0;
     }
 
+    .margin-top-0{
+        margin-top: 0;
+    }
+
+    .margin-auto{
+        margin: auto;
+    }
+
     .margin-0-auto{
         margin: 0 auto;
+    }
+
+    .margin-auto-0{
+        margin: auto 0;
+    }
+
+    .margin-auto-auto{
+        margin: auto auto;
     }
 
     .margin-rigth-3ch{
@@ -140,18 +204,37 @@ body:has(.spinningLogo:hover) .logoHeader{
         margin-top: 2rem;
     }
 
+    .margin-bottom-0{
+        margin-bottom: 0;
+    }
+
+    .margin-bottom-05{
+        margin-bottom: .5rem;
+    }
+
     .margin-bottom-1{
         margin-bottom: 1rem;
     }
 
+    .margin-bottom-2{
+        margin-bottom: 2rem;
+    }
+
     /*Paddings*/
+    .padding-0{
+        padding: 0;
+    }
 
     .padding-1{
-        padding: 1rem;
+        padding: 1rem !important;
+    }
+
+    .padding-top-05{
+        padding-top: .5rem;
     }
 
     .padding-2{
-        padding: 2rem;
+        padding: 2rem !important;
     }
 
     .padding-top-1-25{
@@ -166,13 +249,29 @@ body:has(.spinningLogo:hover) .logoHeader{
         padding: 1ch 0ch 1ch 2ch !important;
     }
 
+    .padding-08-2-08-2{
+        padding: .8rem 2rem;
+    }
+
     /*Text modifiers*/
+    .text-italic{
+        font-style: italic;
+    }
+
     .text-white{
         color: white;
     }
 
+    .text-gray{
+        color: rgb(177, 177, 177);
+    }
+
     .text-centered{
         text-align: center;
+    }
+
+    .text-end{
+        text-align: end;
     }
 
     .text-justified-center{
@@ -180,9 +279,26 @@ body:has(.spinningLogo:hover) .logoHeader{
         text-justify: distribute;
     }
 
-    .text-light{
-        font-weight: 100;
+    .text-decoration-none{
+        text-decoration: none;
     }
+
+    .text-decoration-underline {
+        text-decoration: underline;
+    }
+
+    .text-normal{
+        font-weight: 200;
+    }
+
+    .text-light{
+        font-weight: 100 !important;
+    }
+
+    .text-semiLight{
+        font-weight: 200 !important;
+    }
+
     .text-bold{
         font-weight: bold;
     }
@@ -191,8 +307,28 @@ body:has(.spinningLogo:hover) .logoHeader{
         font-size: 23px;
     }
 
+    .textMini{
+        font-size: 15px;
+    }
+
+    .textNano{
+        font-size: 12px;
+    }
+
+    .userSelectNone{
+        user-select: none;
+    }
+
+    .vertical-align-middle{
+        vertical-align: middle;
+    }
+
 .line-height200{
     line-height: 200%;
+}
+
+.line-height100{
+    line-height: 100%;
 }
 
 .line-height-fitContent{
@@ -213,13 +349,28 @@ body:has(.spinningLogo:hover) .logoHeader{
     margin: 0 20vw;
 }
 
-/*WRAPERS*/
+/*WRAPPERS*/
 .window{
     background-color: #10101063;
     border-radius: 1em;
     border: #222 solid 1px;
     padding: 1ch;
     backdrop-filter: blur(2px);
+}
+
+.login{
+    height: 25rem;
+    width: 23rem;
+    margin: auto auto;
+    transition: 500ms ease;
+}
+
+.boxSize-Border{
+    box-sizing: border-box;
+}
+
+.registerBtnWrapper{
+    width: calc(100% - (2rem));
 }
 
 /*GRIDS*/
@@ -256,6 +407,11 @@ body:has(.spinningLogo:hover) .logoHeader{
     justify-content: space-between;
 }
 
+/*Displays*/
+.display-block{
+    display: block;
+}
+
 /*TITLES*/
 
 .header{
@@ -266,7 +422,61 @@ body:has(.spinningLogo:hover) .logoHeader{
     font-size: 70px;
 }
 
+.loginTitle{
+    font-size: 40px;
+    margin-bottom: .6rem !important;
+}
+
+.labelTitle{
+    font-size: 19px;
+}
+
+.optionalFieldText{
+    font-size: 12px;
+}
+
 /*Positions*/
+
+.positionAbsolute{
+    position: absolute;
+}
+
+.positionRelative{
+    position: relative;
+}
+
+.position-l0-t0{
+    left: 0;
+    top: 0;
+}
+
+.btm-0{
+    bottom: 0;
+}
+
+.btm-1{
+    bottom: 1rem;
+}
+
+.btm-2{
+    bottom: 2rem;
+}
+
+.btm-05{
+    bottom: .5rem;
+}
+
+.float-right{
+    float: right;
+}
+
+/*Z-INDEXES*/
+.z-index-0{
+    z-index: 0;
+}
+.z-index-1{
+    z-index: 1;
+}
 
 /*Cards*/
 
@@ -281,7 +491,9 @@ body:has(.spinningLogo:hover) .logoHeader{
 }
 
 .cardHeight{
+    min-height: 14rem;
     height: 14rem;
+    max-height: 14rem;
 }
 
 .greenGradient{
@@ -290,6 +502,51 @@ body:has(.spinningLogo:hover) .logoHeader{
 
 .purpleGradient{
     background: radial-gradient(hsla(278, 100%, 65%, 0.706) 0%, #10101000 75%);
+}
+
+/*BUTTONS*/
+.btn{
+    background-color: #101010;
+    border-radius: 9px;
+    border: #222 solid 1px;
+    padding: 1ch;
+    width: fit-content;
+    cursor: pointer;
+    color: #000000;
+    font-size: 16px;
+}
+
+.btn > p{
+    font-weight: 500;
+}
+
+.btn:hover{
+    border: white solid 1.5px;
+    color: white;
+}
+
+.btn-large{
+    padding-left: 1.5ch !important;
+    padding-right: 1.5ch !important;
+}
+
+body:has(.btn:hover) .btnGradientBluePurple{
+    background:
+    radial-gradient(ellipse at top, #4dc1ff, transparent),
+    radial-gradient(ellipse at bottom, hsla(278, 100%, 65%, 0.706), transparent);
+}
+
+.btnGradientBluePurple{
+    background:
+    radial-gradient(ellipse at top, #2eb6ff, transparent),
+    radial-gradient(ellipse at bottom, hsla(278, 100%, 58%, 0.706), transparent);
+}
+/*FORMS*/
+.errorMessageLabel{
+    position: relative;
+    margin: 0 auto;
+    font-size: 14px;
+    color: rgb(250, 69, 69);
 }
 
 /*FONTS*/
