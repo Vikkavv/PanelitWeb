@@ -7,44 +7,43 @@ document.title = "Sign up in Panelit"
 document.getElementsByTagName("html")[0].classList = "html100";
 document.getElementById("root").classList = "html100";
 
-
-let registerStep = 0;
-let backBtn;
-let counter = 0;
-let regExpMap;
-let errorMap = new Map;
+let fieldsWithFeedBackError = {};
+let userWrongFields = {};
+let errorData = {}; //object with all the errors occured in back server.
+let pagesWithErrors = []; //Number of sign up page that has feed back errors.
+let registerStep = 0; //The current step/page of the sign up process.
+let backBtn; //Global var to save back button.
+let counter = 0; //Icremental counter to assign unique key attribute value in form tags array.
+let regExpMap; //Map of String: name of an user key, String: regExp applied to that field
+let errorMap = new Map; //Map of String: name of an user key, String: error name of that field.
+let pageInputs = []; //Array of user key values grouped in each array pos by how appear in each step of sign up form (Example, if in a step appears two fields, in the array is going to be two names separated by a space).
+let newUser = {
+    "name":"",
+    "lastName":"",
+    "nickname":"",
+    "email":"",
+    "password":"",
+    "phoneNumber":null,
+    "profilePicture":null,
+    "plan":{"id":1},
+    "planExpirationDate":null
+};
 
 function SignUp() {
-    const [newUser, setNewUser] = useState({
-        "name":"",
-        "lastName":"",
-        "nickname":"",
-        "email":"",
-        "password":"",
-        "phoneNumber":null,
-        "profilePicture":null,
-        "plan_id":1,
-        "planExpirationDate":null
-    });
 
     const [formContent, setFormContent] = useState([<h2 key="0"></h2>]);
     const refs = useRef({});
 
     useEffect(() =>{
-        //console.log(parsePhoneNumber("+34 640 79 42 64").isValid());
-        regExpMap = createRegExpMap(signUpDialog(newUser, setFormContent, refs));
-        document.getElementById("nextBtn").addEventListener("click", nextStep.bind(null, newUser, setNewUser, setFormContent, refs));
+        regExpMap = createRegExpMap(signUpDialog(setFormContent, refs));
+        document.getElementById("nextBtn").addEventListener("click", nextStep.bind(null, setFormContent, refs));
         backBtn = document.getElementById("backBtn");
-        backBtn.addEventListener("click", previusStep.bind(null, newUser, setNewUser, setFormContent, refs));
+        backBtn.addEventListener("click", previusStep.bind(null, setFormContent, refs));
     }, [])
 
     useEffect(() =>{
         checkTitleSize();
     }, [formContent[0].props.children]);
-
-    useEffect(() =>{
-        console.log({newUser});
-    }, [JSON.stringify(newUser)])
 
     return (
         <>
@@ -68,6 +67,33 @@ function SignUp() {
     )
 }
 
+async function sendUserInfo(setFormContent, refs){
+    const response = await fetch("http://localhost:8080/User",{
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newUser)
+    });
+    errorData = await response.json();
+    if(!JSON.stringify(errorData).includes('"errors":null')) showFeedBackErrors(setFormContent, refs);
+}
+
+function showFeedBackErrors(setFormContent, refs){
+    document.getElementById("nextBtn").textContent = "Next";
+    for (const property in errorData) {
+        let completeString = pageInputs.filter((inputName) => inputName.includes(property))[0];
+        if(completeString !== undefined){
+            pagesWithErrors.push(pageInputs.findIndex((inputNames) => inputNames === completeString));
+        }
+        userWrongFields[property] = newUser[property];
+        fieldsWithFeedBackError[property] = true;
+    }
+    pagesWithErrors.sort();
+    registerStep = pagesWithErrors[0];
+    signUpDialog(setFormContent, refs);
+}
+
 function validateField(input){
     let regExpString = regExpMap.get(input.name);
     let isValid = true;
@@ -78,6 +104,8 @@ function validateField(input){
             let regExp = new RegExp(splited[0]);
             if(!regExp.test(input.value)){
                 let phoneNumber = parsePhoneNumber(input.value);
+                console.log(phoneNumber.formatInternational().replaceAll(" ",""), input.value.replaceAll(" ",""), phoneNumber.formatInternational().replaceAll(" ","") !== input.value.replaceAll(" ", ""));
+                if(phoneNumber.formatInternational().replaceAll(" ","") !== input.value.replaceAll(" ", "")) isValid = false;
                 if(phoneNumber === undefined || !phoneNumber.isValid()){
                     isValid = false;
                     document.getElementById(input.name + `Err`).classList.remove("hidden");
@@ -86,7 +114,7 @@ function validateField(input){
             }else true;
         }
     }
-    let regExp = new RegExp(regExpString);
+    let regExp = new RegExp(regExpString)
     if(!regExp.test(input.value)){
         isValid = false;
         document.getElementById(input.name + `Err`).classList.remove("hidden");
@@ -103,43 +131,52 @@ function createRegExpMap(regExpList){
     return regExpMap;
 }
 
-function previusStep(newUser, setNewUser, setFormContent, refs){
+function previusStep(setFormContent, refs){
     for (const input of document.getElementById("signUpForm").querySelectorAll("input")) {
-        setNewUser((prev) => {
-            prev[input.name] = input.value;
-            return prev;
-        });
+        newUser[input.name] = input.value;
     }
     if(registerStep > 0) registerStep--;
     if(registerStep == 0) backBtn.classList.add("hidden");
     if(registerStep < 3){
         document.getElementById("nextBtn").textContent = "Next";
     }
-    signUpDialog(newUser, setFormContent, refs);
+    signUpDialog(setFormContent, refs);
 }
 
-function nextStep(newUser, setNewUser, setFormContent, refs){
+function nextStep(setFormContent, refs){
     let hasErrors = false;
+    let inputNames = "";
     for (const input of document.getElementById("signUpForm").querySelectorAll("input")) {
-        if(input.value !== "" && input.value !== " "){
-            if(validateField(input)){
-                setNewUser((prev) => {
-                    prev[input.name] = input.value;
-                    return prev;
-                });
-            }else {
-                hasErrors = true;
-                refs.current[input.name].textContent = errorMap.get(input.name);
-            }
-        }else{
-            if(input.name.toLowerCase().indexOf("phone") === -1 ){
-                let errorLabel = document.getElementById(input.name + `Err`);
-                errorLabel.textContent = "Field can not be empty.";
-                errorLabel.classList.remove("hidden");
-                hasErrors = true;
+        if(userWrongFields[input.name] === input.value){
+            fieldsWithFeedBackError[input.name] = true;
+            refs.current[input.name].textContent = errorData[input.name];
+            refs.current[input.name].classList.remove("hidden");
+            hasErrors = true;
+        }else fieldsWithFeedBackError[input.name] = false;
+        inputNames += " "+input.name;
+        inputNames = inputNames.trim();
+        if(!hasErrors){
+            if(input.value !== "" && input.value !== " "){
+                if(validateField(input)){
+                    newUser[input.name] = input.value;
+                }else {
+                    hasErrors = true;
+                    if(document.getElementById(input.name + `Err`).style.getPropertyValue("line-height") === "255%") document.getElementById(input.name + `Err`).removeAttribute("style");
+                    refs.current[input.name].textContent = errorMap.get(input.name);
+                    if(refs.current[input.name].classList.contains("hidden")) refs.current[input.name].classList.remove("hidden");
+                }
+            }else{
+                if(input.name.toLowerCase().indexOf("phone") === -1 ){
+                    let errorLabel = document.getElementById(input.name + `Err`);
+                    errorLabel.textContent = "Field can not be empty.";
+                    errorLabel.style.lineHeight = "255%";
+                    errorLabel.classList.remove("hidden");
+                    hasErrors = true;
+                }
             }
         }
     }
+    if(!pageInputs.includes(inputNames)) pageInputs.push(inputNames);
     if(hasErrors) return;
     registerStep++;
     if(registerStep > 0) backBtn.classList.remove("hidden");
@@ -150,13 +187,15 @@ function nextStep(newUser, setNewUser, setFormContent, refs){
         document.getElementById("nextBtn").textContent = "Send";
     }
     if(registerStep > 3){
-        document.getElementById("signUpForm").submit();
+        registerStep--;
+        sendUserInfo(setFormContent, refs);
+        return;
     }
-    signUpDialog(newUser, setFormContent, refs);
+    signUpDialog(setFormContent, refs);
 }
 
 
-function signUpDialog(newUser, setFormContent, refs){
+function signUpDialog(setFormContent, refs){
     setFormContent(() => []);
     /**
      * This array has his own sintax to apply into titles, labels and inputs, every label-input pack should be separated with a comma (and one space next),
@@ -171,123 +210,83 @@ function signUpDialog(newUser, setFormContent, refs){
         "Name[Shamash]<Name can not take special symbols and either numbers.>; What is your name?, Last name[Thot]<Last name can not take special symbols and either numbers.>", 
         "Nickname[Thotsha]<Nickname must be at least 6 characters long: include numbers: and common symbols and letters.>; What is your acronym?", 
         "Email[superCognizance@example.com]<Use a valid email format>(F)%; What is your email and secret password?, Password[Choose carefully]<Password has to be between 8 to 12 characters long and common letters and symbols>%", 
-        "Phone number[Prefix and number]<If you provides a phone number: use a valid format>*; Do you want to add your phone number?"
+        "Phone number[Prefix and number]<If you provide a phone number: use a valid format>*; Do you want to add your phone number?"
     ];
     let regExps = [
-        "name/!/^[A-Za-zÑñÁÉÍÓÚÇáéíóúçÀÈÌÒÙàèìòùÂÊÎÔÛâêîôûÄËÏÖÜäëïöü]{1,}$", 
-        "lastName/!/^[A-Za-zÑñÁÉÍÓÚÇáéíóúçÀÈÌÒÙàèìòùÂÊÎÔÛâêîôûÄËÏÖÜäëïöü]{1,}$", 
-        "nickname/!/^[-A-Za-z0-9ÑñÁÉÍÓÚÇáéíóúçÀÈÌÒÙàèìòùÂÊÎÔÛâêîôûÄËÏÖÜäëïöü_/\\.\|]{6,}$",
+        "name/!/^[A-Za-zÑñÁÉÍÓÚÇáéíóúçÀÈÌÒÙàèìòùÂÊÎÔÛâêîôûÄËÏÖÜäëïöü]{1,25}$", 
+        "lastName/!/^[A-Za-zÑñÁÉÍÓÚÇáéíóúçÀÈÌÒÙàèìòùÂÊÎÔÛâêîôûÄËÏÖÜäëïöü]{1,25}$", 
+        "nickname/!/^[-A-Za-z0-9ÑñÁÉÍÓÚÇáéíóúçÀÈÌÒÙàèìòùÂÊÎÔÛâêîôûÄËÏÖÜäëïöü_/\\.\|]{6,25}$",
         "email/!/^[a-zA-Z0-9._]+@[a-zA-Z]+(([.][a-z]+)*)[.][a-z]{2,}$",
         "password/!/^[-A-Za-z0-9ÑñÇç@_.,]{8,12}$", 
         "phoneNumber/!/^\s*$/¡/[tel]*"
     ];
     if(steps[registerStep].indexOf(", ") !== -1){
         for (let nameLabel of steps[registerStep].split(", ")) {
-            let inputType = "text";
-            let diffetentType = false;
-            if(nameLabel.indexOf("%") !== -1){
-                diffetentType = true;
-                nameLabel = nameLabel.replaceAll("%", "");
-            }
-            let isOptional = false;
-            if(nameLabel.indexOf("*") !== -1){
-                isOptional = true;
-                nameLabel = nameLabel.replaceAll("*", "");
-            }
-            let placeholder = "";
-            if(nameLabel.indexOf("; ") !== -1){
-                let splited = nameLabel.split("; ");
-                nameLabel = splited[0];
-                setFormContent(prev => [...prev,
-                    <h2 key={counter++} id="checkSize" className="loginTitle text-white margin-top-0 line-height100 text-centered">{splited[1]}</h2>
-                ]);
-            }
-            let errorMesagge = "";
-            if(nameLabel.indexOf("<") !== -1){
-                let splited = nameLabel.split("<");
-                nameLabel = splited[0];
-                errorMesagge = splited[1].replace(">", "").replaceAll(":", ",");
-            }
-            let smallFont = false;
-            if(errorMesagge.indexOf("(F)") !== -1){
-                smallFont = true;
-                errorMesagge = errorMesagge.replace("(F)", "");
-            }
-            if(nameLabel.indexOf("[") !== -1){
-                let splited = nameLabel.split("[");
-                nameLabel = splited[0];
-                placeholder = splited[1].replace("]","");
-            }
-            let camelCaserizer = nameLabel.toLowerCase();
-            if(camelCaserizer.indexOf(" ") !== -1){
-                let splited = camelCaserizer.split(" ");
-                //Changes first letter of the second word into a capital and removes the space between them.
-                camelCaserizer = splited[0] + splited[1].replace(splited[1].charAt(0), splited[1].charAt(0).toUpperCase());
-            }
-            if(diffetentType) inputType = camelCaserizer;
-            errorMap.set(camelCaserizer, errorMesagge);
-            setFormContent(prev => [...prev, 
-            <label key={counter++} className={(smallFont && `smallFontLenguages`) +` labelTitle display-block text-white margin-0-auto margin-bottom-05 w75`} htmlFor={camelCaserizer}>{nameLabel}{isOptional && <span className="optionalFieldText text-gray"> / Optional</span>}</label>, 
-            <input key={counter++} type={inputType} className="display-block window text-white w75 margin-0-auto margin-bottom-1" defaultValue={newUser[camelCaserizer]} name={camelCaserizer} id={camelCaserizer} placeholder={placeholder}/>,
-            <span key={counter++} ref={(el) => (refs.current[camelCaserizer] = el)} id={camelCaserizer + `Err`} className="errorMessageLabel display-block margin-0-auto w75 btm-1 hidden">{errorMesagge}</span>
-            ]);
+            createFormInputs(nameLabel, setFormContent, refs);
         }
     }else{
         let nameLabel = steps[registerStep];
-        let inputType = "text";
-        let diffetentType = false;
-        if(nameLabel.indexOf("%") !== -1){
-            diffetentType = true;
-            nameLabel = nameLabel.replaceAll("%", "");
-        }
-        let isOptional = false;
-        if(nameLabel.indexOf("*") !== -1){
-            isOptional = true;
-            nameLabel = nameLabel.replaceAll("*", "");
-        }
-        let placeholder = "";
-        if(nameLabel.indexOf("; ") !== -1){
-            let splited = nameLabel.split("; ");
-            nameLabel = splited[0];
-            setFormContent(prev => [...prev,
-                <h2 key={counter++} id="checkSize" className="loginTitle text-white margin-top-0 line-height100 text-centered">{splited[1]}</h2>
-            ]);
-        }
-        let errorMesagge = "";
-        if(nameLabel.indexOf("<") !== -1){
-            let splited = nameLabel.split("<");
-            nameLabel = splited[0];
-            errorMesagge = splited[1].replace(">", "").replaceAll(":", ",");
-        }
-        let smallFont = false;
-        if(errorMesagge.indexOf("(F)") !== -1){
-            smallFont = true;
-            errorMesagge = errorMesagge.replace("(F)", "");
-        }
-        if(nameLabel.indexOf("[") !== -1){
-            let splited = nameLabel.split("[");
-            nameLabel = splited[0];
-            placeholder = splited[1].replace("]","");
-        }
-        if(placeholder.indexOf("%") !== -1){
-            inputType = nameLabel;
-            placeholder = placeholder.replace("%", "");
-        }
-        let camelCaserizer = nameLabel.toLowerCase();
-        if(camelCaserizer.indexOf(" ") !== -1){
-            //Changes first letter of the second word into a capital and removes the space between them.
-            let splited = camelCaserizer.split(" ");
-            camelCaserizer = splited[0] + splited[1].replace(splited[1].charAt(0), splited[1].charAt(0).toUpperCase());
-        }
-        if(diffetentType) inputType = camelCaserizer;
-        errorMap.set(camelCaserizer, errorMesagge);
-        setFormContent(prev => [...prev,
-            <label key={counter++} className="labelTitle display-block text-white margin-0-auto margin-bottom-05 w75" htmlFor={camelCaserizer}>{nameLabel}{isOptional && <span className="optionalFieldText text-gray"> / Optional</span>}</label>, 
-            <input key={counter++} type={inputType} className="display-block window text-white w75 margin-0-auto margin-bottom-1" defaultValue={newUser[camelCaserizer]} name={camelCaserizer} id={camelCaserizer} placeholder={placeholder}/>,
-            <span key={counter++} ref={(el) => (refs.current[camelCaserizer] = el)} id={camelCaserizer + `Err`} className="errorMessageLabel display-block margin-0-auto w75 btm-1 hidden">{errorMesagge}</span>
-        ]);
+        createFormInputs(nameLabel, setFormContent, refs);
     }
     return regExps;
+}
+
+function createFormInputs(nameLabel, setFormContent, refs){
+    let intputHasFeedBackErrors = false;
+    let inputType = "text";
+    let diffetentType = false;
+    if(nameLabel.indexOf("%") !== -1){
+        diffetentType = true;
+        nameLabel = nameLabel.replaceAll("%", "");
+    }
+    let isOptional = false;
+    if(nameLabel.indexOf("*") !== -1){
+        isOptional = true;
+        nameLabel = nameLabel.replaceAll("*", "");
+    }
+    let placeholder = "";
+    if(nameLabel.indexOf("; ") !== -1){
+        let splited = nameLabel.split("; ");
+        nameLabel = splited[0];
+        setFormContent(prev => [...prev,
+            <h2 key={counter++} data-page_number={registerStep} id="checkSize" className="loginTitle text-white margin-top-0 line-height100 text-centered">{splited[1]}</h2>
+        ]);
+    }
+    let errorMesagge = "";
+    if(nameLabel.indexOf("<") !== -1){
+        let splited = nameLabel.split("<");
+        nameLabel = splited[0];
+        errorMesagge = splited[1].replace(">", "").replaceAll(":", ",");
+    }
+    let smallFont = false;
+    if(errorMesagge.indexOf("(F)") !== -1){
+        smallFont = true;
+        errorMesagge = errorMesagge.replace("(F)", "");
+    }
+    if(nameLabel.indexOf("[") !== -1){
+        let splited = nameLabel.split("[");
+        nameLabel = splited[0];
+        placeholder = splited[1].replace("]","");
+    }
+    let camelCaserizer = nameLabel.toLowerCase();
+    if(camelCaserizer.indexOf(" ") !== -1){
+        let splited = camelCaserizer.split(" ");
+        //Changes first letter of the second word into a capital and removes the space between them.
+        camelCaserizer = splited[0] + splited[1].replace(splited[1].charAt(0), splited[1].charAt(0).toUpperCase());
+    }
+    if(diffetentType) inputType = camelCaserizer;
+    errorMap.set(camelCaserizer, errorMesagge);
+    if(Object.keys(errorData).includes(camelCaserizer) && fieldsWithFeedBackError[camelCaserizer] === true){
+        intputHasFeedBackErrors = true;
+    }else intputHasFeedBackErrors = false;
+    if(intputHasFeedBackErrors){
+        errorMesagge = errorData[camelCaserizer];
+    }
+    setFormContent(prev => [...prev, 
+    <label key={counter++} data-page_number={registerStep} className={(smallFont && `smallFontLenguages`) +` labelTitle display-block text-white margin-0-auto margin-bottom-05 w75`} htmlFor={camelCaserizer}>{nameLabel}{isOptional && <span className="optionalFieldText text-gray"> / Optional</span>}</label>, 
+    <input key={counter++} data-page_number={registerStep} type={inputType} className="display-block window text-white w75 margin-0-auto margin-bottom-1" defaultValue={newUser[camelCaserizer]} name={camelCaserizer} id={camelCaserizer} placeholder={placeholder}/>,
+    <span key={counter++} data-page_number={registerStep} ref={(el) => (refs.current[camelCaserizer] = el)} id={camelCaserizer + `Err`} className={`${!intputHasFeedBackErrors ? "hidden" : ""} errorMessageLabel display-block margin-0-auto w75 btm-1`}>{errorMesagge}</span>
+    ]);
 }
 
 function checkTitleSize(){
