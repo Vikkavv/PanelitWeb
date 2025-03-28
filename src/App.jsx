@@ -3,6 +3,7 @@ import './App.css'
 import Main from './pages/Main'
 import SignUp from './pages/SignUp'
 import SignIn from './pages/SignIn'
+import Worksapce from './pages/WorkSpace'
 
 function App() {
 
@@ -11,6 +12,7 @@ function App() {
       <Route path='/' element={<Main/>}/>
       <Route path='/signUp' element={<SignUp/>}/>
       <Route path='/signIn' element={<SignIn/>}/>
+      <Route path='/workspace' element={<Worksapce/>}/>
     </Routes>
   )
 }

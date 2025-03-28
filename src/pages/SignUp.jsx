@@ -1,22 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import parsePhoneNumber from "libphonenumber-js";
 import LogoContainer from "../components/LogoContainerComponent";
-
-document.title = "Sign up in Panelit"
+import { useNavigate } from 'react-router';
 
 document.getElementsByTagName("html")[0].classList = "html100";
 document.getElementById("root").classList = "html100";
 
-let fieldsWithFeedBackError = {};
-let userWrongFields = {};
+let fieldsWithFeedBackError = {}; //Key of the fields that had feedback errors and a boolean that change to false when fixed.
+let userWrongFields = {}; //Key of the fields that have feedback errors and theirs corresponding erroneus values.
 let errorData = {}; //object with all the errors occured in back server.
-let pagesWithErrors = []; //Number of sign up page that has feed back errors.
+let pagesWithErrors = []; //Numbers of sign up pages that have feed back errors.
 let registerStep = 0; //The current step/page of the sign up process.
 let backBtn; //Global var to save back button.
 let counter = 0; //Icremental counter to assign unique key attribute value in form tags array.
-let regExpMap; //Map of String: name of an user key, String: regExp applied to that field
-let errorMap = new Map; //Map of String: name of an user key, String: error name of that field.
-let pageInputs = []; //Array of user key values grouped in each array pos by how appear in each step of sign up form (Example, if in a step appears two fields, in the array is going to be two names separated by a space).
+let regExpMap; //Map of: String: name of an user object key, String: regExp applied to that field.
+let errorMap = new Map; //Map of: String: name of an user object key, String: error text of that field.
+let pageInputs = []; //Array of user object key values grouped in each array pos by how appear in each step of sign up form (Example, if in a step appears two fields, in the array is going to be two names separated by a space).
 let newUser = {
     "name":"",
     "lastName":"",
@@ -34,9 +33,17 @@ function SignUp() {
     const [formContent, setFormContent] = useState([<h2 key="0"></h2>]);
     const refs = useRef({});
 
+    const navigate = useNavigate();
+
+    const redirect = (path) => {
+        navigate(path);
+    };
+
     useEffect(() =>{
+        document.title = "Sign up in Panelit"
+
         regExpMap = createRegExpMap(signUpDialog(setFormContent, refs));
-        document.getElementById("nextBtn").addEventListener("click", nextStep.bind(null, setFormContent, refs));
+        document.getElementById("nextBtn").addEventListener("click", nextStep.bind(null, setFormContent, refs, redirect));
         backBtn = document.getElementById("backBtn");
         backBtn.addEventListener("click", previusStep.bind(null, setFormContent, refs));
     }, [])
@@ -56,7 +63,7 @@ function SignUp() {
                             {formContent}
                         </div>
                         <div className="positionAbsolute btm-05 registerBtnWrapper flex justify-space-bwt">
-                            <a href="/signIn" className="navlink text-decoration-underline padding-1 textNano">Already have an account?, sign in</a>
+                            <a href="/signIn" id="variable" className="navlink text-decoration-underline padding-1 textNano">Already have an account?, sign in</a>
                             <div className="btn btn-large h-fitContent margin-auto-0 userSelectNone hidden" id="backBtn"><p className="margin-0 text-white text-semiLight">Back</p></div>
                             <div className="btn btn-large btnGradientBluePurple h-fitContent margin-auto-0 userSelectNone" id="nextBtn"><p className="margin-0">Next</p></div>
                         </div>
@@ -67,9 +74,10 @@ function SignUp() {
     )
 }
 
-async function sendUserInfo(setFormContent, refs){
-    const response = await fetch("http://localhost:8080/User",{
+async function sendUserInfo(setFormContent, refs, redirect){
+    const response = await fetch("http://localhost:8080/User/signUp",{
         method: "POST",
+        credentials: "include",
         headers: {
             "Content-Type": "application/json",
         },
@@ -77,6 +85,7 @@ async function sendUserInfo(setFormContent, refs){
     });
     errorData = await response.json();
     if(!JSON.stringify(errorData).includes('"errors":null')) showFeedBackErrors(setFormContent, refs);
+    else redirect("/workspace");
 }
 
 function showFeedBackErrors(setFormContent, refs){
@@ -143,7 +152,7 @@ function previusStep(setFormContent, refs){
     signUpDialog(setFormContent, refs);
 }
 
-function nextStep(setFormContent, refs){
+function nextStep(setFormContent, refs, redirect){
     let hasErrors = false;
     let inputNames = "";
     for (const input of document.getElementById("signUpForm").querySelectorAll("input")) {
@@ -188,7 +197,7 @@ function nextStep(setFormContent, refs){
     }
     if(registerStep > 3){
         registerStep--;
-        sendUserInfo(setFormContent, refs);
+        sendUserInfo(setFormContent, refs, redirect);
         return;
     }
     signUpDialog(setFormContent, refs);

@@ -1,11 +1,26 @@
 import { useEffect } from "react"
 import Navbar from "../components/NavbarComponent"
 import {dynamicClasses} from '../assets/js/dynamicCssClasses.js'
-
-document.title = "Welcome! | Panelit"
+import { useNavigate } from 'react-router';
+import { cookieSessionChecker } from "../assets/js/SessionChecker.js";
 
 function Main() {
+
+    const navigate = useNavigate();
+
+    const redirect = (path) => {
+        navigate(path);
+    };
+
     useEffect(() => {
+        const checkSession = async () => {
+            const data = await cookieSessionChecker();
+            if(data !== null){
+                redirect("/workspace");
+            }
+        };
+        checkSession();
+        document.title = "Welcome! | Panelit"
         let html = document.getElementsByTagName("html")[0];
         html.classList.remove("html100");
         dynamicClasses();

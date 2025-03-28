@@ -57,7 +57,7 @@ html:not([lang="en"]) :has(label.smallFontLenguages) .loginTitle{
     margin-bottom: .8 !important;
 }
 
-html:not([lang="en"]) .navlink{
+html:not([lang="en"]) .navlink#variable{
     padding-left: 0 !important;
     padding-right: .3rem !important;
     font-size: 11px;
