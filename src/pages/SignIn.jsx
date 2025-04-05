@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import LogoContainer from "../components/LogoContainerComponent";
 import { useNavigate } from 'react-router';
+import { cookieSessionChecker } from "../assets/js/SessionChecker.js";
 
 document.getElementsByTagName("html")[0].classList = "html100";
 
@@ -19,6 +20,13 @@ function SignIn() {
 
 
     useEffect(() => {
+        const checkSession = async () => {
+            const data = await cookieSessionChecker();
+            if(data !== null){
+                redirect("/workspace");
+            }
+        };
+        checkSession();
         document.title = "Sign in Panelit"
         document.getElementById("nextBtn").addEventListener("click", checkFields);
     },[])

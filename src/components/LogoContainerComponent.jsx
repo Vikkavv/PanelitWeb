@@ -10,11 +10,11 @@ function LogoContainer(props) {
     return (
         <>
             {linkEnabled === undefined || linkEnabled !== true ? 
-                <div className={(hasPadding && ("logoContainer w-fitContent "+classes+" "+paddingClass)) || "logoContainer w-fitContent "+classes}>
+                <div className={hasPadding === true ? "logoContainer text-decoration-none w-fitContent "+classes+" "+paddingClass : "logoContainer text-decoration-none w-fitContent "+classes}>
                     {internalContent(props)}
                 </div> 
             :
-                <a className={(hasPadding && ("logoContainer text-decoration-none w-fitContent "+classes+" "+paddingClass)) || "logoContainer text-decoration-none w-fitContent "+classes} href={url}>
+                <a className={hasPadding === true ? "logoContainer text-decoration-none w-fitContent "+classes+" "+paddingClass : "logoContainer text-decoration-none w-fitContent "+classes} href={url}>
                     {internalContent(props)}
                 </a>
             }
@@ -29,7 +29,7 @@ function internalContent(params) {
     if(logoColor === undefined) logoColor = "#f0f0f0";
     return(
         <>
-            <div className={isRotatable && "spinningLogo"}>
+            <div className={isRotatable == true ? "spinningLogo" : ""}>
                 <PanelitLogoSvg color={logoColor} />
             </div>
             <h2 className="logoHeader margin-0 text-white line-height200">Panelit</h2>

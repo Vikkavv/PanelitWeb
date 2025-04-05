@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import PanelitLogoSvg from "./panelItLogoSvgComponent"
 import LogoContainer from "./LogoContainerComponent";
 
 function createLinksObjects(names, paths){
@@ -18,6 +17,10 @@ function Navbar(props) {
     const names = props.texts.split(", ");
     const paths = props.paths.split(", ");
     const hiddnBool = props.hiddnLog === "true" ? true : false;
+    const hasSignBtns = props.hasSignBtns === "false" ? false : true;
+    const hasUserInfo = props.hasUserInfo === "true" ? true : false;
+    const userInfo = props.userInfo !== undefined ? props.userInfo : {};
+    let hasLogoSeparator = props.hasLogoSeparator === "false" ? "false" : "true";
     const [links, setLinks] = useState([]);
     useEffect(() => {
         setLinks(createLinksObjects(names, paths));
@@ -26,20 +29,36 @@ function Navbar(props) {
 
     return (
         <nav className="navbar">
-            <LogoContainer hasLogoSeparator="true" isRotatable="true"/>
+            <LogoContainer hasLogoSeparator={hasLogoSeparator} isRotatable="true"/>
             <div className="navlinks">
                 <div className="navlinks margin-rigth-3ch">
                     {links}
                 </div>
                 <div></div>
-                <div className="logoContainer" id="logContainer">
-                    <a href="/signIn" className="navlink">Log in</a>
-                    <span className="logoSeparator"/>
-                    <a href="/signUp" className="navlink">Sign up</a>
-                </div>
+                {createSignBtns()}
+                {hasUserInfo && putUserInfo()}
             </div>
         </nav>
     )
+
+    function createSignBtns(){
+        if(hasSignBtns) return (
+            <div className="logoContainer" id="logContainer">
+                <a href="/signIn" className="navlink">Log in</a>
+                <span className="logoSeparator"/>
+                <a href="/signUp" className="navlink">Sign up</a>
+            </div>
+        )
+    }
+
+    function putUserInfo(){
+        return (
+            <div className="logoContainer" id="logContainer">
+                <span className="logoSeparator margin-auto-0 margin-right05"/>
+                <img className="miniUserPicture margin-auto-0" src={userInfo.profilePicture !== null && userInfo.profilePicture !== undefined && userInfo.profilePicture !== "" ? userInfo.profilePicture : `svgs/defaultProfileImage.svg`} alt="" />
+            </div>
+        )
+    }
 }
 
 export default Navbar

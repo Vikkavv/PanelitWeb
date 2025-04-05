@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import parsePhoneNumber from "libphonenumber-js";
 import LogoContainer from "../components/LogoContainerComponent";
 import { useNavigate } from 'react-router';
+import { cookieSessionChecker } from "../assets/js/SessionChecker.js";
 
 document.getElementsByTagName("html")[0].classList = "html100";
 document.getElementById("root").classList = "html100";
@@ -40,6 +41,14 @@ function SignUp() {
     };
 
     useEffect(() =>{
+        const checkSession = async () => {
+            const data = await cookieSessionChecker();
+            if(data !== null){
+                redirect("/workspace");
+            }
+        };
+        checkSession();
+
         document.title = "Sign up in Panelit"
 
         regExpMap = createRegExpMap(signUpDialog(setFormContent, refs));
@@ -113,7 +122,6 @@ function validateField(input){
             let regExp = new RegExp(splited[0]);
             if(!regExp.test(input.value)){
                 let phoneNumber = parsePhoneNumber(input.value);
-                console.log(phoneNumber.formatInternational().replaceAll(" ",""), input.value.replaceAll(" ",""), phoneNumber.formatInternational().replaceAll(" ","") !== input.value.replaceAll(" ", ""));
                 if(phoneNumber.formatInternational().replaceAll(" ","") !== input.value.replaceAll(" ", "")) isValid = false;
                 if(phoneNumber === undefined || !phoneNumber.isValid()){
                     isValid = false;

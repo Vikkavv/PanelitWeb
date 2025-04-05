@@ -18,12 +18,13 @@ export function dynamicClasses(){
             docChild.classList.remove("Jfs["+value+"]");
             docChild.style.fontSize = value;
         }
-        if(docChild.classList.value.indexOf("Jpr[") !== -1){
+        if(docChild.classList.value.indexOf("Jpr[") !== -1 || docChild.classList.value.indexOf("Jpa[") !== -1){
             let className = docChild.classList.value.substring(docChild.classList.value.indexOf("Jpr["));
             let strValues = className.substring(className.indexOf("[") + 1, className.indexOf("]"));
             let values = strValues.split(",");
+            if(docChild.classList.value.indexOf("Jpr[") !== -1) docChild.style.position = "relative";
+            else docChild.style.position = "absolute";
             docChild.classList.remove("Jpr["+strValues+"]");
-            docChild.style.position = "relative";
             for (const value of values) {
                 if(value.charAt(0) == "b") docChild.style.bottom = value.split(":")[1];
                 if(value.charAt(0) == "l") docChild.style.left = value.split(":")[1];
