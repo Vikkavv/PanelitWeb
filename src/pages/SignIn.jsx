@@ -29,6 +29,12 @@ function SignIn() {
         checkSession();
         document.title = "Sign in Panelit"
         document.getElementById("nextBtn").addEventListener("click", checkFields);
+        document.addEventListener("keydown", function(event){
+            if(event.key === "Enter"){
+                event.preventDefault();
+                checkFields();
+            }
+        });
     },[])
     return (
         <>

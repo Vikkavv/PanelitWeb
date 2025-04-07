@@ -22,7 +22,6 @@ function Worksapce() {
     const [reactiveUser, setReactiveUser] = useState({});
 
     useEffect(() => {
-        console.log(reactiveUser);
         if(JSON.stringify(reactiveUser).includes("nickname")) {
             const getPanels = async () => {
                 const data = await getUserPanels();
@@ -33,7 +32,6 @@ function Worksapce() {
     }, [JSON.stringify(reactiveUser)]);
 
     useEffect(() => {
-        console.log(panels);
         createPanelCards();
     }, [JSON.stringify(panels)]);
 
@@ -52,7 +50,7 @@ function Worksapce() {
     },[])
     return (
         <>  
-            <Navbar texts="Change Plan, Explore" paths="/plans, /home" hasSignBtns="false" hasLogoSeparator="false" hasUserInfo="true" userInfo={reactiveUser}/>
+            <Navbar texts="Change Plan, Explore, My panel subscriptions" paths="/plans, /home" hasSignBtns="false" hasLogoSeparator="false" hasUserInfo="true" userInfo={reactiveUser}/>
             <div id="noBg" className="container padding-top-1 body-OverflowHidden">
                 {panels.length > 0 ? 
                 <>

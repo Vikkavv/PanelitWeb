@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import LogoContainer from "./LogoContainerComponent";
+import UserProfileBtnComponent from "./UserProfileBtnComponent";
 
 function createLinksObjects(names, paths){
     let linkarray = [];
@@ -20,6 +21,7 @@ function Navbar(props) {
     const hasSignBtns = props.hasSignBtns === "false" ? false : true;
     const hasUserInfo = props.hasUserInfo === "true" ? true : false;
     const userInfo = props.userInfo !== undefined ? props.userInfo : {};
+    const hasUserBtns = props.hasUserBtns !== "true" ? true : false ;
     let hasLogoSeparator = props.hasLogoSeparator === "false" ? "false" : "true";
     const [links, setLinks] = useState([]);
     useEffect(() => {
@@ -52,12 +54,23 @@ function Navbar(props) {
     }
 
     function putUserInfo(){
-        return (
-            <div className="logoContainer" id="logContainer">
-                <span className="logoSeparator margin-auto-0 margin-right05"/>
-                <img className="miniUserPicture margin-auto-0" src={userInfo.profilePicture !== null && userInfo.profilePicture !== undefined && userInfo.profilePicture !== "" ? userInfo.profilePicture : `svgs/defaultProfileImage.svg`} alt="" />
-            </div>
-        )
+        if(!hasUserBtns){
+            return (
+                <div className="logoContainer" id="logContainer">
+                    <span className="logoSeparator margin-auto-0 margin-right05"/>
+                    <UserProfileBtnComponent userInfo={userInfo}/>
+                </div>
+            )
+        }else{
+            return (
+                <div className="logoContainer gap1" id="logContainer">
+                    <span className="logoSeparator margin-auto-0 margin-right05"/>
+                    <img className="iconSize" src="svgs/NotificationIcon.svg" alt="" />
+                    <img className="iconSize" src="svgs/MessagesIcon.svg" alt="" />
+                    <UserProfileBtnComponent userInfo={userInfo}/>
+                </div>
+            )
+        }
     }
 }
 

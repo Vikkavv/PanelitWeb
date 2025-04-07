@@ -25,7 +25,6 @@ function PanelCardComponent(props) {
     }, []);
 
     useEffect(() => {
-        console.log(userData);
     },[JSON.stringify(userData)]);
 
     return (
