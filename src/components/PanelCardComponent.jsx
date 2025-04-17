@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 function PanelCardComponent(props) {
-    let ownerNickname = props.ownerNickname === undefined ? console.error("ownerNickname has to be given") : props.ownerNickname;
+    let creatorId = props.creatorId === undefined ? console.error("creatorId has to be given") : props.creatorId;
     let panelId = props.panelId === undefined ? console.error("panelId has to be given") : props.panelId;
     let panelTitle = props.panelTitle === undefined ? console.error("panelTitle has to be given") : props.panelTitle;
     let panelLastEditedDate = props.panelLastEditedDate === undefined ? console.error("panelLastEdited date has to be given") : props.panelLastEditedDate;
@@ -18,10 +18,10 @@ function PanelCardComponent(props) {
 
     useEffect(() => {
         const getUserInfo = async () => {
-            const data = await getUserByNickname(ownerNickname);
+            const data = await getUserById(creatorId);
             if(data !== null) setUserData(data);
         }
-        if(ownerNickname !== undefined) getUserInfo();
+        if(creatorId !== undefined) getUserInfo();
     }, []);
 
     useEffect(() => {
@@ -31,7 +31,7 @@ function PanelCardComponent(props) {
         <a href={`/Panel/`+panelId} className="panelCard overFlowHidden positionRelative text-decoration-none text-white">
             <img className="coverPhoto" src={panelCoverPhoto} alt="" />
             <div className="authorInfo flex gap05 positionAbsolute position-l0-t0 boxSize_Border">
-            <img src={userData.profilePicture !== null && userData.profilePicture !== undefined && userData.profilePicture !== "" ? userData.profilePicture : `svgs/defaultProfileImage.svg`} alt="Default profile image" className={( userData.profilePicture !== null ? `profilePicture` : ``) + ` cardProfilePicture padding-05`} />
+            <img src={userData.profilePicture !== null && userData.profilePicture !== undefined && userData.profilePicture !== "" ? userData.profilePicture : `svgs/defaultProfileImage.svg`} alt="Default profile image" className={( userData.profilePicture !== null ? `profilePicture` : ``) + ` cardProfilePicture padding-05 object-fit-cover`} />
                 <p className="margin-auto-0 textNano">{userData.nickname}</p>
             </div>
             <div className="panelInfo flex justify-space-bwt positionAbsolute btm-0 padding-05 boxSize-Border">
@@ -42,8 +42,8 @@ function PanelCardComponent(props) {
     )
 }
 
-async function getUserByNickname(ownerNickname) {
-    const response = await fetch("http://localhost:8080/User/"+ownerNickname);
+async function getUserById(creatorId) {
+    const response = await fetch("http://localhost:8080/User/findById/"+creatorId);
     const data = await response.json();
     return data;
 }

@@ -45,16 +45,21 @@ function Worksapce() {
             else redirect("/signIn");
         };
         checkSession();
-        document.title = "My Workspace | Panelit"
+        document.title = "My Workspace | Panelit";
         dynamicClasses();
     },[])
     return (
         <>  
             <Navbar texts="Change Plan, Explore, My panel subscriptions" paths="/plans, /home" hasSignBtns="false" hasLogoSeparator="false" hasUserInfo="true" userInfo={reactiveUser}/>
-            <div id="noBg" className="container padding-top-1 body-OverflowHidden">
+            <div id="noBg" className="workspace container padding-top-1 body-OverflowHidden">
                 {panels.length > 0 ? 
                 <>
-                    <input type="search" className="display-block window text-white margin-bottom-1 margin-top-1 margin-0-1" placeholder="&#xFE0F; Search a Panel" autoComplete="on"/>
+                    <div className="flex">
+                        <input type="search" className="display-block window text-white margin-bottom-1 margin-top-1 margin-0-1" placeholder="&#xFE0F; Search a Panel" autoComplete="on"/> 
+                        <div className="SearchBtn whiteIcon margin-auto-0 btnGradientBluePurple flex">
+                            <img className="iconSize margin-auto" src="svgs/SearchIcon.svg" alt="" />
+                        </div>
+                    </div>
                     <div className="grid col-4 gap2 row-gap1 margin-top-2 overFlowYAuto darkscrollBar h70vh padding-0-1">
                         {htmlPanels}
                     </div>
@@ -72,7 +77,7 @@ function Worksapce() {
         if(panels.length > 0){
             for (const panel of panels) {
                 setHtmlPanels(prev => [...prev,
-                    <PanelCardComponent key={counter++} ownerNickname={userData.nickname} panelId={panel.id} panelTitle={panel.name} panelLastEditedDate={panel.lastEditedDate} panelCoverPhoto={panel.coverPhoto} />
+                    <PanelCardComponent key={counter++} creatorId={panel.creatorId} panelId={panel.id} panelTitle={panel.name} panelLastEditedDate={panel.lastEditedDate} panelCoverPhoto={panel.coverPhoto} />
                 ]);
             }
         }

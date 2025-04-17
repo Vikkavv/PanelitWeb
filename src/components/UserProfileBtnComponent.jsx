@@ -32,12 +32,12 @@ function UserProfileBtnComponent(props) {
 
     return (
         <>
-            <img ref={imgBtn} className="miniUserPicture cursor-pointer margin-auto-0" src={profilePicture} alt="" />
+            <img ref={imgBtn} className="miniUserPicture cursor-pointer object-fit-cover margin-auto-0" src={profilePicture} alt="" />
             <div ref={divPopUp} className="userPopUp positionAbsolute top-0 border-radius-0 window h100vh boxSize-Border">
                 <div className="flex flex-direction-column">
                     <div className="flex justify-space-bwt">
                         <div className="flex gap1">
-                            <img className="miniUserPicture margin-auto-0" src={profilePicture} alt="" />
+                            <img className="miniUserPicture margin-auto-0 object-fit-cover" src={profilePicture} alt="" />
                             <p className="text-white">{userInfo.nickname}</p>
                         </div>
                         <div onClick={showOrHideUserPopUp} className="PlusBtn whitePlus transparentBtn diagonal medium-size margin-auto-0"></div>
@@ -55,7 +55,7 @@ function UserProfileBtnComponent(props) {
                             <img className="iconSize" src="svgs/ViewProfileIcon.svg" alt="" />
                             <p className="margin-0 padding-0">View profile</p>
                         </a>
-                        <a href={`/Profile/`+userInfo.id} className="flex gap2 navlink margin-0 padding-0 w100">
+                        <a href={`/EditUserProfile`} className="flex gap2 navlink margin-0 padding-0 w100">
                             <img className="iconSize" src="svgs/editPencilIcon.svg" alt="" />
                             <p className="margin-0 padding-0">Edit profile</p>
                         </a>

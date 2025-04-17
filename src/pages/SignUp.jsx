@@ -122,7 +122,6 @@ function validateField(input){
             let regExp = new RegExp(splited[0]);
             if(!regExp.test(input.value)){
                 let phoneNumber = parsePhoneNumber(input.value);
-                if(phoneNumber.formatInternational().replaceAll(" ","") !== input.value.replaceAll(" ", "")) isValid = false;
                 if(phoneNumber === undefined || !phoneNumber.isValid()){
                     isValid = false;
                     document.getElementById(input.name + `Err`).classList.remove("hidden");
@@ -226,7 +225,7 @@ function signUpDialog(setFormContent, refs){
     let steps = [
         "Name[Shamash]<Name can not take special symbols and either numbers.>; What is your name?, Last name[Thot]<Last name can not take special symbols and either numbers.>", 
         "Nickname[Thotsha]<Nickname must be at least 6 characters long: include numbers: and common symbols and letters.>; What is your acronym?", 
-        "Email[superCognizance@example.com]<Use a valid email format>(F)%; What is your email and secret password?, Password[Choose carefully]<Password has to be between 8 to 12 characters long and common letters and symbols>%", 
+        "Email[superCognizance@example.com]<Use a valid email format>(F)%; What is your email and secret password?, Password[Choose carefully]<Password has to be between 8 and 12 characters long and must include common letters and symbols>%", 
         "Phone number[Prefix and number]<If you provide a phone number: use a valid format>*; Do you want to add your phone number?"
     ];
     let regExps = [

@@ -35,7 +35,10 @@ body:has(*.body-OverflowHidden) {
 body:has(*#noBg){
     background-image: none;
     background-color: #0a0a0a;
-    background: radial-gradient(circle at 50% 130%, #4a3aff, #100c1a 60%);
+}
+
+body:has(*.workspace){
+    background: radial-gradient(circle at 50% 130%, #4a3aff, #100c1a 60%) !important;
 }
 
 /* * LENGUAGE MODIFICATIONS*/
@@ -76,6 +79,21 @@ html:not([lang="en"]) .navlink#variable{
     padding-right: .3rem !important;
     font-size: 11px;
 }
+
+/* * DEV BACKGROUNDS*/
+
+.bgRed{
+    background-color: red;
+}
+
+.bgBlue{
+    background-color: blue;
+}
+
+.bgTransparent{
+    background-color: transparent !important;
+}
+
 /* * LOGO STYLES*/
 
 .logo{
@@ -173,6 +191,10 @@ body:has(.spinningLogo:hover) .logoHeader{
         width: 100%;
     }
 
+    .aspect-ratio-1{
+        aspect-ratio: 1 / 1;
+    }
+
     .w75{
         width: 75%;
     }
@@ -199,7 +221,7 @@ body:has(.spinningLogo:hover) .logoHeader{
 
     /* * Margins*/
     .margin-0{
-        margin: 0;
+        margin: 0 !important;
     }
 
     .margin-0-1{
@@ -246,6 +268,18 @@ body:has(.spinningLogo:hover) .logoHeader{
         margin-top: 2rem;
     }
 
+    .margin-top-3{
+        margin-top: 3rem;
+    }
+
+    .margin-bottom-N05{
+        margin-bottom: -0.5rem !important;
+    }
+
+    .margin-bottom-N1{
+        margin-bottom: -1rem !important;
+    }
+
     .margin-bottom-0{
         margin-bottom: 0;
     }
@@ -284,7 +318,7 @@ body:has(.spinningLogo:hover) .logoHeader{
     }
 
     .padding-05{
-        padding: .5rem;
+        padding: .5rem !important;
     }
 
     .padding-bottom-1{
@@ -386,11 +420,11 @@ body:has(.spinningLogo:hover) .logoHeader{
     }
 
     .textMicro{
-        font-size: 13px;
+        font-size: 13px !important;
     }
 
     .textNano{
-        font-size: 12px;
+        font-size: 12px !important;
     }
 
     .userSelectNone{
@@ -415,6 +449,10 @@ body:has(.spinningLogo:hover) .logoHeader{
 
 .hidden{
     visibility: hidden;
+}
+
+.display-none{
+    display: none;
 }
 
 .overFlowHidden{
@@ -549,6 +587,29 @@ body:has(.spinningLogo:hover) .logoHeader{
     gap: 2rem;
 }
 
+.gap3{
+    gap: 3rem;
+}
+
+.gap4{
+    gap: 4rem;
+}
+.gap5{
+    gap: 5rem;
+}
+.gap6{
+    gap: 6rem;
+}
+.gap7{
+    gap: 7rem;
+}
+.gap8{
+    gap: 8rem;
+}
+.gap9{
+    gap: 9rem;
+}
+
 /* * FLEXES*/
 
 .flex{
@@ -561,6 +622,18 @@ body:has(.spinningLogo:hover) .logoHeader{
 
 .justify-content-center{
     justify-content: center;
+}
+
+.align-items-center{
+    align-items: center;
+}
+
+.justify-content-end{
+    justify-content: end;
+}
+
+.justify-self-center{
+    justify-self: center;
 }
 
 .justify-space-bwt{
@@ -602,7 +675,7 @@ body:has(.spinningLogo:hover) .logoHeader{
 /* * Positions*/
 
 .positionAbsolute{
-    position: absolute;
+    position: absolute !important;
 }
 
 .positionRelative{
@@ -725,7 +798,7 @@ body:has(.spinningLogo:hover) .logoHeader{
     padding-right: 1.5ch !important;
 }
 
-body:has(.btn:hover) .btnGradientBluePurple{
+.btn:hover.btnGradientBluePurple{
     background:
     radial-gradient(ellipse at top, #4dc1ff, transparent),
     radial-gradient(ellipse at bottom, hsla(278, 100%, 65%, 0.706), transparent);
@@ -737,12 +810,13 @@ body:has(.btn:hover) .btnGradientBluePurple{
     radial-gradient(ellipse at bottom, hsla(278, 100%, 58%, 0.706), transparent);
 }
 
-.PlusBtn{
+.PlusBtn, .SearchBtn{
     --plus_color: black;
     --btn-color: blue;
     --lines_lenght: 2rem;
     --lines_width: 4px;
     --BtnSize: 4.5rem;
+    --plus_border_radius: 1px; 
     background-color: var(--btn-color);
     width: var(--BtnSize);
     height: var(--BtnSize);
@@ -760,7 +834,7 @@ body:has(.btn:hover) .btnGradientBluePurple{
     position: absolute;
     left: calc(var(--BtnSize) / 2 - (var(--lines_width) / 2));
     top: calc((var(--BtnSize) - var(--lines_lenght) ) / 2);
-    border-radius: 1px;
+    border-radius: var(--plus_border_radius);
 }
 
 .PlusBtn::before{
@@ -772,10 +846,21 @@ body:has(.btn:hover) .btnGradientBluePurple{
     position: absolute;
     left: calc((var(--BtnSize) - var(--lines_lenght) ) / 2);
     top: calc(var(--BtnSize) / 2 - (var(--lines_width) / 2));
-    border-radius: 1px;
+    border-radius: var(--plus_border_radius);
 }
 
-.whitePlus{
+.dragPlus{
+    position: absolute;
+    display: none;
+}
+
+.dragPlus > div{
+    --lines_lenght: 4rem;
+    --lines_width: 8px;
+    --plus_border_radius: 2.5px;
+}
+
+.whitePlus, .whiteIcon{
     --plus_color: white;
 }
 
@@ -793,6 +878,17 @@ body:has(.btn:hover) .btnGradientBluePurple{
     color: #4dc2ff;
     transition: 200ms ease;
 }
+
+.SearchBtn{
+    --BtnSize: 2.2rem;
+    box-sizing: border-box;
+}
+
+.SearchBtn:hover{
+    border: white 2px solid;
+}
+
+
 
 /* * FORMS*/
 .errorMessageLabel{
@@ -813,6 +909,59 @@ body:has(.btn:hover) .btnGradientBluePurple{
 
 .iconSize{
     width: 18px;
+}
+
+.circular{
+    border-radius: 50%;
+}
+
+.userProfilePicture{
+    min-width: 300px;
+    max-width: 300px;
+    min-height: 300px;
+    max-height: 300px;
+}
+
+.object-fit-cover{
+    object-fit: cover;
+}
+
+.drag::before{
+    content: '';
+    justify-content: center;
+    font-size: large;
+    line-height: 900%;
+    color: white; 
+    display: flex;
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    background-color: black;
+    min-width: 318px;
+    min-height: 318px;
+    margin: rem;
+    border-radius: 50%;
+    border: #f4f4f4 2px dashed;
+    animation: rotateBorder 20s linear infinite;
+}
+
+label.drag .dragText {
+    display: block;
+}
+
+label.drag .dragPlus{
+    display: flex;
+}
+
+.dragText{
+    display: none;
+    font-size: large;
+}
+
+@keyframes rotateBorder {
+    100% {
+        transform: rotate(-360deg);
+    }
 }
 
 /* * SCROLL BARS */
