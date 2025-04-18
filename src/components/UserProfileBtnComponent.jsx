@@ -32,7 +32,7 @@ function UserProfileBtnComponent(props) {
 
     return (
         <>
-            <img ref={imgBtn} className="miniUserPicture cursor-pointer object-fit-cover margin-auto-0" src={profilePicture} alt="" />
+            <img ref={imgBtn} className="miniUserPicture display-block cursor-pointer object-fit-cover margin-auto-0" src={profilePicture} alt="" />
             <div ref={divPopUp} className="userPopUp positionAbsolute top-0 border-radius-0 window h100vh boxSize-Border">
                 <div className="flex flex-direction-column">
                     <div className="flex justify-space-bwt">
@@ -48,10 +48,10 @@ function UserProfileBtnComponent(props) {
                         <p className="textMicro text-white margin-0">0 Following</p>
                     </div>
                 </div>
-                <div className="userOptions flex flex-direction-column justify-space-bwt padding-top-1 padding-bottom-1">
+                <div className="userOptions flex flex-direction-column justify-space-bwt padding-top-1 padding-bottom-05">
                     <div className="flex flex-direction-column gap1 margin-0-auto">
                     <span className="popUpseparator" />
-                        <a href="#" className="flex gap2 navlink margin-0 padding-0 w100">
+                        <a href={`/UserProfile/`+userInfo.id} className="flex gap2 navlink margin-0 padding-0 w100">
                             <img className="iconSize" src="svgs/ViewProfileIcon.svg" alt="" />
                             <p className="margin-0 padding-0">View profile</p>
                         </a>
@@ -59,7 +59,7 @@ function UserProfileBtnComponent(props) {
                             <img className="iconSize" src="svgs/editPencilIcon.svg" alt="" />
                             <p className="margin-0 padding-0">Edit profile</p>
                         </a>
-                        <a href="#" className="flex gap2 navlink margin-0 padding-0 w100">
+                        <a href={`/UpdatePlan`} className="flex gap2 navlink margin-0 padding-0 w100">
                             <img className="iconSize" src="svgs/ChangePlanIcon.svg" alt="" />
                             <p className="margin-0 padding-0">Change plan</p>
                         </a>

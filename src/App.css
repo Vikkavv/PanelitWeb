@@ -28,6 +28,10 @@ body{
     background-repeat: no-repeat;
 }
 
+body:has(*.body-OverFlowXHidden){
+    overflow-x: hidden;
+}
+
 body:has(*.body-OverflowHidden) {
     overflow: hidden;
 }
@@ -166,7 +170,11 @@ body:has(.spinningLogo:hover) .logoHeader{
     transition: 200ms ease;
 }
 
-.navlink:hover{
+.text-hover{
+    transition: 200ms ease;
+}
+
+.navlink:hover, .text-hover:hover{
     color: #4dc2ff;
     transition: 200ms ease;
 }
@@ -257,11 +265,11 @@ body:has(.spinningLogo:hover) .logoHeader{
     }
 
     .margin-top-05{
-        margin-top: .5rem;
+        margin-top: .5rem !important;
     }
 
     .margin-top-1{
-        margin-top: 1rem;
+        margin-top: 1rem !important;
     }
 
     .margin-top-2{
@@ -298,7 +306,11 @@ body:has(.spinningLogo:hover) .logoHeader{
 
     /* * Paddings*/
     .padding-0{
-        padding: 0;
+        padding: 0 !important;
+    }
+
+    .padding-1ch{
+        padding: 1ch;
     }
 
     .padding-0-1{
@@ -325,6 +337,11 @@ body:has(.spinningLogo:hover) .logoHeader{
         padding-bottom: 1rem;
     }
 
+    
+    .padding-bottom-05{
+        padding-bottom: .5rem !important; 
+    }
+
     .padding-top-05{
         padding-top: .5rem;
     }
@@ -342,7 +359,7 @@ body:has(.spinningLogo:hover) .logoHeader{
     }
 
     .padding-left-05{
-        padding-left: .5rem;
+        padding-left: .5rem !important;
     }
 
     .padding-left-1{
@@ -532,10 +549,12 @@ body:has(.spinningLogo:hover) .logoHeader{
 }
 
 .authorInfo::before{
-    left: 100%;
+    left: calc(100%);
+    top: 0;
 }
 .authorInfo::after{
     top: 100%;
+    left: 0;
 }
 
 .profilePicture{
@@ -577,6 +596,10 @@ body:has(.spinningLogo:hover) .logoHeader{
 
 .row-gap1{
     row-gap: 1rem;
+}
+
+.gap0{
+    gap: 0;
 }
 
 .gap1{
@@ -770,6 +793,26 @@ body:has(.spinningLogo:hover) .logoHeader{
 .cardProfilePicture{
     width: fit-content;
     aspect-ratio: 1/1;
+}
+
+.planColoredPart{
+    min-height: 10rem;
+}
+
+.planBlue{
+    background-color: hsl(209, 100%, 15%);
+}
+
+.planGreen{
+    background-color: hsl(149, 100%, 10%);
+}
+
+.planPurple{
+    background-color: hsl(270, 100%, 15%);
+}
+
+.planYellow{
+    background-color: hsl(50, 100%, 15%);
 }
 
 /* * BUTTONS*/
@@ -994,7 +1037,7 @@ label.drag .dragPlus{
 /* * BORDERS*/
 
 .popUpseparator{
-    border-top:#222 solid 1px;;
+    border-top:#222 solid 1px;
 }
 
 .border-top-right-radius-0{
@@ -1007,6 +1050,14 @@ label.drag .dragPlus{
 
 .border-radius-0{
     border-radius: 0;
+}
+
+.border-radius-50{
+    border-radius: 50%;
+}
+
+.hoverWhiteBorder:hover{
+    border: white 1px solid;
 }
 
 /* * FONTS*/

@@ -37,7 +37,6 @@ let editUser = {
 };
 
 let sendUser = structuredClone(editUser);
-let image = null;
 let formHasErrors = false;
 
 function EditUserProfile() {
@@ -47,6 +46,7 @@ function EditUserProfile() {
         navigate(path);
     };
 
+    const imageFileRef = useRef(null);
     const imageRef = useRef();
     const refs= useRef({});
     const timeouRefs = useRef({});
@@ -78,15 +78,15 @@ function EditUserProfile() {
                     <div>
                     <h1 className="text-white margin-0 margin-bottom-1 text-semiLight">Edit profile</h1>
                     <div className="flex gap5 margin-top-2">
-                        <label ref={(el) => {refs.current["imageLabel"] = el}} onDrop={(e) => handleImageDrop(e)} onDragEnter={activeDragStyles} onDragExit={disableDragStyles} htmlFor="profilePicture" className="profilePicture h-fitContent positionRelative">
+                        <label ref={(el) => {refs.current["imageLabel"] = el}} onDrop={(e) => handleImageDrop(e)} onDragOver={(e) => e.preventDefault()} onDragEnter={activeDragStyles} onDragExit={disableDragStyles} htmlFor="profilePicture" className="profilePicture h-fitContent positionRelative">
                             <p className="margin-0 w100 text-centered dragText Jpa[t:4.5rem] text-white">Drop image here</p>
                             <div className="w100 aspect-ratio-1 dragPlus justify-content-center align-items-center">
                                 <div className="PlusBtn whitePlus bgTransparent"></div>
                             </div>
                             <img ref={imageRef} className="btn padding-05 userProfilePicture object-fit-cover overFlowHidden cursor-pointer circular" src={reactiveUser.profilePicture !== undefined && reactiveUser.profilePicture !== null && reactiveUser.profilePicture !== "" ? reactiveUser.profilePicture : `/svgs/defaultProfileImage.svg`} alt="" />
-                            <div className="btn w-fitContent margin-0-auto margin-top-1 padding-0"><p className="margin-0 textMicro text-white text-semiLight">Change profile image</p></div>
+                            <div className="btn w-fitContent margin-0-auto margin-top-1"><p className="margin-0 textMicro text-white text-semiLight">Change profile image</p></div>
                         </label>
-                        <input ref={(el) => (refs.current["profilePicture"] = el)} type="file" onChange={manageProfilePicture} className="hidden positionAbsolute" name="profilePicture" id="profilePicture" />
+                        <input ref={(el) => (refs.current["profilePicture"] = el)} type="file" onChange={() => manageProfilePicture(null)} className="hidden positionAbsolute" name="profilePicture" id="profilePicture" />
                         <div>
                             <div className="flex flex-direction-column justify-content-center">
                                 <form action="" className="flex flex-direction-column">
@@ -155,7 +155,7 @@ function EditUserProfile() {
         if(!formHasErrors){
             const formData = new FormData();
             formData.append("user", JSON.stringify(sendUser));
-            formData.append("image", image);
+            formData.append("image", imageFileRef.current);
 
             const response = await fetch("http://localhost:8080/User/editProfile",{
                 method: "POST",
@@ -195,7 +195,7 @@ function EditUserProfile() {
                 imageRef.current.src = reader.result;
             }
             reader.readAsDataURL(file);
-            image = file;
+            imageFileRef.current = file;
         }
         else{
             imageRef.current.src = "/svgs/defaultProfileImage.svg";
