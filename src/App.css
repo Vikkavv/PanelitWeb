@@ -301,7 +301,7 @@ body:has(.spinningLogo:hover) .logoHeader{
     }
 
     .margin-bottom-2{
-        margin-bottom: 2rem;
+        margin-bottom: 2rem !important;
     }
 
     /* * Paddings*/
@@ -315,6 +315,11 @@ body:has(.spinningLogo:hover) .logoHeader{
 
     .padding-0-1{
         padding: 0rem 1rem;
+    }
+
+    
+    .padding-0-05{
+        padding: 0rem .5rem;
     }
 
     .padding-1{
@@ -337,6 +342,10 @@ body:has(.spinningLogo:hover) .logoHeader{
         padding-bottom: 1rem;
     }
 
+    .padding-bottom-2{
+        padding-bottom: 2rem !important;
+    }
+
     
     .padding-bottom-05{
         padding-bottom: .5rem !important; 
@@ -348,6 +357,10 @@ body:has(.spinningLogo:hover) .logoHeader{
 
     .padding-top-1{
         padding-top: 1rem;
+    }
+
+    .padding-top-2{
+        padding-top: 2rem;
     }
 
     .padding-2{
@@ -469,12 +482,17 @@ body:has(.spinningLogo:hover) .logoHeader{
 }
 
 .display-none{
-    display: none;
+    display: none !important;
 }
 
 .overFlowHidden{
     overflow: hidden;
 }
+
+.overFlowXHidden{
+    overflow-x: hidden;
+}
+
 
 .overFlowYScroll{
     overflow-y: scroll;
@@ -497,6 +515,17 @@ body:has(.spinningLogo:hover) .logoHeader{
     border: #222 solid 1px;
     padding: 1ch;
     backdrop-filter: blur(2px);
+}
+
+.popUpWindow{
+    background-color: #101010dc;
+    backdrop-filter: blur(4px);
+    width: 70vW;
+    height: 80vH;
+    min-width: 70vW;
+    min-height: 80vh;
+    max-width: 70vW;
+    max-height: 80vh;
 }
 
 .login{
@@ -594,6 +623,10 @@ body:has(.spinningLogo:hover) .logoHeader{
     grid-template-columns: 1fr 2fr;
 }
 
+.span-4{
+    grid-column: span 4;
+}
+
 .row-gap1{
     row-gap: 1rem;
 }
@@ -637,6 +670,10 @@ body:has(.spinningLogo:hover) .logoHeader{
 
 .flex{
     display: flex;
+}
+
+.flex-1{
+    flex: 1;
 }
 
 .flex-direction-column{
@@ -704,6 +741,11 @@ body:has(.spinningLogo:hover) .logoHeader{
 .positionRelative{
     position: relative;
 }
+
+.positionFixed{
+    position:fixed;
+}
+
 
 .position-l0-t0{
     left: 0;
@@ -815,6 +857,12 @@ body:has(.spinningLogo:hover) .logoHeader{
     background-color: hsl(50, 100%, 15%);
 }
 
+.userList{
+    border-top:#222 solid 1px;
+    border-bottom:#222 solid 1px;
+    min-height: 4rem;
+}
+
 /* * BUTTONS*/
 .btn{
     background-color: #101010;
@@ -866,6 +914,7 @@ body:has(.spinningLogo:hover) .logoHeader{
     border-radius: 50%;
     position: relative;
     cursor: pointer;
+    border: none;
 }
 
 .PlusBtn::after{

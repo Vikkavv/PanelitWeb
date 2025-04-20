@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 
 function PanelCardComponent(props) {
     let creatorId = props.creatorId === undefined ? console.error("creatorId has to be given") : props.creatorId;
@@ -16,6 +17,12 @@ function PanelCardComponent(props) {
         "profilePicture": null
     });
 
+    const navigate = useNavigate();
+
+    const redirect = (path) => {
+        navigate(path);
+    };
+
     useEffect(() => {
         const getUserInfo = async () => {
             const data = await getUserById(creatorId);
@@ -28,21 +35,27 @@ function PanelCardComponent(props) {
     },[JSON.stringify(userData)]);
 
     return (
-        <a href={`/Panel/`+panelId} className="panelCard overFlowHidden positionRelative text-decoration-none text-white">
-            <img className="coverPhoto" src={panelCoverPhoto} alt="" />
-            <div className="authorInfo flex gap05 positionAbsolute position-l0-t0 boxSize_Border">
-            <img src={userData.profilePicture !== null && userData.profilePicture !== undefined && userData.profilePicture !== "" ? userData.profilePicture : `svgs/defaultProfileImage.svg`} alt="Default profile image" className={( userData.profilePicture !== null ? `profilePicture` : ``) + ` cardProfilePicture padding-05 object-fit-cover`} />
-                <p className="margin-auto-0 textNano">{userData.nickname}</p>
+        <div className="panelCard overFlowHidden positionRelative text-decoration-none text-white">
+            <a href={`/Panel/`+panelId}>
+                <img className="coverPhoto" src={panelCoverPhoto} alt="" />
+            </a>
+            <div onClick={() => {goToOwnerProfile(userData.nickname)}} className="authorInfo flex gap05 positionAbsolute position-l0-t0 boxSize_Border cursor-pointer text-hover padding-05 boxSize-Border">
+                <img src={userData.profilePicture !== null && userData.profilePicture !== undefined && userData.profilePicture !== "" ? userData.profilePicture : `svgs/defaultProfileImage.svg`} alt="Default profile image" className={( userData.profilePicture !== null ? `profilePicture` : ``) + ` cardProfilePicture  object-fit-cover boxSize-Border hoverWhiteBorder`} />
+                <p className="margin-auto-0 display-block textNano padding-0 padding-left-05">{userData.nickname}</p>
             </div>
-            <div className="panelInfo flex justify-space-bwt positionAbsolute btm-0 padding-05 boxSize-Border">
-                <p className="margin-0 textMini">{panelTitle}</p>
+            <a href={`/Panel/`+panelId} className="panelInfo flex justify-space-bwt positionAbsolute btm-0 padding-05 boxSize-Border text-decoration-none">
+                <p className="margin-0 text-white textMini">{panelTitle}</p>
                 <p className="textNano text-gray margin-auto-0">{panelLastEditedDate}</p>
-            </div>
-        </a>
+            </a>
+        </div>
     )
+
+    function goToOwnerProfile(userId){
+        redirect("/UserProfile/"+userId);
+    }
 }
 
-async function getUserById(creatorId) {
+export async function getUserById(creatorId) {
     const response = await fetch("http://localhost:8080/User/findById/"+creatorId);
     const data = await response.json();
     return data;

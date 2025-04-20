@@ -50,7 +50,7 @@ function Worksapce() {
     },[])
     return (
         <>  
-            <Navbar texts="Change Plan, Explore, My panel subscriptions" paths="/plans, /home" hasSignBtns="false" hasLogoSeparator="false" hasUserInfo="true" userInfo={reactiveUser}/>
+            <Navbar texts="Change Plan, Explore, My panel subscriptions" paths="/UpdatePlan, /home" hasSignBtns="false" hasLogoSeparator="false" hasUserInfo="true" userInfo={reactiveUser}/>
             <div id="noBg" className="workspace container padding-top-1 body-OverflowHidden">
                 {panels.length > 0 ? 
                 <>
@@ -95,8 +95,9 @@ function Worksapce() {
     }
 }
 
-async function getUserPanels() {
-    const response = await fetch("http://localhost:8080/Panel/ofUser/"+userData.nickname);
+export async function getUserPanels(opUserData = null) {
+    let userInfo = opUserData !== null ? opUserData : userData ;
+    const response = await fetch("http://localhost:8080/Panel/ofUser/"+userInfo.nickname);
     const data = await response.json();
     return data;
 }

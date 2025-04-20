@@ -6,6 +6,8 @@ import SignIn from './pages/SignIn'
 import Worksapce from './pages/WorkSpace'
 import Panel from './pages/Panel'
 import EditUserProfile from './pages/EditUserProfile'
+import UpdatePlan from './pages/UpdatePlan'
+import UserProfile from './pages/UserProfile'
 
 function App() {
 
@@ -17,6 +19,8 @@ function App() {
       <Route path='/workspace' element={<Worksapce/>}/>
       <Route path='/Panel/:id' element={<Panel/>}/>
       <Route path='/EditUserProfile' element={<EditUserProfile/>}/>
+      <Route path='/UpdatePlan' element={<UpdatePlan/>}/>
+      <Route path='/UserProfile/:id' element={<UserProfile/>}/>
     </Routes>
   )
 }

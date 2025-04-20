@@ -51,7 +51,7 @@ function UserProfileBtnComponent(props) {
                 <div className="userOptions flex flex-direction-column justify-space-bwt padding-top-1 padding-bottom-05">
                     <div className="flex flex-direction-column gap1 margin-0-auto">
                     <span className="popUpseparator" />
-                        <a href={`/UserProfile/`+userInfo.id} className="flex gap2 navlink margin-0 padding-0 w100">
+                        <a href={`/UserProfile/`+userInfo.nickname} className="flex gap2 navlink margin-0 padding-0 w100">
                             <img className="iconSize" src="svgs/ViewProfileIcon.svg" alt="" />
                             <p className="margin-0 padding-0">View profile</p>
                         </a>
