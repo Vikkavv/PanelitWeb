@@ -98,6 +98,10 @@ html:not([lang="en"]) .navlink#variable{
     background-color: transparent !important;
 }
 
+.bgWindow{
+    background-color: #101010;
+}
+
 /* * LOGO STYLES*/
 
 .logo{
@@ -171,6 +175,7 @@ body:has(.spinningLogo:hover) .logoHeader{
 }
 
 .text-hover{
+    color: white;
     transition: 200ms ease;
 }
 
@@ -232,8 +237,16 @@ body:has(.spinningLogo:hover) .logoHeader{
         margin: 0 !important;
     }
 
+    .margin-1{
+        margin: 1rem !important;
+    }
+
     .margin-0-1{
         margin: 0rem 1rem;
+    }
+
+    .margin-1-0{
+        margin: 1rem 0rem;
     }
 
     .margin-top-0{
@@ -262,6 +275,14 @@ body:has(.spinningLogo:hover) .logoHeader{
 
     .margin-right05{
         margin-right: 0.5rem;
+    }
+
+    .margin-left-1{
+        margin-left: 1rem;
+    }
+
+    .margin-right-1{
+        margin-right: 1;
     }
 
     .margin-top-05{
@@ -410,6 +431,10 @@ body:has(.spinningLogo:hover) .logoHeader{
 
     .text-end{
         text-align: end;
+    }
+
+    .text-start{
+        text-align: start !important;
     }
 
     .text-justified-center{

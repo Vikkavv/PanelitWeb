@@ -1,6 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { dynamicClasses } from "../assets/js/dynamicCssClasses";
 import { useNavigate } from "react-router";
+import { getFollowed, getFollowers } from "../assets/js/getFollowersAndFollowedOfAnUser";
 
 function UserProfileBtnComponent(props) {
     let userInfo = props.userInfo;
@@ -12,9 +13,22 @@ function UserProfileBtnComponent(props) {
 
     const navigate = useNavigate();
 
+    const [userFollowed, setUserFollowed] = useState({});
+    const [userFollowers, setUserFollowers] = useState({});
+
     const redirect = (path) => {
         navigate(path);
     };
+
+    useEffect(() => {
+        if(JSON.stringify(userInfo) !== "{}"){
+            const getFollowingInfo = async () => {
+                setUserFollowed(await getFollowed(userInfo));
+                setUserFollowers(await getFollowers(userInfo));
+            };
+            getFollowingInfo();
+        }
+    }, [JSON.stringify(userInfo)])
 
     useEffect(() => {
         imgBtn.current.addEventListener("click", showOrHideUserPopUp);
@@ -25,7 +39,7 @@ function UserProfileBtnComponent(props) {
                 redirect("/");
             }
         };
-
+        
         signOutBtn.current.addEventListener("click", closeSession);
         dynamicClasses();
     },[]);
@@ -36,16 +50,16 @@ function UserProfileBtnComponent(props) {
             <div ref={divPopUp} className="userPopUp positionAbsolute top-0 border-radius-0 window h100vh boxSize-Border">
                 <div className="flex flex-direction-column">
                     <div className="flex justify-space-bwt">
-                        <div className="flex gap1">
+                        <a href={"/UserProfile/"+userInfo.nickname} className="flex gap1 text-hover text-decoration-none">
                             <img className="miniUserPicture margin-auto-0 object-fit-cover" src={profilePicture} alt="" />
-                            <p className="text-white">{userInfo.nickname}</p>
-                        </div>
+                            <p>{userInfo.nickname}</p>
+                        </a>
                         <div onClick={showOrHideUserPopUp} className="PlusBtn whitePlus transparentBtn diagonal medium-size margin-auto-0"></div>
                     </div>
                     <div className="flex gap1 padding-left-05 margin-top-05">
-                        <p className="textMicro text-white margin-0">0 Followers</p>
+                        <p className="textMicro text-white margin-0">{userFollowers.length} Followers</p>
                         <span className="text-white labelTitle margin-auto-0 line-height-fitContent">·</span>
-                        <p className="textMicro text-white margin-0">0 Following</p>
+                        <p className="textMicro text-white margin-0">{userFollowed.length} Following</p>
                     </div>
                 </div>
                 <div className="userOptions flex flex-direction-column justify-space-bwt padding-top-1 padding-bottom-05">

@@ -174,19 +174,6 @@ function UserProfile() {
         }
     }
 
-    function setOnlyRelevantUserValues(user, data){
-        user = structuredClone(user);
-        user.id = data.id;
-        user.name = data.name;
-        user.lastName = data.lastName;
-        user.nickname = data.nickname;
-        user.phoneNumber = data.phoneNumber;
-        user.email = data.email;
-        user.password = ""+data.password;
-        user.profilePicture = data.profilePicture;
-        return user;
-    }
-
     async function unfollow(followedUser = null) {
         let followed = followedUser !== null ? followedUser : reactiveUser;
         let formData = new FormData();
@@ -239,6 +226,19 @@ function UserProfile() {
             }
         }
     }
+}
+
+export function setOnlyRelevantUserValues(user, data){
+    user = structuredClone(user);
+    user.id = data.id;
+    user.name = data.name;
+    user.lastName = data.lastName;
+    user.nickname = data.nickname;
+    user.phoneNumber = data.phoneNumber;
+    user.email = data.email;
+    user.password = ""+data.password;
+    user.profilePicture = data.profilePicture;
+    return user;
 }
 
 export async function getUserByNickname(nickname) {
