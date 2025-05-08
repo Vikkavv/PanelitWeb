@@ -17,6 +17,8 @@ function PanelCardComponent(props) {
         "profilePicture": null
     });
 
+    const [panel, setPanel] = useState({});
+
     const navigate = useNavigate();
 
     const redirect = (path) => {
@@ -29,6 +31,7 @@ function PanelCardComponent(props) {
             if(data !== null) setUserData(data);
         }
         if(creatorId !== undefined) getUserInfo();
+        getPanel();
     }, []);
 
     useEffect(() => {
@@ -37,7 +40,8 @@ function PanelCardComponent(props) {
     return (
         <div className="panelCard overFlowHidden positionRelative text-decoration-none text-white">
             <a href={`/Panel/`+panelId}>
-                <img className="coverPhoto" src={panelCoverPhoto} alt="" />
+                {panelCoverPhoto !== null ? <img className="coverPhoto" src={panelCoverPhoto} alt=""/> : <div className={"coverPhoto " + (JSON.stringify(panel) !== "{}" ? JSON.parse(panel.additionalInfo).background.cssBackground : "")}></div>}
+                
             </a>
             <div onClick={() => {goToOwnerProfile(userData.nickname)}} className="authorInfo flex gap05 positionAbsolute position-l0-t0 boxSize_Border cursor-pointer text-hover padding-05 boxSize-Border">
                 <img src={userData.profilePicture !== null && userData.profilePicture !== undefined && userData.profilePicture !== "" ? userData.profilePicture : `svgs/defaultProfileImage.svg`} alt="Default profile image" className={( userData.profilePicture !== null ? `profilePicture` : ``) + ` cardProfilePicture  object-fit-cover boxSize-Border hoverWhiteBorder`} />
@@ -52,6 +56,12 @@ function PanelCardComponent(props) {
 
     function goToOwnerProfile(userId){
         redirect("/UserProfile/"+userId);
+    }
+
+    async function getPanel(){
+        const response = await fetch("http://localhost:8080/Panel/findById/"+panelId);
+        const data = await response.json();
+        setPanel(data);
     }
 }
 

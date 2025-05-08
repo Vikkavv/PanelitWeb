@@ -6,6 +6,11 @@ export function dynamicClasses(){
             let className = docChild.classList.value.substring(docChild.classList.value.indexOf("Jh["));
             let value = className.substring(className.indexOf("[") + 1, className.indexOf("]"));
             docChild.classList.remove("Jh["+value+"]");
+            if(value.charAt(0) === "i" && value.charAt(1) === "a"){
+                isMinHeight = true;
+                isMaxHeight = true;
+                value = value.replaceAll("ia", "");
+            }
             if(value.charAt(0) === "i"){
                 isMinHeight = true;
                 value = value.replaceAll("i", "");
@@ -55,6 +60,18 @@ export function dynamicClasses(){
                 if(value.charAt(0) == "r") docChild.style.right = value.split(":")[1];
                 if(value.charAt(0) == "t") docChild.style.top = value.split(":")[1];
             }
+        }
+        if(docChild.classList.value.indexOf("Jcol[") !== -1){
+            let className = docChild.classList.value.substring(docChild.classList.value.indexOf("Jcol["));
+            let value = className.substring(className.indexOf("[") + 1, className.indexOf("]"));
+            docChild.classList.remove("Jcol["+value+"]");
+            if(value.indexOf(",") !== -1){
+                value = value.split(",");
+            }
+            if(Array.isArray(value)){
+                docChild.style.gridTemplateColumns = "repeat("+value[0]+","+value[1]+")";
+            }
+            else docChild.style.gridTemplateColumns = "repeat("+value+", 1fr)";
         }
     }
 }

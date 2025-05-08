@@ -62,6 +62,7 @@ function UserProfile() {
             document.title = user.nickname + "'s profile | Panelit";
         }
         getUser();
+        document.getElementsByTagName("html")[0].classList.add("darkscrollBar");
         dynamicClasses();
     }, [])
 
@@ -148,7 +149,7 @@ function UserProfile() {
             if(userList.length < 1){
                 HTMLUserList = 
                 <div className="positionAbsolute top-0 w100 h100 flex justify-content-center align-items-center z-index-0">
-                    <h2 className="text-white">{reactiveUser?.nickname} has not yet followed anyone.</h2>
+                    <h2 className="text-white">{reactiveUser?.nickname} has nobody here yet.</h2>
                 </div>;
             }
             else{

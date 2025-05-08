@@ -51,6 +51,11 @@ function SignIn() {
                             <label className="labelTitle display-block text-white margin-0-auto margin-bottom-05 w75" htmlFor="password">Password</label>
                             <input className="display-block window text-white w75 margin-0-auto margin-bottom-1" id="password" placeholder="Don't let anyone see it" type="password" name="password" autoComplete="off"/>
                             <span id="passwordErr" className="hidden errorMessageLabel display-block margin-0-auto w75 btm-1"></span>
+                            <div className="containerCheckbox padding-01 w75 display-block margin-0-auto">
+                                <input id="rememberMe" type="checkbox" className="hidden"/>
+                                <label htmlFor="rememberMe" className="checkmark cursor-pointer w-fitContent"></label>
+                                <label htmlFor="rememberMe" className="textNano text-white w-fitContent fontWeightNormal">Remember me</label>
+                            </div>
                         </div>
                         <div className="positionAbsolute btm-05 registerBtnWrapper flex justify-space-bwt">
                             <a href="/signUp" id="variable" className="navlink text-decoration-underline padding-1 textNano">Don't have an account yet?, sign up</a>
@@ -62,10 +67,12 @@ function SignIn() {
         </>
     )
 
-    async function send(emailInput, passInput){
+    async function send(emailInput, passInput, rememberMe = false){
+        rememberMe = document.getElementById("rememberMe").checked;
         const formData = new URLSearchParams();
         formData.append(emailInput.name, emailInput.value);
         formData.append(passInput.name, passInput.value);
+        formData.append("rememberMe", rememberMe);
         const response = await fetch("http://localhost:8080/User/signIn",{
             method: "POST",
             credentials: "include",

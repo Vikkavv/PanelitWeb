@@ -23,6 +23,7 @@ function LogoContainer(props) {
 }
 
 function internalContent(params) {
+    let hasTitle = params.hasTitle !== "false" ? true : false;
     let isRotatable = params.isRotatable === "true" ? true : false;
     let hasLogoSeparator = params.hasLogoSeparator === "true" ? true : false;
     let logoColor = params.logoColor; 
@@ -32,7 +33,7 @@ function internalContent(params) {
             <div className={isRotatable == true ? "spinningLogo" : ""}>
                 <PanelitLogoSvg color={logoColor} />
             </div>
-            <h2 className="logoHeader margin-0 text-white line-height200">Panelit</h2>
+            {hasTitle && <h2 className="logoHeader margin-0 text-white line-height200">Panelit</h2>}
             {hasLogoSeparator && <span className="logoSeparator"/>}
         </>
     );

@@ -55,20 +55,26 @@ function Worksapce() {
             <div id="noBg" className="workspace container padding-top-1 body-OverflowHidden">
                 {panels.length > 0 ? 
                 <>
-                    <div className="flex">
-                        <select onChange={() => createPanelCards(null)} ref={(el) => {refs.current["panelsFilter"] = el}} className="window padding-0 margin-1-0 margin-left-1 text-gray" defaultValue="0">   
-                            <option value="0" className="bgWindow">All</option>
-                            <option value="1" className="bgWindow">Owned</option>
-                            <option value="2" className="bgWindow">Joined</option>
-                        </select>
-                        <form onSubmit={(e) => searchPanels(e)} className="flex">
-                            <input ref={(el) => {refs.current["searchInput"] = el}} type="text" className="display-block window text-white margin-bottom-1 margin-top-1 margin-0-1" placeholder="&#xFE0F; Search a Panel" autoComplete="on"/> 
-                            <button type="submit" className="SearchBtn whiteIcon margin-auto-0 btnGradientBluePurple flex">
-                                <img className="iconSize margin-auto" src="svgs/SearchIcon.svg" alt="" />
-                            </button>
-                        </form>
+                    <div className="flex justify-space-bwt">
+                        <div className="flex">
+                            <select onChange={() => createPanelCards(null)} ref={(el) => {refs.current["panelsFilter"] = el}} className="window padding-0 margin-1-0 margin-left-1 text-gray" defaultValue="0">   
+                                <option value="0" className="bgWindow">All</option>
+                                <option value="1" className="bgWindow">Owned</option>
+                                <option value="2" className="bgWindow">Joined</option>
+                            </select>
+                            <form onSubmit={(e) => searchPanels(e)} className="flex">
+                                <input ref={(el) => {refs.current["searchInput"] = el}} type="text" className="display-block window text-white margin-bottom-1 margin-top-1 margin-0-1" placeholder="Search a Panel" autoComplete="on"/> 
+                                <button type="submit" className="SearchBtn whiteIcon margin-auto-0 btnGradientBluePurple flex">
+                                    <img className="iconSize margin-auto" src="svgs/SearchIcon.svg" alt="" />
+                                </button>
+                            </form>
+                        </div>
+                        <div className="flex gap1 align-items-center">
+                            <p className="margin-0 text-white">Create panel</p>
+                            <a href="/CreatePanel" className="PlusBtn smallPlusBtn searchSizeBtn shadowBtnBorder margin-auto-0 btnGradientBluePurple whitePlus inverted"></a>
+                        </div>
                     </div>
-                    <div className="grid col-4 gap2 row-gap1 margin-top-2 overFlowYAuto darkscrollBar h70vh padding-0-1">
+                    <div className="grid col-4 gap2 row-gap1 margin-top-2 overFlowYAuto darkscrollBar ha70vh padding-0-1">
                         {htmlPanels}
                     </div>
                 </>
@@ -92,7 +98,7 @@ function Worksapce() {
             for (const panel of panels) {
                 let userPanel = await getUserById(panel.creatorId);
                 if((optionValue == 0) || (optionValue == 1 && panel.creatorId === userData.id) || (optionValue == 2 && panel.creatorId !== userData.id)){
-                    if(searchText === null || searchText.trim() === "" || (userPanel.nickname.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === searchText.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "") || panel.name.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "") === searchText.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, ""))){
+                    if(searchText === null || searchText.trim() === "" || (userPanel.nickname.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(searchText.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "")) || panel.name.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(searchText.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "")))){
                         setHtmlPanels(prev => [...prev,
                             <PanelCardComponent key={counter++} creatorId={panel.creatorId} panelId={panel.id} panelTitle={panel.name} panelLastEditedDate={panel.lastEditedDate} panelCoverPhoto={panel.coverPhoto} />
                         ]);
@@ -125,7 +131,7 @@ function Worksapce() {
                 <div key={counter++} className="flex justify-content-center w100 h70vh margin-top-2 padding-top-1">
                     <div className="flex flex-direction-column">
                         <h1 className="panelMessageTitle text-white margin-top-2 padding-top-1 line-height-fitContent">You do not have any panels yet</h1>
-                        <div id="createPanelBtn" className="PlusBtn margin-0-auto margin-top-2 btnGradientBluePurple whitePlus inverted"></div>
+                        <a href="/CreatePanel" id="createPanelBtn" className="PlusBtn shadowBtnBorder margin-0-auto margin-top-2 btnGradientBluePurple whitePlus inverted"></a>
                         <p className="text-gray margin-0-auto margin-top-2">Let's do something wonderful</p>
                     </div>
                 </div>

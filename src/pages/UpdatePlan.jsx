@@ -65,7 +65,7 @@ function UpdatePlan() {
 
     return (
     <>
-        <div id="noBg" className="body-OverFlowXHidden">
+        <div className="body-OverFlowXHidden">
             <div className="flex justify-space-bwt">
                 <LogoContainer isLink="true" url="/workspace" hasPadding="true" paddingClass="padding-08-2-08-2" isRotatable="true"/>
                 <div className="flex w-fitContnent aspect-ratio-1 padding-08-2-08-2">
@@ -114,7 +114,7 @@ function UpdatePlan() {
                         </div>
                         <div className="flex flex-direction-column gap1 padding-top-1 padding-bottom-1">
                             <p className="text-gray textMini text-centered">{plan.nMaxPanels === 999 ? "Unlimited" : plan.nMaxPanels}<br/><span>Panels</span></p>
-                            <p className="text-gray textMini text-centered">{plan.nMaxCollaborators}<br/><span>Collaborators</span></p>
+                            <p className="text-gray textMini text-centered">{plan.nMaxCollaborators}<br/><span>Collaborators</span><span className="display-block margin-0 text-gray textMicro text-semiLight text-centered margin-top-05">Per panel</span></p>
                         </div>
 
                         {plan.monthPrice === 0 && plan.yearPrice === 0 ? 
@@ -122,11 +122,11 @@ function UpdatePlan() {
                         <div className={ planColors[plan.name] + " planColoredPart w100 padding-2 flex justify-content-center align-items-center gap3 boxSize-Border"}>
                             <div className="flex flex-direction-column gap0 align-items-center">
                                 <div onClick={() => {sendNewPlan(plan.id, false)}} className="btn h-fitContent"><span className="text-white textMicro">Free</span></div>
-                                <p className="margin-0 text-gray textMicro text-semiLight text-centered margin-top-05">For ever</p>
+                                <p className="margin-0 text-gray textMicro text-semiLight text-centered margin-top-05">Forever</p>
                                 {reactiveUser.plan.id === plan.id &&
                                     <div className="padding-top-05 positionAbsolute btm-1">
                                         <p className="margin-0 text-white text-centered textNano">Your current plan</p>
-                                        <p className="margin-0 text-gray text-centered textNano">Never expires </p>
+                                        <p className="margin-0 text-gray text-centered textNano">Never expires</p>
                                     </div>
                                 }
                             </div>

@@ -18,12 +18,15 @@ html:has(noscript#vh100){
     height: 100vh;
 }
 
+:root{
+    all: unset !important;
+}
+
 body{
     margin: 0;
     /*background-color: #101010;*/
     /*background-color: hsl(0, 100%, 36%);*/
     background-color: #000000ed;
-    opacity: 0.9;
     background-image:  repeating-radial-gradient( circle at 0 0, transparent 0, rgba(0, 0, 0, 0.93) 33px ), repeating-linear-gradient( #00000055, #000000 );
     background-repeat: no-repeat;
 }
@@ -90,6 +93,14 @@ html:not([lang="en"]) .navlink#variable{
     background-color: red;
 }
 
+.bgWhite{
+    background-color: white;
+}
+
+.bgGray{
+    background-color: rgb(202, 202, 202);
+}
+
 .bgBlue{
     background-color: blue;
 }
@@ -98,9 +109,46 @@ html:not([lang="en"]) .navlink#variable{
     background-color: transparent !important;
 }
 
-.bgWindow{
-    background-color: #101010;
+.bgPopUp{
+    background-color: #101010dc !important;
 }
+
+.bgWindow{
+    background-color: #101010 !important;
+}
+
+.bgCross{
+    background-color: #0a0a0a;
+    background: radial-gradient(circle, transparent 20%, #0a0a0a 20%, #0a0a0a 80%, transparent 80%, transparent), radial-gradient(circle, transparent 20%, #0a0a0a 20%, #0a0a0a 80%, transparent 80%, transparent) 17.5px 17.5px, linear-gradient(#242424 1.4000000000000001px, transparent 1.4000000000000001px) 0 -0.7000000000000001px, linear-gradient(90deg, #242424 1.4000000000000001px, #0a0a0a 1.4000000000000001px) -0.7000000000000001px 0;
+    background-size: 35px 35px, 35px 35px, 17.5px 17.5px, 17.5px 17.5px;
+}
+
+.bgZigZag{
+    background-color: #0a0a0a;
+    background: linear-gradient(135deg, #24242455 25%, transparent 25%) -12px 0/ 24px 24px, linear-gradient(225deg, #242424 25%, transparent 25%) -12px 0/ 24px 24px, linear-gradient(315deg, #24242455 25%, transparent 25%) 0px 0/ 24px 24px, linear-gradient(45deg, #242424 25%, #0a0a0a 25%) 0px 0/ 24px 24px;
+}
+
+.bgDots{
+    background-color: rgb(10, 10, 10);
+    background: radial-gradient(rgb(36, 36, 36) 1.9px, rgb(10, 10, 10) 1.9px);
+    background-size: 38px 38px;
+}
+
+.bgDiagonalDots{
+    background-color: #0a0a0a;
+    background:  radial-gradient(#242424 1.5px, transparent 1.5px), radial-gradient(#242424 1.5px, #0a0a0a 1.5px);
+    background-size: 60px 60px;
+    background-position: 0 0,30px 30px;
+}
+
+.opacity100{
+    opacity: 1;
+}
+
+.opacity90{
+    opacity: .9;
+}
+
 
 /* * LOGO STYLES*/
 
@@ -157,6 +205,10 @@ body:has(.spinningLogo:hover) .logoHeader{
     justify-content: space-between;
 }
 
+.navbarTranslucent{
+    background-color: #0f0f0fc9;
+}
+
 .navlinks{
     display: flex;
     gap: 3rem;
@@ -173,6 +225,16 @@ body:has(.spinningLogo:hover) .logoHeader{
     line-height: 200%;
     transition: 200ms ease;
 }
+
+.text-ellipsis{
+    text-overflow: ellipsis;
+}
+
+.text-noWrap{
+    text-wrap: nowrap;
+}
+
+
 
 .text-hover{
     color: white;
@@ -207,6 +269,10 @@ body:has(.spinningLogo:hover) .logoHeader{
     .aspect-ratio-1{
         aspect-ratio: 1 / 1;
     }
+    
+    .aspect-ratio-A4{
+        aspect-ratio: 1 / 1.41;
+    }
 
     .w75{
         width: 75%;
@@ -214,6 +280,14 @@ body:has(.spinningLogo:hover) .logoHeader{
 
     .h-fitContent{
         height: fit-content !important;
+    }
+
+    .hMax10{
+        max-height: 10rem;
+    }
+
+    .hauto{
+        height: auto;
     }
 
     .h100{
@@ -226,6 +300,18 @@ body:has(.spinningLogo:hover) .logoHeader{
 
     .h70vh{
         height: 70vh;
+    }
+
+    .ha70vh{
+        max-height: 70vh;
+    }
+
+    .h80vh{
+        height: 80vh;
+    }
+
+    .h40vh{
+        height: 40vh;
     }
 
     .h75vh{
@@ -318,7 +404,7 @@ body:has(.spinningLogo:hover) .logoHeader{
     }
 
     .margin-bottom-1{
-        margin-bottom: 1rem;
+        margin-bottom: 1rem !important;
     }
 
     .margin-bottom-2{
@@ -343,6 +429,10 @@ body:has(.spinningLogo:hover) .logoHeader{
         padding: 0rem .5rem;
     }
 
+    .padding-1px{
+        padding: 1px;
+    }
+
     .padding-1{
         padding: 1rem !important;
     }
@@ -353,6 +443,18 @@ body:has(.spinningLogo:hover) .logoHeader{
 
     .padding-0-auto{
         padding: 0 auto;
+    }
+
+    .padding-02{
+        padding: .2rem !important;
+    }
+
+    .padding-01{
+        padding: .1rem !important;
+    }
+
+    .padding-03{
+        padding: .3rem !important;
     }
 
     .padding-05{
@@ -373,7 +475,7 @@ body:has(.spinningLogo:hover) .logoHeader{
     }
 
     .padding-top-05{
-        padding-top: .5rem;
+        padding-top: .5rem !important;
     }
 
     .padding-top-1{
@@ -382,6 +484,10 @@ body:has(.spinningLogo:hover) .logoHeader{
 
     .padding-top-2{
         padding-top: 2rem;
+    }
+
+    .padding-top-2-25{
+        padding-top: 2.25rem;
     }
 
     .padding-2{
@@ -408,6 +514,10 @@ body:has(.spinningLogo:hover) .logoHeader{
         padding: 1ch 0ch 1ch 2ch !important;
     }
 
+    .padding-right-2{
+        padding-right: 2rem;
+    }
+
     .padding-08-2-08-2{
         padding: .8rem 2rem;
     }
@@ -417,8 +527,20 @@ body:has(.spinningLogo:hover) .logoHeader{
         font-style: italic;
     }
 
+    .text-red, .text-redHover:hover{
+        color: #fa4545;
+    }
+
     .text-white{
         color: white;
+    }
+
+    .textShadowBlack{
+        filter: drop-shadow(1px 1px black);
+    }
+
+    .text-black{
+        color: black !important;
     }
 
     .text-gray{
@@ -470,6 +592,23 @@ body:has(.spinningLogo:hover) .logoHeader{
         font-size: 23px;
     }
 
+    .textH2{
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .fontWeightNormal{
+        font-weight: normal;
+    }
+
+    .textSNormal{
+        font-size: 21px;
+    }
+
+    .textLittle{
+        font-size: 18px;
+    }
+
     .textMini{
         font-size: 15px;
     }
@@ -518,6 +657,14 @@ body:has(.spinningLogo:hover) .logoHeader{
     overflow-x: hidden;
 }
 
+.overFlowYHidden{
+    overflow-y: hidden;
+}
+
+
+.overFlowAuto{
+    overflow: auto;
+}
 
 .overFlowYScroll{
     overflow-y: scroll;
@@ -533,6 +680,14 @@ body:has(.spinningLogo:hover) .logoHeader{
     margin: 0 20vw;
 }
 
+.container15{
+    margin: 0 15vw;
+}
+
+.container10{
+    margin: 0 10vw;
+}
+
 /* * WRAPPERS*/
 .window{
     background-color: #10101063;
@@ -543,14 +698,27 @@ body:has(.spinningLogo:hover) .logoHeader{
 }
 
 .popUpWindow{
+    --width: 70vW;
+    --height: 80vh;
     background-color: #101010dc;
     backdrop-filter: blur(4px);
-    width: 70vW;
-    height: 80vH;
-    min-width: 70vW;
-    min-height: 80vh;
-    max-width: 70vW;
-    max-height: 80vh;
+    width: var(--width);
+    height: var(--height);
+    min-width: var(--width);
+    min-height: var(--height);
+    max-width: var(--width);
+    max-height: var(--height);
+}
+
+.fullScreenPopUpwindow{
+    border-radius: 0 !important;
+    --width: 100vW;
+    --height: 100vh;
+}
+
+.miniPopUpwindow{
+    --width: 20vW;
+    --height: 21vh;
 }
 
 .login{
@@ -615,22 +783,75 @@ body:has(.spinningLogo:hover) .logoHeader{
     border-radius: 50%;
 }
 
-.userPopUp{
+.userPopUp, .panelSettingsPopUp{
+    --width: 15vW;
+    --right: -15vw;
     background-color: #101010c4;
     visibility: hidden;
-    width: 15vw;
-    right: -15vw;
+    width: var(--width);
+    right: var(--right);
     transition: 400ms ease;
 }
 
-.userPopUpToggled{
+.panelSettingsPopUp{
+    --width: 30vW;
+    --right: -30vw;
+}
+
+.userPopUpToggled, .panelSettingsPopUpToggled{
+    --right: 0vw;
     visibility: visible;
-    right: 0vw;
     transition: 400ms ease;
 }
 
 .userOptions{
     height: calc(100vh + (-2ch + -4rem + -30px));
+}
+
+.editSliderPanel{
+    --width: 12rem;
+    --height: 11rem;
+    position: absolute;
+    bottom: 0;
+    right: calc(((var(--width) + 2rem) * -1) + (-2px));
+    min-width: var(--width);
+    max-width: var(--width);
+    min-height: var(--height);
+    transition: 400ms ease;
+}
+
+.noteEditSliderPanel{
+    --width: 18rem;
+    --height: 13rem;
+}
+
+.editSliderPanelToggled{
+    right: 0;
+    display: flex;
+    transition: 400ms ease;
+}
+
+.noteOptions, .columnOptions{
+    display: none;
+}
+
+.note:hover > .noteOptions, .panelColumn:hover > .columnOptions{
+    display: flex;
+}
+
+body:has(.note:hover) .columnOptions{
+    display: none;
+}
+
+.accordionUserList{
+    min-height: 34vh;
+    height: 34vh;
+    max-height: 34vh;
+}
+
+.cardCanvas{
+    height: calc(100vh - 4.063rem);
+    width: 100%;
 }
 
 /* * GRIDS*/
@@ -641,6 +862,10 @@ body:has(.spinningLogo:hover) .logoHeader{
 .col-4{
     grid-template-columns: repeat(4, 1fr);
 }
+.col-3{
+    grid-template-columns: repeat(3, 1fr);
+}
+
 .col2-1{
     grid-template-columns: 2fr 1fr;
 }
@@ -658,6 +883,14 @@ body:has(.spinningLogo:hover) .logoHeader{
 
 .gap0{
     gap: 0;
+}
+
+.gap02{
+    gap: .2rem;
+}
+
+.gap05{
+    gap: .5rem;
 }
 
 .gap1{
@@ -713,6 +946,10 @@ body:has(.spinningLogo:hover) .logoHeader{
     align-items: center;
 }
 
+.justify-content-start{
+    justify-content: start;
+}
+
 .justify-content-end{
     justify-content: end;
 }
@@ -757,6 +994,65 @@ body:has(.spinningLogo:hover) .logoHeader{
     font-size: 12px;
 }
 
+/* * TRANSITIONS*/
+
+.fadeSlide, .fadeSlideUnToggled{
+    content:'';
+}
+
+.fadeSlide{
+    height: 40vh;
+    transition: 500ms ease;
+    overflow: hidden;
+    margin-top: 1rem;
+}
+
+.fadeSlideUnToggled{
+    height: 0;
+    transition: 500ms ease-out;
+    margin-top: 0rem;
+}
+
+.fadeSlide::after{
+    position: absolute;
+    bottom: 0;
+    z-index: 1;
+    content:'';
+    display:block;
+    height: 0;
+    width: 100%;
+    background-color: #101010;
+    transition: 500ms ease;
+}
+
+.fadeSlideUnToggled::after{
+    background-color: #101010;
+    transition: 500ms ease-out;
+    height: 40vh;
+}
+
+.transition300{
+    transition: 300ms ease;
+}
+
+.transition500{
+    transition: 500ms ease;
+}
+
+/* * TRANSFORMS*/
+
+.rotateNeg90Deg{
+    transform: rotate(-90deg);
+}
+
+.rotate90Deg{
+    transform: rotate(90deg);
+}
+
+.willChange{
+    will-change: transform;
+}
+
 /* * Positions*/
 
 .positionAbsolute{
@@ -771,6 +1067,10 @@ body:has(.spinningLogo:hover) .logoHeader{
     position:fixed;
 }
 
+.positionSticky{
+    position:sticky;
+}
+
 
 .position-l0-t0{
     left: 0;
@@ -779,6 +1079,14 @@ body:has(.spinningLogo:hover) .logoHeader{
 
 .top-0{
     top: 0;
+}
+
+.top-40px{
+    top: 40px;
+}
+
+.left-0{
+    left: 0;
 }
 
 .btm-0{
@@ -819,6 +1127,14 @@ body:has(.spinningLogo:hover) .logoHeader{
 }
 .z-index-1{
     z-index: 1;
+}
+
+.z-index-2{
+    z-index: 2;
+}
+
+.z-index-3{
+    z-index: 3;
 }
 
 /* * Cards*/
@@ -888,6 +1204,60 @@ body:has(.spinningLogo:hover) .logoHeader{
     min-height: 4rem;
 }
 
+/* * INPUTS*/
+
+.containerCheckbox .checkmark:after {
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.containerCheckbox input:checked ~ .checkmark:after {
+    display: block;
+}
+
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #101010dc;
+    border-radius: 4px;
+    border: #242424 1px solid;
+}  
+
+.containerCheckbox {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 22px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.containerCheckbox input:checked ~ .checkmark {
+    background-color: #101010ec;
+}
+
 /* * BUTTONS*/
 .btn{
     background-color: #101010;
@@ -898,6 +1268,12 @@ body:has(.spinningLogo:hover) .logoHeader{
     cursor: pointer;
     color: #000000;
     font-size: 16px;
+}
+
+.miniBtn{
+    padding: .3rem;
+    padding-left: .4rem;
+    padding-right: .4rem;
 }
 
 .btn > p{
@@ -926,7 +1302,35 @@ body:has(.spinningLogo:hover) .logoHeader{
     radial-gradient(ellipse at bottom, hsla(278, 100%, 58%, 0.706), transparent);
 }
 
-.PlusBtn, .SearchBtn{
+.btnNotHover:hover{
+    color: black !important;
+    border: #222 solid 1px !important;
+    background:
+    radial-gradient(ellipse at top, #2eb6ff, transparent),
+    radial-gradient(ellipse at bottom, hsla(278, 100%, 58%, 0.706), transparent) !important;
+}
+
+.ArrowBtn img{
+    position: relative;
+    right: 1px;
+    width: 20px;
+}
+
+.smallPlusBtn{
+    --BtnSize: 2.5rem !important;
+    --lines_lenght: 1.6rem !important;
+    --lines_width: .2rem !important;
+    --plus_border_radius: 3px !important; 
+}
+
+.nanoPlusBtn{
+    --BtnSize: 1.64rem !important;
+    --lines_lenght: .9rem !important;
+    --lines_width: .1rem !important;
+    --plus_border_radius: 1px !important; 
+}
+
+.PlusBtn, .SearchBtn, .minusBtn{
     --plus_color: black;
     --btn-color: blue;
     --lines_lenght: 2rem;
@@ -954,7 +1358,7 @@ body:has(.spinningLogo:hover) .logoHeader{
     border-radius: var(--plus_border_radius);
 }
 
-.PlusBtn::before{
+.PlusBtn::before, .minusBtn::before{
     content: '';
     display: block;
     background-color: var(--plus_color);
@@ -996,16 +1400,49 @@ body:has(.spinningLogo:hover) .logoHeader{
     transition: 200ms ease;
 }
 
-.SearchBtn{
+.SearchBtn, .searchSizeBtn{
     --BtnSize: 2.2rem;
     box-sizing: border-box;
 }
 
-.SearchBtn:hover{
+.btnHover{
+    border: #242424 2px solid;
+}
+
+.btnOnlyHover{
+    border: transparent 2px solid;
+}
+
+.border1px{
+    border-width: 1px !important;
+}
+
+.shadowBtnBorder1px:hover{
+    box-shadow: 0px 0px 0px 1px white;
+}
+
+.shadowBtnBorder:hover{
+    box-shadow: 0px 0px 0px 2px white;
+}
+
+.SearchBtn:hover, .btnHover:hover, .btnOnlyHover:hover{
     border: white 2px solid;
 }
 
+.underlinedBtn{
+    background-color: #101010;
+    border-bottom: transparent solid 2px;
+    padding: 1ch;
+    width: fit-content;
+    cursor: pointer;
+    color: white;
+    font-size: 16px;
+}
 
+.underlinedBtn:hover, .underlinedBtnToggled {
+    border-bottom: white solid 2px;
+    background-color: #141414;
+}
 
 /* * FORMS*/
 .errorMessageLabel{
@@ -1017,6 +1454,33 @@ body:has(.spinningLogo:hover) .logoHeader{
 
 /* * IMAGES */
 
+.creationCard p{
+    filter: drop-shadow(1px 1px black);
+}
+
+.creationCard:hover .diagonalImgCard{
+    --percentage: calc(-61.67 / 100);
+    right: calc(((var(--width) + (var(--width) * var(--percentage)))) * (-1));
+    bottom: calc(((var(--width) + (var(--width) * var(--percentage)))) * (-1));
+    transition: 200ms ease;
+}
+
+.diagonalImgCard{
+    --width: 300px;
+    width: var(--width);
+    aspect-ratio: 1/1;
+    position: absolute;
+    right: calc(((var(--width) + (var(--width) * -0.4667))) * (-1));
+    bottom: calc(((var(--width) + (var(--width) * -0.4667))) * (-1));
+    transform: rotate(-45deg);
+    transition: 200ms ease;
+}
+
+.panelCardImg{
+    --width: 300px;
+    --percentage: calc(-70 / 100) !important;
+}
+
 .miniUserPicture{
     width: 40px;
     height: 40px;
@@ -1026,6 +1490,10 @@ body:has(.spinningLogo:hover) .logoHeader{
 
 .iconSize{
     width: 18px;
+}
+
+.iconSize-2{
+    width: 16px !important;
 }
 
 .circular{
@@ -1108,10 +1576,43 @@ label.drag .dragPlus{
     cursor: pointer;
 }
 
+.cursor-notAllowed{
+    cursor:not-allowed;
+}
+
+.max-resize-vertical-40vh{
+    resize: vertical;
+    max-height: 40vh;
+}
+
+.resize-none{
+    resize: none;
+}
+
 /* * BORDERS*/
+
+.border-none, .border-none:focus{
+    border: none;
+    outline: none;
+}
+
+.darkBorder, .darkFocusBorder, darkFocusBorder:focus{
+    border: #242424 2px solid;
+}
 
 .popUpseparator{
     border-top:#222 solid 1px;
+}
+
+.borderLR{
+    border-left: #222 solid 1px;
+    border-right: #222 solid 1px;
+}
+
+.border-radius-inherit-0-0-0{
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
 }
 
 .border-top-right-radius-0{
