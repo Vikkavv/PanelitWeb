@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router"
 import LogoContainer from "../components/LogoContainerComponent";
 import { useEffect, useRef, useState } from "react";
 import { getUserById } from "../components/PanelCardComponent";
-import { ARTICLE_STRUCTURE_SAMPLE, CARDS_TYPE_PANEL, COLUMN_STRUCTURE_SAMPLE, COLUMN_TYPE_PANEL } from "./CreatePanel";
+import { ARTICLE_STRUCTURE_SAMPLE, CARD_STRUCTURE_SAMPLE, CARDS_TYPE_PANEL, COLUMN_STRUCTURE_SAMPLE, COLUMN_TYPE_PANEL, CONNECTED_CARDS_TYPE_PANEL } from "./CreatePanel";
 import { dynamicClasses } from "../assets/js/dynamicCssClasses";
 import { cookieSessionChecker } from "../assets/js/SessionChecker";
 import { setOnlyRelevantUserValues } from "./UserProfile";
@@ -10,7 +10,7 @@ import ModalComponent, { hiddePopUp, showPopUp } from "../components/ModalCompon
 import PdfThumbnail from "../components/PdfThumbnail";
 import PdfViewer from "../components/PdfViewer";
 import { isLightImg } from "../assets/js/ImgDarkOrLight";
-import PanelSettingsMenuComponent from "../components/PanelSettingsMenuComponent";
+import PanelSettingsMenuComponent, { deleteFriends, getPanelParticipantsByPanel } from "../components/PanelSettingsMenuComponent";
 
 let userData = {
     "id": 0,
@@ -27,6 +27,16 @@ let noteCounter = 0;
 let noReactivePanel = {};
 let strPanelContent = "";
 let currentColumn = -1;
+let canvasContext = null;
+let isDragging = false;
+let draggedCard = null;
+let offsetX = 0;
+let offsetY = 0;
+let currentX = 0;
+let currentY = 0;
+let modifiedNotes = new Map();
+let saveTimeout = null;
+let globalCards = null;
 
 let NOTE_STRUCTURE = {
     "panel": {
@@ -57,6 +67,7 @@ function Panel() {
     const [HTMLPdfRender, setHTMLPdfRender] = useState(null);
     const [HTMLNoteForm, setHTMLNoteForm] = useState(null);
     const [invertTextColors, setInvertTextColors] = useState(false);
+    const [HTMLCardNotes, setHTMLCardNotes] = useState([]);
 
     const [isCreator, setIsCreator] = useState(null);
     const [isAdmin, setIsAdmin] = useState(null);
@@ -68,6 +79,9 @@ function Panel() {
     const columnRefs = useRef([]);
     const pdfFileRef = useRef(null);
     const canvasRef = useRef(null);
+    const cardsRef = useRef([]);
+    const dbCardNotesRef = useRef([]);
+    const cardsContainerRef = useRef(null);
 
     const navigate = useNavigate();
 
@@ -106,6 +120,20 @@ function Panel() {
             getUser();
             getPanelParticipant();
             getPanelBackground();
+            const checkParticipants = async () => {
+                let panelParticipants = await getPanelParticipantsByPanel(panel);
+                let panelOwner = await getUserById(panel.creatorId);
+                if(panelParticipants.filter((panelParticipant) => panelParticipant.participant.id !== panel.creatorId).length > panelOwner.plan.nMaxCollaborators){
+                    let panelParticipantsWithOutOwner = panelParticipants.filter((panelParticipant) => panelParticipant.participant.id !== panel.creatorId);
+                    let panelParticipantToDelete = [];
+                    for (let i = 0; i < panelParticipantsWithOutOwner.length - panelOwner.plan.nMaxCollaborators; i++) {
+                        let rand = Math.floor(Math.random() * panelParticipantsWithOutOwner.length);
+                        panelParticipantToDelete.push(panelParticipantsWithOutOwner[rand].participant.id);
+                    }
+                    await deleteFriends(panelParticipantToDelete, panel);
+                }
+            }
+            checkParticipants();
             if(panelContent !== null && divRefs.current["columnContainer"]){
                 printcolumns();
             }
@@ -129,6 +157,7 @@ function Panel() {
         if(panelContent !== null && divRefs.current["columnContainer"]){
             printcolumns();
         }
+        if(panelContent !== null && (JSON.parse(panel.additionalInfo).type === CARDS_TYPE_PANEL || JSON.parse(panel.additionalInfo).type === CONNECTED_CARDS_TYPE_PANEL )) printCardNotes();
     },[strPanelContent]);
 
     useEffect(() => {
@@ -138,6 +167,10 @@ function Panel() {
     useEffect(() => {
         dynamicClasses();
     }, [JSON.stringify(HTMLNoteForm)])
+
+    useEffect(() => {
+        if(JSON.stringify(HTMLCardNotes) !== "[]" && JSON.parse(panel.additionalInfo).type === CONNECTED_CARDS_TYPE_PANEL) draw();
+    }, [HTMLCardNotes])
 
     return (
         <>
@@ -184,9 +217,8 @@ function Panel() {
                         </form>
                     </div>
                 }
-
                 {(isAdmin || isCreator) &&
-                    <div id="noteSlider" className="editSliderPanel noteEditSliderPanel flex-direction-column justify-space-bwt window bgWindow border-radius-inherit-0-0-0 padding-1 display-none">
+                    <div id="noteSlider" className="editSliderPanel z-index-1 noteEditSliderPanel flex-direction-column justify-space-bwt window bgWindow border-radius-inherit-0-0-0 padding-1 display-none">
                         <div className="flex justify-space-bwt align-items-center">
                             <h2 className="margin-0 text-white fontWeightNormal">New note</h2>
                             <div className="flex">
@@ -218,7 +250,7 @@ function Panel() {
         </>
     )
 
-    function getPanelContent(paramHTMLColumns = null){
+    function getPanelContent(paramHTMLNotes = null){
         if(JSON.parse(panel.additionalInfo).type === COLUMN_TYPE_PANEL){
             let nColumns = JSON.parse(panel.additionalInfo).columns.length;
             let content = nColumns === 0 ?
@@ -235,7 +267,7 @@ function Panel() {
             : 
             
             <div ref={(el) => {divRefs.current["columnContainer"] = el}} className="container15 overFlowAuto darkscrollBar padding-top-2 margin-bottom-2 h80vh grid gap2">
-                {paramHTMLColumns === null ? HTMLcolumns : paramHTMLColumns}
+                {paramHTMLNotes === null ? HTMLcolumns : paramHTMLNotes}
                 {(isAdmin || isCreator) && 
                     <div onClick={() => {showHideSlider("columnSlider")}} className="flex gap1 flex-direction-column justify-content-center align-items-center btnHover cursor-pointer">
                         <h2 className="text-gray textLittle fontWeightNormal margin-0">Add column</h2>
@@ -250,19 +282,20 @@ function Panel() {
                 content
             );
         }
-        if(JSON.parse(panel.additionalInfo).type === CARDS_TYPE_PANEL){
-            let nNotes = JSON.parse(panel.additionalInfo).notes.length;
-            let content = nNotes === 0 ? 
-            
-            <div className="cardCanvas">
-                <canvas ref={canvasRef.current} className="cardCanvas display-block">
-
-                </canvas>
-            </div>
-
-            :
-
-            <></>;
+        if(JSON.parse(panel.additionalInfo).type === CARDS_TYPE_PANEL || JSON.parse(panel.additionalInfo).type === CONNECTED_CARDS_TYPE_PANEL){
+            let content = 
+            <div className="cardCanvas positionRelative">
+                <div className="positionAbsolute right-0 padding-05 z-index-1">
+                    <div className="flex padding-05 gap1 align-items-center window bgWindow">
+                        <p className="margin-0 textNano text-white">Add note</p>
+                        <button onClick={() => showHideSlider("noteSlider")} className="PlusBtn nanoPlusBtn shadowBtnBorder margin-auto-0 btnGradientBluePurple whitePlus inverted"></button>
+                    </div>
+                </div>
+                <canvas ref={canvasRef} className="cardCanvas display-block"></canvas>
+                <div id="cardsContainer" onMouseDown={(e) => handleMouseDown(e)} onMouseMove={(e) => handleMouseMove(e)} onMouseUp={handleMouseUp} ref={cardsContainerRef.current} className="w100 h100 positionAbsolute top-0">
+                    {paramHTMLNotes === null ? HTMLCardNotes : paramHTMLNotes}
+                </div>
+            </div>;
 
             strPanelContent = " ";
 
@@ -270,6 +303,179 @@ function Panel() {
                 content
             );
         }
+    }
+
+    async function printCardNotes(){
+        setHTMLCardNotes([]);
+        cardsRef.current = [];
+        dbCardNotesRef.current = [];
+        globalCards = [];
+        let cards = [];
+        if(canvasRef.current !== null){
+            let canvas = canvasRef.current;
+            canvas.width = parseFloat(getComputedStyle(canvas).width);
+            canvas.height = parseFloat(getComputedStyle(canvas).height);
+        }
+        if(canvasContext === null){
+            canvasContext = canvasRef.current?.getContext('2d');
+        }
+        let panelNotes = JSON.parse(panel.additionalInfo).notes;
+        for (const panelNote of panelNotes) {
+            let dbNote = await findNoteById(panelNote.noteId);
+            cards.push(printCard(dbNote.id, panelNote.posX, panelNote.posY, dbNote.title, dbNote.bodyText, dbNote.resourceUrl, dbNote.contentType));
+            dbCardNotesRef.current[dbNote.id] = dbNote;
+        }
+        globalCards = cards;
+        setHTMLCardNotes(
+            cards
+        );
+        getPanelContent(cards);
+    }
+
+    function printCard(cardId, x, y, title, text = null, pdfUrl = null, contentType = null){
+        let card = contentType === "text" ?
+            <div key={noteCounter++} id={`card${cardId}`} ref={(el) => {cardsRef.current[cardId] = el}} className="panelNoteCard bgWhite padding-05" style={{left: `${x}px`, top: `${y}px`}}>
+                {(isAdmin || isCreator) &&
+                    <div className="noteOptions positionAbsolute gap02 top-0 right-0 bgWindow boxSize-Border padding-02 z-index-1">
+                        <img onClick={() => {editNote(cardId)}} title="Edit note" className="iconSize display-block cursor-pointer btnHover padding-01" src="http://localhost:5173/svgs/editPencilIcon.svg" alt="" />
+                        <img onClick={() => {deleteNote(cardId)}} title="Delete note" className="iconSize display-block cursor-pointer btnHover padding-01" src="http://localhost:5173/svgs/DeleteIcon.svg" alt="" />
+                    </div>
+                }
+                {contentType === "text" &&
+                    <>
+                        <h2 className="margin-0">{title}</h2>
+                        <p className="margin-0">{text}</p>
+                    </>
+                }
+                {contentType === "document" &&
+                    <>
+                        <div className="positionAbsolute top-0 bgWhite w100">
+                            <h2 className="margin-0 border-none textSNormal padding-05 text-ellipsis overFlowHidden text-black text-noWrap" title={title}>{title}</h2>
+                        </div>
+                        <PdfThumbnail key={noteCounter++} onClick={() => {setHTMLPdfRender(<PdfViewer url={pdfUrl}/>); showPopUp("pdfRender")}} url={pdfUrl}/>
+                    </>
+                }
+
+                
+            </div>
+            
+            :
+
+            <div key={noteCounter++} id={`card${cardId}`} ref={(el) => {cardsRef.current[cardId] = el}} className="panelNoteCard panelpdfNoteCard bgWhite padding-05" style={{left: `${x}px`, top: `${y}px`}}>
+                {(isAdmin || isCreator) &&
+                    <div className="noteOptions positionAbsolute gap02 top-0 right-0 bgWindow boxSize-Border padding-02 z-index-1">
+                        <img onClick={() => {editNote(cardId)}} title="Edit note" className="iconSize display-block cursor-pointer btnHover padding-01" src="http://localhost:5173/svgs/editPencilIcon.svg" alt="" />
+                        <img onClick={() => {deleteNote(cardId)}} title="Delete note" className="iconSize display-block cursor-pointer btnHover padding-01" src="http://localhost:5173/svgs/DeleteIcon.svg" alt="" />
+                    </div>
+                }
+                <h2 className="margin-0 border-none textSNormal text-ellipsis overFlowHidden text-black text-noWrap" title={title}>{title}</h2>
+                <div className="flex justify-content-center padding-05">
+                    <PdfThumbnail key={noteCounter++} onClick={() => {setHTMLPdfRender(<PdfViewer url={pdfUrl}/>); showPopUp("pdfRender")}} url={pdfUrl}/>
+                </div>
+            </div>
+            ;
+        return card;
+    }
+
+    function draw() {
+        clearCanvas();
+        connectAllCards();
+        requestAnimationFrame(draw);
+    }
+
+    function connectAllCards(){
+        for (let i = 0; i < globalCards.length - 1; i++) {
+            connectCards(document.getElementById(globalCards[i].props.id), document.getElementById(globalCards[i + 1].props.id));
+        }
+    }
+
+    function connectCards(card1, card2){
+        canvasContext.strokeStyle = invertTextColors === false ? "#FFFFFF" : "#000000";
+        canvasContext.lineWidth = 2;
+        const startX = card1.offsetLeft + card1.offsetWidth / 2;
+        const startY = card1.offsetTop + card1.offsetHeight / 2;
+        const endX = card2.offsetLeft + card2.offsetWidth / 2;
+        const endY = card2.offsetTop + card2.offsetHeight / 2;
+        const dx = endX - startX;
+        const cx1 = startX + dx / 2;
+        const cy1 = startY;
+
+        canvasContext.beginPath();
+        canvasContext.moveTo(startX, startY);
+        canvasContext.bezierCurveTo(cx1, cy1, cx1, endY, endX, endY);
+        canvasContext.stroke();
+    }
+
+    function clearCanvas() {
+        canvasContext.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+    }
+
+    function handleMouseDown(event){
+        const div = event.target;
+        if(div.classList.contains("panelNoteCard") || div.parentElement.classList.contains("panelNoteCard")){
+            isDragging = true;
+            draggedCard = div.classList.contains("panelNoteCard") ? div : div.parentElement;
+            offsetX = event.clientX - draggedCard.offsetLeft;
+            offsetY = event.clientY - draggedCard.offsetTop;
+        }
+    }
+
+    function handleMouseMove(event){
+        if(isDragging && draggedCard){
+            const rect = canvasRef.current.getBoundingClientRect();
+            const clampedX = Math.min(Math.max(event.clientX - offsetX, 0), rect.width - draggedCard.offsetWidth);
+            const clampedY = Math.min(Math.max(event.clientY - offsetY, 0), rect.height - draggedCard.offsetHeight);
+
+            draggedCard.classList.add("z-index-1");
+            draggedCard.style.left = `${clampedX}px`;
+            draggedCard.style.top = `${clampedY}px`;
+            currentX = clampedX;
+            currentY = clampedY;
+        }
+    }
+
+    async function handleMouseUp(){
+        if(draggedCard !== null){
+            let noteId = parseInt(draggedCard.id.replaceAll("card",""));
+
+            modifiedNotes.set(noteId, {
+                posX: currentX,
+                posY: currentY
+            });
+
+            console.log(modifiedNotes);
+
+            if(saveTimeout) clearTimeout(saveTimeout);
+
+            saveTimeout = setTimeout(() => {
+                saveAllModifiedNotes();
+            }, 2000);
+
+            draggedCard.classList.remove("z-index-1");
+            isDragging = false;
+            draggedCard = null;
+        }
+    }
+
+    async function saveAllModifiedNotes(){
+        if(modifiedNotes.size === 0) return;
+        let additionalInfo = JSON.parse(panel.additionalInfo);
+        
+        additionalInfo.notes = additionalInfo.notes.map(note => {
+            const update = modifiedNotes.get(note.noteId);
+            return update 
+                ? {...note, posX: update.posX, posY: update.posY}
+                : note;
+        })
+
+        noReactivePanel.additionalInfo = JSON.stringify(additionalInfo);
+        noReactivePanel.panelParticipants = [];
+        noReactivePanel.notes = [];
+
+        modifiedNotes.clear();
+        saveTimeout = null;
+
+        await updatePanel(noReactivePanel, false);
     }
 
     function showColumnDeleteModal(columnId){
@@ -406,23 +612,47 @@ function Panel() {
                 await updatePanel(noReactivePanel);
             }
         }
-    }
-
-    async function deleteNote(noteId, columnId) {
-        let panelAdditionalInfo = JSON.parse(panel.additionalInfo);
-        if(panelAdditionalInfo.type === COLUMN_TYPE_PANEL){
-            let columns = panelAdditionalInfo.columns;
-            panelAdditionalInfo.columns[columnId].articles = columns[columnId].articles.filter(note => note.noteId !== noteId);
+        if(panelAdditionalInfo.type === CARDS_TYPE_PANEL || panelAdditionalInfo.type === CONNECTED_CARDS_TYPE_PANEL){
+            let note = structuredClone(NOTE_STRUCTURE);
+            note.owner.id = userData.id;
+            note.panel.id = panel.id;
+            note.title = inputRefs.current["noteTitle"].value.trim() === "" ? null : inputRefs.current["noteTitle"].value;
+            note.bodyText = contentType !== "document" ? inputRefs.current["noteText"].value : null;
+            note.contentType = contentType;
+            let cardNote = structuredClone(CARD_STRUCTURE_SAMPLE);
+            cardNote.noteId = await addNote(note, contentType);
+            cardNote.posX = (canvasRef.current?.width / 2) - (320 / 2);
+            cardNote.posY = canvasRef.current?.height / 2;
+            panelAdditionalInfo.notes.push(cardNote);
             noReactivePanel.additionalInfo = JSON.stringify(panelAdditionalInfo);
-            await deleteNoteDB(noteId);
-            noReactivePanel.notes = [];
             noReactivePanel.panelParticipants = [];
+            noReactivePanel.notes = [];
             await updatePanel(noReactivePanel);
         }
     }
 
+    async function deleteNote(noteId, columnId = 0) {
+        let panelAdditionalInfo = JSON.parse(panel.additionalInfo);
+        if(panelAdditionalInfo.type === COLUMN_TYPE_PANEL){
+            let columns = panelAdditionalInfo.columns;
+            panelAdditionalInfo.columns[columnId].articles = columns[columnId].articles.filter(note => note.noteId !== noteId);
+        }
+        if(panelAdditionalInfo.type === CARDS_TYPE_PANEL || panelAdditionalInfo.type === CONNECTED_CARDS_TYPE_PANEL){
+            panelAdditionalInfo.notes = panelAdditionalInfo.notes.filter((note) => note.noteId !== noteId);
+            globalCards = globalCards.filter((card) => parseInt(card.props.id.replaceAll("card","")) !== noteId)
+            let cardsContainer = document.getElementById("cardsContainer");
+            cardsContainer.removeChild(cardsRef.current[noteId]);
+        }
+        noReactivePanel.additionalInfo = JSON.stringify(panelAdditionalInfo);
+        await deleteNoteDB(noteId);
+        noReactivePanel.notes = [];
+        noReactivePanel.panelParticipants = [];
+        await updatePanel(noReactivePanel, panelAdditionalInfo.type === COLUMN_TYPE_PANEL ? true : false);
+    }
+
     function editNote(noteId){
-        let HTMLNote = noteRefs.current[noteId];
+        let panelType = JSON.parse(panel.additionalInfo).type;
+        let HTMLNote = panelType === COLUMN_TYPE_PANEL ? noteRefs.current[noteId] : cardsRef.current[noteId];
         let noteTitle = HTMLNote.getElementsByTagName("h2")[0].textContent;
         let noteText = HTMLNote.getElementsByTagName("p")[0] !== undefined ? HTMLNote.getElementsByTagName("p")[0].textContent : null;
         if(noteText !== null){
@@ -450,7 +680,11 @@ function Panel() {
                     dbNote.owner = {"id": userData.id};
                     dbNote.panel = {"id": dbNote.panel.id};
                     await editNoteDB(dbNote);
-                    await updatePanel(noReactivePanel, false);
+                    await updatePanel(noReactivePanel, true);
+                }
+                else{
+                    if(panelType === COLUMN_TYPE_PANEL) printcolumns();
+                    else printCardNotes();
                 }
             }
         }
@@ -642,7 +876,15 @@ function Panel() {
         const data = await response.json();
         if(data === true){
             getPanel();
-            if(print === true) printcolumns();
+            if(print === true){
+                let panelType = JSON.parse(panel.additionalInfo).type;
+                if(panelType === COLUMN_TYPE_PANEL){
+                    printcolumns();
+                }
+                else{
+                    printCardNotes();
+                }
+            } 
         } 
     }
 

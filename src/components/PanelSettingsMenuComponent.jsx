@@ -20,7 +20,7 @@ function PanelSettingsMenuComponent(props) {
     return (
         <>
             <img onClick={showSlide} title="Settings" src="/svgs/SettingsIcon.svg" className="iconSize cursor-pointer shadowBtnBorder1px padding-03 border-radius-50" alt="" />
-            <div ref={popUpRef} className="panelSettingsPopUp bgWindow positionAbsolute top-0 h100vh">
+            <div ref={popUpRef} className="panelSettingsPopUp bgWindow positionAbsolute top-0 h100vh z-index-2">
                 <div className="flex justify-content-end padding-1 positionRelative z-index-1">
                     <div onClick={hiddeSlide} title="close" className="PlusBtn whitePlus transparentBtn diagonal medium-size margin-auto-0"></div>
                 </div>
@@ -225,7 +225,6 @@ function PanelSettingsMenuComponent(props) {
     }
 
     async function deleteFriends(usersSelected){
-        console.log(usersSelected);
         const response = await fetch("http://localhost:8080/PanelParticipant/deleteFromArrayInPanel/"+panel.id,{
             method: "DELETE",
             headers: {
@@ -291,5 +290,16 @@ export async function getPanelParticipantsByPanel(panel) {
     if(Array.isArray(data)) return data;
     else return null;
 }
+
+export async function deleteFriends(usersSelected, panel){
+        const response = await fetch("http://localhost:8080/PanelParticipant/deleteFromArrayInPanel/"+panel.id,{
+            method: "DELETE",
+            headers: {
+                "Content-type": "application/json",
+            },
+            body: JSON.stringify(usersSelected),
+        });
+        const data = await response.json();
+    }
 
 export default PanelSettingsMenuComponent

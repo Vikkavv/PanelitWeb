@@ -7,6 +7,8 @@ import Navbar from "../components/NavbarComponent.jsx";
 
 document.getElementsByTagName("html")[0].classList = "html100";
 
+export const UNLIMITED_PANELS = 999;
+
 let userData = null;
 
 function Worksapce() {
@@ -69,9 +71,10 @@ function Worksapce() {
                                 </button>
                             </form>
                         </div>
-                        <div className="flex gap1 align-items-center">
+                        <div className="flex gap1 align-items-center positionRelative">
                             <p className="margin-0 text-white">Create panel</p>
-                            <a href="/CreatePanel" className="PlusBtn smallPlusBtn searchSizeBtn shadowBtnBorder margin-auto-0 btnGradientBluePurple whitePlus inverted"></a>
+                            <a onClick={(e) => exceededNumMaxOfPanels(e)} href="/CreatePanel" className="PlusBtn smallPlusBtn searchSizeBtn shadowBtnBorder margin-auto-0 btnGradientBluePurple whitePlus inverted"></a>
+                            <span id="panelExceededError" className="hidden textNano btm-Neg-1-3 text-red positionAbsolute w120 z-index-0">You can not create more panels due to your current plan.</span>
                         </div>
                     </div>
                     <div className="grid col-4 gap2 row-gap1 margin-top-2 overFlowYAuto darkscrollBar ha70vh padding-0-1">
@@ -84,6 +87,19 @@ function Worksapce() {
             </div>
         </>
     )
+
+    function exceededNumMaxOfPanels(e){
+        e.preventDefault();
+        if(panels.filter((panel) => panel.creatorId === userData.id).length < userData.plan.nMaxPanels || userData.plan.nMaxPanels === UNLIMITED_PANELS)
+            redirect(e.target.href.substring(e.target.href.lastIndexOf("/"), e.target.href.length));
+        else{
+            let errSpan = document.getElementById("panelExceededError");
+            errSpan.classList.remove("hidden");
+            setTimeout(() => {
+                errSpan.classList.add("hidden");
+            }, 4000)
+        }
+    }
 
     function searchPanels(event){
         event.preventDefault();
@@ -100,7 +116,7 @@ function Worksapce() {
                 if((optionValue == 0) || (optionValue == 1 && panel.creatorId === userData.id) || (optionValue == 2 && panel.creatorId !== userData.id)){
                     if(searchText === null || searchText.trim() === "" || (userPanel.nickname.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(searchText.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "")) || panel.name.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(searchText.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "")))){
                         setHtmlPanels(prev => [...prev,
-                            <PanelCardComponent key={counter++} creatorId={panel.creatorId} panelId={panel.id} panelTitle={panel.name} panelLastEditedDate={panel.lastEditedDate} panelCoverPhoto={panel.coverPhoto} />
+                            <PanelCardComponent blocked="true" key={counter++} creatorId={panel.creatorId} panelId={panel.id} panelTitle={panel.name} panelLastEditedDate={panel.lastEditedDate} panelCoverPhoto={panel.coverPhoto} />
                         ]);
                     }
                 }

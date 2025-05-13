@@ -5,6 +5,8 @@ import LogoContainer from "../components/LogoContainerComponent.jsx";
 import { dynamicClasses } from "../assets/js/dynamicCssClasses.js";
 import UserProfileBtnComponent from "../components/UserProfileBtnComponent.jsx";
 import { capitalize } from "../assets/js/normalizeCamelCase";
+import { getUserById } from "../components/PanelCardComponent.jsx";
+import { UNLIMITED_PANELS } from "./WorkSpace.jsx";
 
 let planDescriptions = {
     "basic": "Perfect for personal projects, passion ideas, or anything you’re building just for you.",
@@ -19,6 +21,8 @@ let planColors = {
     "informer": "planPurple",
     "press": "planYellow"
 }
+
+let counter = 0;
 
 let userData = {};
 
@@ -37,16 +41,12 @@ function UpdatePlan() {
         if(plans !== null){
             createPlanCards();
         }
-    }, [JSON.stringify(plans)]);
+    }, [plans]);
 
     useEffect(() => {
         if(reactiveUser !== null){
             getSubscriptionPlans();
         }
-    }, [JSON.stringify(reactiveUser)]);
-
-    useEffect(() => {
-        console.log(reactiveUser)
     }, [JSON.stringify(reactiveUser)]);
 
     useEffect(() => {
@@ -102,7 +102,7 @@ function UpdatePlan() {
     }
 
     function createPlanCards(){
-        let counter = 0;
+        setHTMLplans([]);
         for (const plan of plans) {
             setHTMLplans(prev => [...prev,
                 <div key={counter++} className="window overFlowHidden padding-0 flex">
@@ -113,7 +113,7 @@ function UpdatePlan() {
                             <span className="popUpseparator display-block w75 margin-0-auto"/>
                         </div>
                         <div className="flex flex-direction-column gap1 padding-top-1 padding-bottom-1">
-                            <p className="text-gray textMini text-centered">{plan.nMaxPanels === 999 ? "Unlimited" : plan.nMaxPanels}<br/><span>Panels</span></p>
+                            <p className="text-gray textMini text-centered">{plan.nMaxPanels === UNLIMITED_PANELS ? "Unlimited" : plan.nMaxPanels}<br/><span>Panels</span></p>
                             <p className="text-gray textMini text-centered">{plan.nMaxCollaborators}<br/><span>Collaborators</span><span className="display-block margin-0 text-gray textMicro text-semiLight text-centered margin-top-05">Per panel</span></p>
                         </div>
 
@@ -168,7 +168,9 @@ function UpdatePlan() {
             body: formData
         })
         const data = await response.json();
-        if(data === true) redirect("/workspace");
+        if(data === true){
+            setReactiveUser(await getUserById(reactiveUser.id));
+        } 
     }
 
     async function getSubscriptionPlans(){

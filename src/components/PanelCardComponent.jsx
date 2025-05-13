@@ -7,6 +7,7 @@ function PanelCardComponent(props) {
     let panelTitle = props.panelTitle === undefined ? console.error("panelTitle has to be given") : props.panelTitle;
     let panelLastEditedDate = props.panelLastEditedDate === undefined ? console.error("panelLastEdited date has to be given") : props.panelLastEditedDate;
     let panelCoverPhoto = props.panelCoverPhoto === undefined ? console.error("paneLCoverPhoto has to be given") : props.panelCoverPhoto;
+    let blocked = props.blocked === "true" ? true : false; 
 
     if(panelLastEditedDate !== undefined){
         panelLastEditedDate = panelLastEditedDate.replaceAll("-","/");
@@ -51,6 +52,9 @@ function PanelCardComponent(props) {
                 <p className="margin-0 text-white textMini">{panelTitle}</p>
                 <p className="textNano text-gray margin-auto-0">{panelLastEditedDate}</p>
             </a>
+            {blocked &&
+                <div className="bgPopUp w100 h100 positionAbsolute top-0"></div>
+            }
         </div>
     )
 
