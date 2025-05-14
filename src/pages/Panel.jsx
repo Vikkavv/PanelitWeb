@@ -142,6 +142,10 @@ function Panel() {
 
     useEffect(() => {
         if(isCreator !== null){
+            if(panel.isBlocked){
+                setIsCreator(false);
+                setIsAdmin(false);
+            }
             getPanelContent();
         }
     },[isCreator+""])
@@ -804,6 +808,7 @@ function Panel() {
     function getPanelBackground(){
         if(panel.backgroundPhoto !== null){
             document.body.style.backgroundImage = `url(`+panel.backgroundPhoto+`)`;
+            document.body.style.backgroundSize = "cover";
             isLightImg(panel.backgroundPhoto, (result) => {setInvertTextColors(result)})
         }
         else{

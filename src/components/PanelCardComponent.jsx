@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
+import { showPopUp } from "./ModalComponent";
 
 function PanelCardComponent(props) {
     let creatorId = props.creatorId === undefined ? console.error("creatorId has to be given") : props.creatorId;
@@ -7,7 +8,7 @@ function PanelCardComponent(props) {
     let panelTitle = props.panelTitle === undefined ? console.error("panelTitle has to be given") : props.panelTitle;
     let panelLastEditedDate = props.panelLastEditedDate === undefined ? console.error("panelLastEdited date has to be given") : props.panelLastEditedDate;
     let panelCoverPhoto = props.panelCoverPhoto === undefined ? console.error("paneLCoverPhoto has to be given") : props.panelCoverPhoto;
-    let blocked = props.blocked === "true" ? true : false; 
+    let blocked = props.blocked === undefined ? false : props.blocked; 
 
     if(panelLastEditedDate !== undefined){
         panelLastEditedDate = panelLastEditedDate.replaceAll("-","/");
@@ -44,7 +45,7 @@ function PanelCardComponent(props) {
                 {panelCoverPhoto !== null ? <img className="coverPhoto" src={panelCoverPhoto} alt=""/> : <div className={"coverPhoto " + (JSON.stringify(panel) !== "{}" ? JSON.parse(panel.additionalInfo).background.cssBackground : "")}></div>}
                 
             </a>
-            <div onClick={() => {goToOwnerProfile(userData.nickname)}} className="authorInfo flex gap05 positionAbsolute position-l0-t0 boxSize_Border cursor-pointer text-hover padding-05 boxSize-Border">
+            <div onClick={() => {goToOwnerProfile(userData.nickname)}} className="authorInfo flex gap05 positionAbsolute position-l0-t0 cursor-pointer text-hover padding-05 boxSize-Border">
                 <img src={userData.profilePicture !== null && userData.profilePicture !== undefined && userData.profilePicture !== "" ? userData.profilePicture : `svgs/defaultProfileImage.svg`} alt="Default profile image" className={( userData.profilePicture !== null ? `profilePicture` : ``) + ` cardProfilePicture  object-fit-cover boxSize-Border hoverWhiteBorder`} />
                 <p className="margin-auto-0 display-block textNano padding-0 padding-left-05">{userData.nickname}</p>
             </div>
@@ -53,7 +54,9 @@ function PanelCardComponent(props) {
                 <p className="textNano text-gray margin-auto-0">{panelLastEditedDate}</p>
             </a>
             {blocked &&
-                <div className="bgPopUp w100 h100 positionAbsolute top-0"></div>
+                <div onClick={() => {showPopUp("viewModePanel"+panelId)}} title="This panel is blocked due to your current plan." className="flex justify-content-center align-items-center bgPopUp w100 h100 positionAbsolute top-0 cursor-pointer btnHover border1px border-radius-9 boxSize-Border">
+                    <img src="/svgs/LockIcon.svg" className="iconSize"/>
+                </div>
             }
         </div>
     )

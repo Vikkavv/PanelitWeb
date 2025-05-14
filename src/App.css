@@ -1667,6 +1667,10 @@ label.drag .dragPlus{
     border-radius: 50%;
 }
 
+.border-radius-9{
+    border-radius: 9.9999px;
+}
+
 .hoverWhiteBorder:hover{
     border: white 1px solid;
 }

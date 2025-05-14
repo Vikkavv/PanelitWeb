@@ -4,6 +4,7 @@ import { cookieSessionChecker } from "../assets/js/SessionChecker.js";
 import {dynamicClasses} from '../assets/js/dynamicCssClasses.js';
 import PanelCardComponent, { getUserById } from "../components/PanelCardComponent.jsx";
 import Navbar from "../components/NavbarComponent.jsx";
+import ModalComponent, { hiddePopUp } from "../components/ModalComponent.jsx";
 
 document.getElementsByTagName("html")[0].classList = "html100";
 
@@ -23,12 +24,15 @@ function Worksapce() {
     const [htmlPanels, setHtmlPanels] = useState([]);
     const [panels, setPanels] = useState([]);
     const [reactiveUser, setReactiveUser] = useState({});
+    const [panelVisitModals, setPanelVisitModals] = useState([]);
 
     useEffect(() => {
         if(JSON.stringify(reactiveUser).includes("nickname")) {            
             const getPanels = async () => {
                 const data = await getUserPanels();
-                if(data !== null) setPanels(data);
+                if(data !== null){
+                    setPanels(data);
+                } 
             };
             getPanels();
         }
@@ -85,6 +89,7 @@ function Worksapce() {
                     htmlPanels
                 }
             </div>
+            {panelVisitModals}
         </>
     )
 
@@ -108,16 +113,32 @@ function Worksapce() {
 
     async function createPanelCards(searchText = null){
         setHtmlPanels([]);
+        setPanelVisitModals([]);
         let counter = 0;
         let optionValue = refs.current["panelsFilter"]?.selectedOptions[0].value;
         if(panels.length > 0){
             for (const panel of panels) {
+                console.log(panel.isBlocked);
                 let userPanel = await getUserById(panel.creatorId);
                 if((optionValue == 0) || (optionValue == 1 && panel.creatorId === userData.id) || (optionValue == 2 && panel.creatorId !== userData.id)){
                     if(searchText === null || searchText.trim() === "" || (userPanel.nickname.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(searchText.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "")) || panel.name.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(searchText.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "")))){
                         setHtmlPanels(prev => [...prev,
-                            <PanelCardComponent blocked="true" key={counter++} creatorId={panel.creatorId} panelId={panel.id} panelTitle={panel.name} panelLastEditedDate={panel.lastEditedDate} panelCoverPhoto={panel.coverPhoto} />
+                            <PanelCardComponent blocked={panel.isBlocked} key={counter++} creatorId={panel.creatorId} panelId={panel.id} panelTitle={panel.name} panelLastEditedDate={panel.lastEditedDate} panelCoverPhoto={panel.coverPhoto} />
                         ]);
+                        if(panel.isBlocked){
+                            setPanelVisitModals(prev => [...prev,
+                                <ModalComponent key={counter++} id={"viewModePanel"+panel.id} isMini="true" content={
+                                    <div>
+                                        <h2 className="margin-0 text-white padding-bottom-05">This panel is blocked!!</h2>
+                                        <p className="margin-0 textMini text-white">You have more panels than your plan permits, but you and all users can still visit it</p>
+                                        <div className="flex justify-space-bwt margin-top-1">
+                                            <div onClick={() => {hiddePopUp("viewModePanel"+panel.id)}} className="btn btn-large text-decoration-none h-fitContent margin-auto-0 userSelectNone"><p className="margin-0 text-white text-semiLight">Cancel</p></div>
+                                            <a href={`/Panel/`+panel.id} className="btn btn-large btnGradientBluePurple h-fitContent margin-auto-0 userSelectNone text-decoration-none"><p className="margin-0">Visit</p></a>
+                                        </div>
+                                    </div>
+                                }/>
+                            ]);
+                        }
                     }
                 }
             }
