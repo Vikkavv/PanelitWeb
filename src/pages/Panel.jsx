@@ -263,7 +263,7 @@ function Panel() {
     function goBack(e){
         e.preventDefault();
         let previousPath = sessionStorage.getItem('previousPath');
-        if(previousPath.includes('/CreatePanel')){
+        if(previousPath?.includes('/CreatePanel')){
             sessionStorage.setItem("previousPath", "");
             redirect("/workspace");
             return;

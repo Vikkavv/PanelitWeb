@@ -22,6 +22,7 @@ function Main() {
         checkSession();
         document.title = "Welcome! | Panelit"
         let html = document.getElementsByTagName("html")[0];
+        document.body.removeAttribute("style");
         html.classList.remove("html100");
         dynamicClasses();
     }, [])
