@@ -50,7 +50,7 @@ function PanelCardComponent(props) {
                 <p className="margin-auto-0 display-block textNano padding-0 padding-left-05">{userData.nickname}</p>
             </div>
             <a href={`/Panel/`+panelId} className="panelInfo flex justify-space-bwt positionAbsolute btm-0 padding-05 boxSize-Border text-decoration-none">
-                <p className="margin-0 text-white textMini">{panelTitle}</p>
+                <p title={panelTitle} className="margin-0 text-white textMini text-noWrap text-ellipsis overFlowHidden padding-right-1">{panelTitle}</p>
                 <p className="textNano text-gray margin-auto-0">{panelLastEditedDate}</p>
             </a>
             {blocked &&

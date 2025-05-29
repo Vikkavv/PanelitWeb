@@ -37,6 +37,7 @@ let currentY = 0;
 let modifiedNotes = new Map();
 let saveTimeout = null;
 let globalCards = null;
+let editingACard = false
 
 let NOTE_STRUCTURE = {
     "panel": {
@@ -96,10 +97,14 @@ function Panel() {
                 setReactiveUser(setOnlyRelevantUserValues(userData, data));
                 userData = setOnlyRelevantUserValues(userData, data);
             } 
-            else redirect("/signIn");
+            else{
+                setReactiveUser({});
+                userData = {};
+            } 
         };
         checkSession();
         noteTypeForm(null, "text");
+        document.body.addEventListener("wheel", (e) => handleResize(e), {passive: false});
     }, [])
 
     useEffect(() => {
@@ -113,6 +118,7 @@ function Panel() {
 
     useEffect(() => {
         if(panel && panel.additionalInfo){
+            document.title = `Panel - ${panel.name} | Panelit`;
             const getUser = async () => {
                 let user = await getUserById(panel.creatorId);
                 setPanelCreator(user);
@@ -184,7 +190,7 @@ function Panel() {
                         <div className="flex">
                             <LogoContainer isLink="true" hasTitle="false" url="/workspace" hasPadding="true" paddingClass="padding-08-2-08-2 padding-top-05 padding-bottom-05" isRotatable="true" classes="positionRelative z-index-1"/>
                             <div className="padding-1 padding-top-05 padding-bottom-05 flex ">
-                                <a title="Go to workspace" href="/workspace" className="btn ArrowBtn flex justify-content-center align-items-center margin-auto-0 border-radius-50 padding-05 aspect-ratio-1 ">
+                                <a title="Go back" href="#" onClick={(e) => goBack(e)} className="btn ArrowBtn flex justify-content-center align-items-center margin-auto-0 border-radius-50 padding-05 aspect-ratio-1 ">
                                     <div className="w-fitContent aspect-ratio-1">
                                         <img className="iconSize-2 display-block margin-0-auto aspect-ratio-1" alt="" src="http://localhost:5173/svgs/leftPointingArrowIcon.svg"/>
                                     </div>
@@ -254,6 +260,21 @@ function Panel() {
         </>
     )
 
+    function goBack(e){
+        e.preventDefault();
+        let previousPath = sessionStorage.getItem('previousPath');
+        if(previousPath.includes('/CreatePanel')){
+            sessionStorage.setItem("previousPath", "");
+            redirect("/workspace");
+            return;
+        } 
+        if(document.referrer === ""){
+            if(userData.id === 0 || userData.id === undefined) redirect("/Explore");
+            else redirect("/workspace");
+        }
+        else history.go(-1);
+    }
+
     function getPanelContent(paramHTMLNotes = null){
         if(JSON.parse(panel.additionalInfo).type === COLUMN_TYPE_PANEL){
             let nColumns = JSON.parse(panel.additionalInfo).columns.length;
@@ -289,12 +310,14 @@ function Panel() {
         if(JSON.parse(panel.additionalInfo).type === CARDS_TYPE_PANEL || JSON.parse(panel.additionalInfo).type === CONNECTED_CARDS_TYPE_PANEL){
             let content = 
             <div className="cardCanvas positionRelative">
-                <div className="positionAbsolute right-0 padding-05 z-index-1">
-                    <div className="flex padding-05 gap1 align-items-center window bgWindow">
-                        <p className="margin-0 textNano text-white">Add note</p>
-                        <button onClick={() => showHideSlider("noteSlider")} className="PlusBtn nanoPlusBtn shadowBtnBorder margin-auto-0 btnGradientBluePurple whitePlus inverted"></button>
+                { (isCreator || isAdmin) &&
+                    <div className="positionAbsolute right-0 padding-05 z-index-1">
+                        <div onClick={() => showHideSlider("noteSlider")} className="flex padding-05 gap1 align-items-center window bgWindow btnHover border1px cursor-pointer">
+                            <p className="margin-0 textNano text-white">Add note</p>
+                            <button className="PlusBtn nanoPlusBtn shadowBtnBorder margin-auto-0 btnGradientBluePurple whitePlus inverted"></button>
+                        </div>
                     </div>
-                </div>
+                }
                 <canvas ref={canvasRef} className="cardCanvas display-block"></canvas>
                 <div id="cardsContainer" onMouseDown={(e) => handleMouseDown(e)} onMouseMove={(e) => handleMouseMove(e)} onMouseUp={handleMouseUp} ref={cardsContainerRef.current} className="w100 h100 positionAbsolute top-0">
                     {paramHTMLNotes === null ? HTMLCardNotes : paramHTMLNotes}
@@ -323,7 +346,7 @@ function Panel() {
         if(canvasContext === null){
             canvasContext = canvasRef.current?.getContext('2d');
         }
-        let panelNotes = JSON.parse(panel.additionalInfo).notes;
+        let panelNotes = JSON.parse(noReactivePanel.additionalInfo).notes;
         for (const panelNote of panelNotes) {
             let dbNote = await findNoteById(panelNote.noteId);
             cards.push(printCard(dbNote.id, panelNote.posX, panelNote.posY, dbNote.title, dbNote.bodyText, dbNote.resourceUrl, dbNote.contentType));
@@ -381,6 +404,10 @@ function Panel() {
         return card;
     }
 
+    function handleResize(e){
+        if(e.ctrlKey) e.preventDefault();
+    }
+
     function draw() {
         clearCanvas();
         connectAllCards();
@@ -415,9 +442,11 @@ function Panel() {
     }
 
     function handleMouseDown(event){
+        if(!isCreator && !isAdmin || editingACard) return;
         const div = event.target;
         if(div.classList.contains("panelNoteCard") || div.parentElement.classList.contains("panelNoteCard")){
             isDragging = true;
+            document.getElementsByTagName("body")[0].classList.add("userSelectNone");
             draggedCard = div.classList.contains("panelNoteCard") ? div : div.parentElement;
             offsetX = event.clientX - draggedCard.offsetLeft;
             offsetY = event.clientY - draggedCard.offsetTop;
@@ -425,6 +454,7 @@ function Panel() {
     }
 
     function handleMouseMove(event){
+        if(!isCreator && !isAdmin || editingACard) return;
         if(isDragging && draggedCard){
             const rect = canvasRef.current.getBoundingClientRect();
             const clampedX = Math.min(Math.max(event.clientX - offsetX, 0), rect.width - draggedCard.offsetWidth);
@@ -439,7 +469,9 @@ function Panel() {
     }
 
     async function handleMouseUp(){
+        if(!isCreator && !isAdmin || editingACard) return;
         if(draggedCard !== null){
+            document.getElementsByTagName("body")[0].classList.remove("userSelectNone");
             let noteId = parseInt(draggedCard.id.replaceAll("card",""));
 
             modifiedNotes.set(noteId, {
@@ -447,13 +479,11 @@ function Panel() {
                 posY: currentY
             });
 
-            console.log(modifiedNotes);
-
             if(saveTimeout) clearTimeout(saveTimeout);
 
             saveTimeout = setTimeout(() => {
                 saveAllModifiedNotes();
-            }, 2000);
+            }, 1);
 
             draggedCard.classList.remove("z-index-1");
             isDragging = false;
@@ -461,9 +491,9 @@ function Panel() {
         }
     }
 
-    async function saveAllModifiedNotes(){
+    async function saveAllModifiedNotes(saveOnlyLocal = false){
         if(modifiedNotes.size === 0) return;
-        let additionalInfo = JSON.parse(panel.additionalInfo);
+        let additionalInfo = JSON.parse(noReactivePanel.additionalInfo);
         
         additionalInfo.notes = additionalInfo.notes.map(note => {
             const update = modifiedNotes.get(note.noteId);
@@ -476,10 +506,12 @@ function Panel() {
         noReactivePanel.panelParticipants = [];
         noReactivePanel.notes = [];
 
-        modifiedNotes.clear();
-        saveTimeout = null;
+        if(!saveOnlyLocal){
+            modifiedNotes.clear();
+            saveTimeout = null;
 
-        await updatePanel(noReactivePanel, false);
+            await updatePanel(noReactivePanel, false);
+        }
     }
 
     function showColumnDeleteModal(columnId){
@@ -542,7 +574,7 @@ function Panel() {
                             <label className="display-block text-white textMini  margin-bottom-05 w-fitContent" htmlFor="noteTitle">Note title</label>
                             <input ref={(el) => {inputRefs.current["noteTitle"] = el}} type="text" id="noteTitle" className="display-block window text-white margin-bottom-1 margin-top-0 Jw[13rem]" placeholder="Note title" autoComplete="off"/>
                             <label className="display-block text-white textMini  margin-bottom-05 w-fitContent" htmlFor="noteText">Note text</label>
-                            <textarea ref={(el) => {inputRefs.current["noteText"] = el}} type="text" id="noteText" className="max-resize-vertical-40vh display-block window text-white margin-bottom-1 margin-top-0 Jw[13rem]" placeholder="Note text" autoComplete="off"/>
+                            <textarea ref={(el) => {inputRefs.current["noteText"] = el}} type="text" id="noteText" className="max-resize-vertical-40vh display-block window text-white margin-bottom-1 margin-top-0 Jw[13rem] darkscrollBar" placeholder="Note text" autoComplete="off"/>
                         </div>
                     </div>
                     <div className="flex justify-content-end">
@@ -636,7 +668,7 @@ function Panel() {
     }
 
     async function deleteNote(noteId, columnId = 0) {
-        let panelAdditionalInfo = JSON.parse(panel.additionalInfo);
+        let panelAdditionalInfo = JSON.parse(noReactivePanel.additionalInfo);
         if(panelAdditionalInfo.type === COLUMN_TYPE_PANEL){
             let columns = panelAdditionalInfo.columns;
             panelAdditionalInfo.columns[columnId].articles = columns[columnId].articles.filter(note => note.noteId !== noteId);
@@ -655,6 +687,7 @@ function Panel() {
     }
 
     function editNote(noteId){
+        editingACard = true;
         let panelType = JSON.parse(panel.additionalInfo).type;
         let HTMLNote = panelType === COLUMN_TYPE_PANEL ? noteRefs.current[noteId] : cardsRef.current[noteId];
         let noteTitle = HTMLNote.getElementsByTagName("h2")[0].textContent;
@@ -684,9 +717,12 @@ function Panel() {
                     dbNote.owner = {"id": userData.id};
                     dbNote.panel = {"id": dbNote.panel.id};
                     await editNoteDB(dbNote);
+                    console.log(JSON.parse(noReactivePanel.additionalInfo).notes);
                     await updatePanel(noReactivePanel, true);
+                    editingACard = false
                 }
                 else{
+                    editingACard = false;
                     if(panelType === COLUMN_TYPE_PANEL) printcolumns();
                     else printCardNotes();
                 }
@@ -880,7 +916,7 @@ function Panel() {
         })
         const data = await response.json();
         if(data === true){
-            getPanel();
+            await getPanel();
             if(print === true){
                 let panelType = JSON.parse(panel.additionalInfo).type;
                 if(panelType === COLUMN_TYPE_PANEL){

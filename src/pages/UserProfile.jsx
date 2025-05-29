@@ -19,6 +19,8 @@ let userData = {
     "profilePicture":null
 };
 
+let counter;
+
 function UserProfile() {
 
     let { id } = useParams();
@@ -26,6 +28,8 @@ function UserProfile() {
     const [reactiveUser, setReactiveUser] = useState(null);
     const [userFollowers, setUserFollowers] = useState([]);
     const [userFollowed, setUserFollowed] = useState([]);
+    const [sessionUserFollowers, setSessionUserFollowers] = useState([]);
+    const [sessionUserFollowed, setSessionUserFollowed] = useState([]);
     const [panels, setPanels] = useState(null);
     const [HTMLOwnedPanels, setHTMLOwnedPanels] = useState([]);
     const [HTMLJoinedPanels, setHTMLJoinedPanels] = useState([]);
@@ -51,6 +55,8 @@ function UserProfile() {
             const data = await cookieSessionChecker();
             if(data !== null){
                 userData = setOnlyRelevantUserValues(userData, data);
+                setSessionUserFollowed(await getFollowed(userData));
+                setSessionUserFollowers(await getFollowers(userData));
             } 
             else redirect("/signIn");
         };
@@ -80,10 +86,10 @@ function UserProfile() {
                                 <p onClick={() => showPopUp("followers")} className="margin-0 text-white text-hover cursor-pointer">{userFollowers.length} Followers</p>
                                 <p onClick={() => showPopUp("followed")} className="margin-0 text-white text-hover cursor-pointer">{userFollowed.length} Followed</p>
                             </div>
-                            {reactiveUser !== null && reactiveUser.id !== userData.id && !userFollowers.some(obj => obj.id === userData.id) ?
+                            {reactiveUser !== null && userData.id !== 0 && reactiveUser.id !== userData.id && !userFollowers.some(obj => obj.id === userData.id) ?
                                 <div onClick={() => follow(null)} className="btn btn-large padding-05 btnGradientBluePurple h-fitContent margin-top-3 userSelectNone"><p className="margin-0">Follow</p></div>
                                 :
-                                (reactiveUser?.id !== userData.id &&
+                                (reactiveUser?.id !== userData.id && userData.id !== 0 &&
                                     <div onClick={() => unfollow(null)} className="btn btn-large padding-05 btnGradientBluePurple h-fitContent margin-top-3 userSelectNone"><p className="margin-0">Unfollow</p></div>
                                 )
                             }
@@ -155,15 +161,17 @@ function UserProfile() {
             else{
                 HTMLUserList = userList.map((user) => {
                     return(
-                        <div key={user.id} className="userList flex align-items-center justify-space-bwt padding-05 boxSize-Border">
+                        <div key={counter++} className="userList flex align-items-center justify-space-bwt padding-05 boxSize-Border">
                             <a href={"/UserProfile/" + user.nickname} className="flex gap1 text-decoration-none">
                                 <img className="miniUserPicture display-block cursor-pointer object-fit-cover margin-auto-0" src={user.profilePicture !== null && user.profilePicture !== undefined && user.profilePicture !== "" ? user.profilePicture : `http://localhost:5173/svgs/defaultProfileImage.svg`} alt="" />
                                 <p className="text-white textMini text-hover">{user.nickname}</p>
                             </a>
-                            {!userFollowed.some(obj => obj.id === user.id) ?  
-                                <div onClick={() => follow(user)} className="btn btn-large padding-05 btnGradientBluePurple h-fitContent userSelectNone"><p className="margin-0">Also follow</p></div>
+                            {(reactiveUser?.id === userData.id && !userFollowed.some(obj => obj.id === user.id)) || (reactiveUser?.id !== userData.id && !sessionUserFollowed.some(obj => obj.id === user.id)) ?  
+                                (user.id !== userData.id && userData.id !== 0 && 
+                                    <div onClick={() => follow(user)} className="btn btn-large padding-05 btnGradientBluePurple h-fitContent userSelectNone"><p className="margin-0">Also follow</p></div>
+                                )
                             :
-                                (user.id !== userData.id &&
+                                (user.id !== userData.id && userData.id !== 0 &&
                                     <div onClick={() => unfollow(user)} className="btn btn-large padding-05 btnGradientBluePurple h-fitContent userSelectNone"><p className="margin-0">Unfollow</p></div>
                                 )
                             }
@@ -177,6 +185,7 @@ function UserProfile() {
 
     async function unfollow(followedUser = null) {
         let followed = followedUser !== null ? followedUser : reactiveUser;
+        userData.panelParticipants = followed.panelParticipants = userData.notes = followed.notes = [];
         let formData = new FormData();
         formData.append("follower", JSON.stringify(userData));
         formData.append("followed", JSON.stringify(followed));
@@ -189,12 +198,15 @@ function UserProfile() {
         if(data === true) {
             setUserFollowed(await getFollowed(reactiveUser));
             setUserFollowers(await getFollowers(reactiveUser));
+            setSessionUserFollowed(await getFollowed(userData));
+            setSessionUserFollowers(await getFollowers(userData));
         }
     }
 
     async function follow(followedUser = null){
         let followed = followedUser != null ? followedUser : reactiveUser;
         let formData = new FormData();
+        userData.panelParticipants = followed.panelParticipants = userData.notes = followed.notes = [];
         formData.append("follower", JSON.stringify(userData));
         formData.append("followed", JSON.stringify(followed));
         const response = await fetch("http://localhost:8080/Follower/follow",{
@@ -206,6 +218,8 @@ function UserProfile() {
         if(data === true) {
             setUserFollowed(await getFollowed(reactiveUser));
             setUserFollowers(await getFollowers(reactiveUser));
+            setSessionUserFollowed(await getFollowed(userData));
+            setSessionUserFollowers(await getFollowers(userData));
         }
     }
 

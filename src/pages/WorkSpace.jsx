@@ -57,7 +57,7 @@ function Worksapce() {
     },[])
     return (
         <>  
-            <Navbar texts="Change Plan, Explore, My panel subscriptions" paths="/UpdatePlan, /home" hasSignBtns="false" hasLogoSeparator="false" hasUserInfo="true" userInfo={reactiveUser}/>
+            <Navbar texts="Change Plan, Explore, My panel subscriptions" paths="/UpdatePlan, /Explore" hasSignBtns="false" hasLogoSeparator="false" hasUserInfo="true" userInfo={reactiveUser}/>
             <div id="noBg" className="workspace container padding-top-1 body-OverflowHidden">
                 {panels.length > 0 ? 
                 <>
@@ -118,7 +118,6 @@ function Worksapce() {
         let optionValue = refs.current["panelsFilter"]?.selectedOptions[0].value;
         if(panels.length > 0){
             for (const panel of panels) {
-                console.log(panel.isBlocked);
                 let userPanel = await getUserById(panel.creatorId);
                 if((optionValue == 0) || (optionValue == 1 && panel.creatorId === userData.id) || (optionValue == 2 && panel.creatorId !== userData.id)){
                     if(searchText === null || searchText.trim() === "" || (userPanel.nickname.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(searchText.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "")) || panel.name.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(searchText.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "")))){

@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router'
+import { Routes, Route, useLocation } from 'react-router'
 import './App.css'
 import Main from './pages/Main'
 import SignUp from './pages/SignUp'
@@ -9,9 +9,11 @@ import EditUserProfile from './pages/EditUserProfile'
 import UpdatePlan from './pages/UpdatePlan'
 import UserProfile from './pages/UserProfile'
 import CreatePanel from './pages/CreatePanel'
+import SubscriptionPlans from './pages/SubscriptionPlans'
+import Explore from './pages/Explore'
+import { useEffect } from 'react'
 
 function App() {
-
   return (
     <Routes>
       <Route path='/' element={<Main/>}/>
@@ -21,8 +23,10 @@ function App() {
       <Route path='/Panel/:id' element={<Panel/>}/>
       <Route path='/EditUserProfile' element={<EditUserProfile/>}/>
       <Route path='/UpdatePlan' element={<UpdatePlan/>}/>
+      <Route path='/SubscriptionPlans' element={<SubscriptionPlans/>}/>
       <Route path='/UserProfile/:id' element={<UserProfile/>}/>
       <Route path='/CreatePanel' element={<CreatePanel/>} />
+      <Route path='/Explore' element={<Explore/>}/>
     </Routes>
   )
 }

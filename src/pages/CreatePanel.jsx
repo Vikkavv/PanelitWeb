@@ -226,6 +226,7 @@ function CreatePanel() {
         if(inputRefs.current["name"].value.trim() !== ""){
             if(!document.getElementById("nameErr").classList.contains("hidden"))
                 document.getElementById("nameErr").classList.add("hidden");
+            sessionStorage.setItem("previousPath", location.pathname);
             sendData();
         } 
         else document.getElementById("nameErr").classList.remove("hidden");

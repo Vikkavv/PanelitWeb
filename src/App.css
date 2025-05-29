@@ -44,7 +44,7 @@ body:has(*#noBg){
     background-color: #0a0a0a;
 }
 
-body:has(*.workspace){
+body:has(*.workspace), body:has(*.explore){
     background: radial-gradient(circle at 50% 130%, #4a3aff, #100c1a 60%) !important;
 }
 
@@ -306,6 +306,10 @@ body:has(.spinningLogo:hover) .logoHeader{
         height: 70vh;
     }
 
+    .ha70vhcalc{
+        max-height: calc(100vh - 30vh);
+    }
+
     .ha70vh{
         max-height: 70vh;
     }
@@ -367,8 +371,16 @@ body:has(.spinningLogo:hover) .logoHeader{
         margin-right: 0.5rem;
     }
 
+    .margin-left-0{
+        margin-left: 0;
+    }
+
     .margin-left-1{
         margin-left: 1rem;
+    }
+
+    .margin-left-1px{
+        margin-left: 1px;
     }
 
     .margin-right-1{
@@ -528,6 +540,10 @@ body:has(.spinningLogo:hover) .logoHeader{
 
     .padding-1-0-1-2{
         padding: 1ch 0ch 1ch 2ch !important;
+    }
+
+    .padding-right-1{
+        padding-right: 1rem;
     }
 
     .padding-right-2{
@@ -874,6 +890,9 @@ body:has(.note:hover) .columnOptions{
 
 .grid{
     display: grid;
+}
+.col-5{
+    grid-template-columns: repeat(5, 1fr);
 }
 .col-4{
     grid-template-columns: repeat(4, 1fr);
@@ -1478,6 +1497,37 @@ body:has(.note:hover) .columnOptions{
 .underlinedBtn:hover, .underlinedBtnToggled {
     border-bottom: white solid 2px;
     background-color: #141414;
+}
+
+.toggleBtn{
+    --markerPos: 0%;
+    --min-width: 9.9rem;
+    --padding: .2rem;
+    position: relative;
+    min-width: var(--min-width);
+    min-height: 2.2rem;
+    height: 2.2rem;
+    padding: var(--padding);
+}
+
+.toggleBtn::after, .toggleOption{
+    text-align: center;
+    width: calc(var(--min-width) / 2);
+    height: 100%;
+    border-radius: .78rem;
+}
+
+.toggleBtn::after{
+    content: '';
+    display: block;
+    height: calc(100% - var(--padding)*2);
+    z-index: 0;
+    position: absolute;
+    transform: translateX(var(--markerPos));
+    background-image:     
+    radial-gradient(ellipse at top, #2eb6ff, transparent),
+    radial-gradient(ellipse at bottom, hsla(278, 100%, 58%, 0.706), transparent);
+    transition: 300ms ease;
 }
 
 /* * FORMS*/

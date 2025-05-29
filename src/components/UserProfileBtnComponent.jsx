@@ -47,7 +47,7 @@ function UserProfileBtnComponent(props) {
     return (
         <>
             <img ref={imgBtn} className="miniUserPicture display-block cursor-pointer object-fit-cover margin-auto-0" src={profilePicture} alt="" />
-            <div ref={divPopUp} className="userPopUp positionAbsolute top-0 border-radius-0 window h100vh boxSize-Border">
+            <div ref={divPopUp} className="userPopUp positionAbsolute top-0 border-radius-0 window h100vh boxSize-Border z-index-1">
                 <div className="flex flex-direction-column">
                     <div className="flex justify-space-bwt">
                         <a href={"/UserProfile/"+userInfo.nickname} className="flex gap1 text-hover text-decoration-none">
