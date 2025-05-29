@@ -22,6 +22,7 @@ function Explore() {
             }
         };
         checkSession();
+        document.title = "Explore! | Panelit"
         createPanelCards();
     }, []);
 

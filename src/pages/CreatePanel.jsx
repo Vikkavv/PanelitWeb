@@ -87,6 +87,7 @@ function CreatePanel() {
             } 
             else redirect("/signIn");
         };
+        document.body.removeAttribute("style");
         checkSession();
         createHTMLContentSteps();
         dynamicClasses();
