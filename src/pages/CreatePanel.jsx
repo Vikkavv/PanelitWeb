@@ -90,6 +90,7 @@ function CreatePanel() {
         document.body.removeAttribute("style");
         checkSession();
         createHTMLContentSteps();
+        document.title = "Create new awsome panel! | Panelit"
         dynamicClasses();
     }, [])
 
