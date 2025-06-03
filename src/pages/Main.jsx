@@ -29,7 +29,7 @@ function Main() {
 
     return (
         <>
-            <Navbar texts="Subscription Plans, Explore, who we are?" paths="/SubscriptionPlans, /Explore, /whoWeAre"/>
+            <Navbar texts="Subscription Plans, Explore" paths="/SubscriptionPlans, /Explore"/>
             <div className="container text-white">
                 <h1 className="header margin-0-auto margin-top-2">Let’s bring order and share knowledge!</h1>
                 <div className="margin-top-2">
