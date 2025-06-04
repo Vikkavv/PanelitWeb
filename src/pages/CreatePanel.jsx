@@ -3,6 +3,7 @@ import LogoContainer from "../components/LogoContainerComponent";
 import { dynamicClasses } from "../assets/js/dynamicCssClasses";
 import { cookieSessionChecker } from "../assets/js/SessionChecker";
 import { useNavigate } from "react-router";
+import { BACKEND_PATH } from "../App";
 
 export const COLUMN_TYPE_PANEL = "columns"; 
 export const CARDS_TYPE_PANEL = "cards";
@@ -258,7 +259,7 @@ function CreatePanel() {
         formData.append("coverPhoto", imageRefs.current["coverPhotoFile"] === undefined ? null : imageRefs.current["coverPhotoFile"]);
         formData.append("backgroundPhoto", imageRefs.current["backgroundImageFile"] === undefined ? null : imageRefs.current["backgroundImageFile"]);
         formData.append("additionalInfoJson", JSON.stringify(jsonInfo));
-        const response = await fetch("http://localhost:8080/Panel/Create",{
+        const response = await fetch(BACKEND_PATH+"/Panel/Create",{
             method: "POST",
             credentials: "include",
             body: formData

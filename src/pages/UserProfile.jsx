@@ -7,6 +7,7 @@ import PanelCardComponent, { getUserById } from "../components/PanelCardComponen
 import { getUserPanels } from "./WorkSpace";
 import { dynamicClasses } from "../assets/js/dynamicCssClasses";
 import ModalComponent, { showPopUp } from "../components/ModalComponent";
+import { BACKEND_PATH } from "../App";
 
 let userData = {
     "id": 0,
@@ -189,7 +190,7 @@ function UserProfile() {
         let formData = new FormData();
         formData.append("follower", JSON.stringify(userData));
         formData.append("followed", JSON.stringify(followed));
-        const response = await fetch("http://localhost:8080/Follower/unfollow",{
+        const response = await fetch(BACKEND_PATH+"/Follower/unfollow",{
             method: "POST",
             credentials: "include",
             body: formData
@@ -209,7 +210,7 @@ function UserProfile() {
         userData.panelParticipants = followed.panelParticipants = userData.notes = followed.notes = [];
         formData.append("follower", JSON.stringify(userData));
         formData.append("followed", JSON.stringify(followed));
-        const response = await fetch("http://localhost:8080/Follower/follow",{
+        const response = await fetch(BACKEND_PATH+"/Follower/follow",{
             method: "POST",
             credentials: "include",
             body: formData
@@ -257,7 +258,7 @@ export function setOnlyRelevantUserValues(user, data){
 }
 
 export async function getUserByNickname(nickname) {
-    const response = await fetch("http://localhost:8080/User/findByNickname/"+nickname);
+    const response = await fetch(BACKEND_PATH+"/User/findByNickname/"+nickname);
     const user = await response.json();
     return user;
 }

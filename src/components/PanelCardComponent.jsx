@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { showPopUp } from "./ModalComponent";
+import { BACKEND_PATH } from "../App";
 
 function PanelCardComponent(props) {
     let creatorId = props.creatorId === undefined ? console.error("creatorId has to be given") : props.creatorId;
@@ -66,14 +67,14 @@ function PanelCardComponent(props) {
     }
 
     async function getPanel(){
-        const response = await fetch("http://localhost:8080/Panel/findById/"+panelId);
+        const response = await fetch(BACKEND_PATH+"/Panel/findById/"+panelId);
         const data = await response.json();
         setPanel(data);
     }
 }
 
 export async function getUserById(creatorId) {
-    const response = await fetch("http://localhost:8080/User/findById/"+creatorId);
+    const response = await fetch(BACKEND_PATH+"/User/findById/"+creatorId);
     const data = await response.json();
     return data;
 }

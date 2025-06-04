@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import LogoContainer from "../components/LogoContainerComponent";
 import { useNavigate } from 'react-router';
 import { cookieSessionChecker } from "../assets/js/SessionChecker.js";
+import { BACKEND_PATH } from "../App.jsx";
 
 document.getElementsByTagName("html")[0].classList = "html100";
 
@@ -73,7 +74,7 @@ function SignIn() {
         formData.append(emailInput.name, emailInput.value);
         formData.append(passInput.name, passInput.value);
         formData.append("rememberMe", rememberMe);
-        const response = await fetch("http://localhost:8080/User/signIn",{
+        const response = await fetch(BACKEND_PATH+"/User/signIn",{
             method: "POST",
             credentials: "include",
             body: formData

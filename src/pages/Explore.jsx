@@ -3,6 +3,7 @@ import LogoContainer from "../components/LogoContainerComponent"
 import UserProfileBtnComponent from "../components/UserProfileBtnComponent"
 import { cookieSessionChecker } from "../assets/js/SessionChecker";
 import PanelCardComponent, { getUserById } from "../components/PanelCardComponent";
+import { BACKEND_PATH } from "../App";
 
 let userData = {}; 
 let counter = 0;
@@ -126,7 +127,7 @@ function Explore() {
     async function searchUsers(nickname){
         let formData = new FormData();
         formData.append("nickname", nickname);
-        const response = await fetch("http://localhost:8080/User/findByContainingNickname",{
+        const response = await fetch(BACKEND_PATH+"/User/findByContainingNickname",{
             method: "POST",
             body: formData
         });
@@ -138,19 +139,19 @@ function Explore() {
 }
 
 export async function getAllPanels() {
-    const response = await fetch("http://localhost:8080/Panel/findAll");
+    const response = await fetch(BACKEND_PATH+"/Panel/findAll");
     const data = await response.json();
     if(Array.isArray(data)) return data;
 }
 
 export async function get100Users() {
-    const response = await fetch("http://localhost:8080/User/find100");
+    const response = await fetch(BACKEND_PATH+"/User/find100");
     const data = await response.json();
     if(Array.isArray(data)) return data;
 }
 
 export async function get100Panels() {
-    const response = await fetch("http://localhost:8080/Panel/find100");
+    const response = await fetch(BACKEND_PATH+"/Panel/find100");
     const data = await response.json();
     if(Array.isArray(data)) return data;
 }

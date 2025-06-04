@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { showPopUp } from "./ModalComponent";
 import { getUserById } from "./PanelCardComponent";
+import { BACKEND_PATH } from "../App";
 
 let hasEvent = [false, false];
 let usersSelectedGlobal = [];
@@ -98,7 +99,7 @@ function PanelSettingsMenuComponent(props) {
         let input = e?.target.getElementsByTagName("input")[0];
         let formData = new FormData();
         formData.append("nickname", nickname === null ? input?.value : nickname);
-        const response = await fetch("http://localhost:8080/User/findByContainingNickname",{
+        const response = await fetch(BACKEND_PATH+"/User/findByContainingNickname",{
             method: "POST",
             body: formData
         });
@@ -213,7 +214,7 @@ function PanelSettingsMenuComponent(props) {
     }
 
     async function addFriends() {
-        const response = await fetch("http://localhost:8080/PanelParticipant/addFromArrayToPanel/"+panel.id,{
+        const response = await fetch(BACKEND_PATH+"/PanelParticipant/addFromArrayToPanel/"+panel.id,{
             method: "POST",
             headers: {
                 "Content-type": "application/json",
@@ -225,7 +226,7 @@ function PanelSettingsMenuComponent(props) {
     }
 
     async function deleteFriends(usersSelected){
-        const response = await fetch("http://localhost:8080/PanelParticipant/deleteFromArrayInPanel/"+panel.id,{
+        const response = await fetch(BACKEND_PATH+"/PanelParticipant/deleteFromArrayInPanel/"+panel.id,{
             method: "DELETE",
             headers: {
                 "Content-type": "application/json",
@@ -279,7 +280,7 @@ function PanelSettingsMenuComponent(props) {
 
 export async function getPanelParticipantsByPanel(panel) {
     panel.panelParticipants = [];
-    const response = await fetch("http://localhost:8080/PanelParticipant/findByPanel",{
+    const response = await fetch(BACKEND_PATH+"/PanelParticipant/findByPanel",{
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -292,7 +293,7 @@ export async function getPanelParticipantsByPanel(panel) {
 }
 
 export async function deleteFriends(usersSelected, panel){
-        const response = await fetch("http://localhost:8080/PanelParticipant/deleteFromArrayInPanel/"+panel.id,{
+        const response = await fetch(BACKEND_PATH+"/PanelParticipant/deleteFromArrayInPanel/"+panel.id,{
             method: "DELETE",
             headers: {
                 "Content-type": "application/json",

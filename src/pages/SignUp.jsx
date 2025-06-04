@@ -3,6 +3,7 @@ import parsePhoneNumber from "libphonenumber-js";
 import LogoContainer from "../components/LogoContainerComponent";
 import { useNavigate } from 'react-router';
 import { cookieSessionChecker } from "../assets/js/SessionChecker.js";
+import { BACKEND_PATH } from "../App.jsx";
 
 document.getElementsByTagName("html")[0].classList = "html100";
 document.getElementById("root").classList = "html100";
@@ -84,7 +85,7 @@ function SignUp() {
 }
 
 async function sendUserInfo(setFormContent, refs, redirect){
-    const response = await fetch("http://localhost:8080/User/signUp",{
+    const response = await fetch(BACKEND_PATH+"/User/signUp",{
         method: "POST",
         credentials: "include",
         headers: {

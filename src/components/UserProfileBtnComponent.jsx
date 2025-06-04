@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { dynamicClasses } from "../assets/js/dynamicCssClasses";
 import { useNavigate } from "react-router";
 import { getFollowed, getFollowers } from "../assets/js/getFollowersAndFollowedOfAnUser";
+import { BACKEND_PATH } from "../App";
 
 function UserProfileBtnComponent(props) {
     let userInfo = props.userInfo;
@@ -106,7 +107,7 @@ function UserProfileBtnComponent(props) {
     )
 
     async function signOut(){
-        const response = await fetch("http://localhost:8080/User/signOut",{
+        const response = await fetch(BACKEND_PATH+"/User/signOut",{
             method: "POST",
             credentials: "include"
         })

@@ -11,6 +11,7 @@ import PdfThumbnail from "../components/PdfThumbnail";
 import PdfViewer from "../components/PdfViewer";
 import { isLightImg } from "../assets/js/ImgDarkOrLight";
 import PanelSettingsMenuComponent, { deleteFriends, getPanelParticipantsByPanel } from "../components/PanelSettingsMenuComponent";
+import { BACKEND_PATH } from "../App";
 
 let userData = {
     "id": 0,
@@ -853,7 +854,7 @@ function Panel() {
     }
 
     async function editNoteDB(note) {
-        const response = await fetch("http://localhost:8080/Note/Update",{
+        const response = await fetch(BACKEND_PATH+"/Note/Update",{
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -866,7 +867,7 @@ function Panel() {
 
     async function addNote(note, contentType) {
         if(contentType === "text"){
-            const response = await fetch("http://localhost:8080/Note/Create",{
+            const response = await fetch(BACKEND_PATH+"/Note/Create",{
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -880,7 +881,7 @@ function Panel() {
             let formData = new FormData();
             formData.append("note", JSON.stringify(note));
             formData.append("pdf", pdfFileRef.current)
-            const response = await fetch("http://localhost:8080/Note/CreateWithPdf",{
+            const response = await fetch(BACKEND_PATH+"/Note/CreateWithPdf",{
                 method: "POST",
                 body: formData
             });
@@ -890,7 +891,7 @@ function Panel() {
     }
 
     async function deleteNoteDB(noteId){
-        const response = await fetch("http://localhost:8080/Note/Delete/"+noteId,{
+        const response = await fetch(BACKEND_PATH+"/Note/Delete/"+noteId,{
             method: "DELETE"
         })
         const data = response.json();
@@ -901,13 +902,13 @@ function Panel() {
     }
 
     async function findNoteById(noteId) {
-        const response = await fetch("http://localhost:8080/Note/findById/"+noteId);
+        const response = await fetch(BACKEND_PATH+"/Note/findById/"+noteId);
         const note = await response.json();
         return note;
     }
 
     async function updatePanel(panel, print = true) {
-        const response = await fetch("http://localhost:8080/Panel/Update",{
+        const response = await fetch(BACKEND_PATH+"/Panel/Update",{
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -935,7 +936,7 @@ function Panel() {
         let formData = new FormData();
         formData.append("user", JSON.stringify(userData));
         formData.append("panel", JSON.stringify(noReactivePanel));
-        const response = await fetch("http://localhost:8080/PanelParticipant/findByUserAndPanel",{
+        const response = await fetch(BACKEND_PATH+"/PanelParticipant/findByUserAndPanel",{
             method: "POST",
             credentials: "include",
             body: formData
@@ -955,7 +956,7 @@ function Panel() {
     }
 
     async function getPanel(){
-        const response = await fetch("http://localhost:8080/Panel/findById/"+id);
+        const response = await fetch(BACKEND_PATH+"/Panel/findById/"+id);
         const data = await response.json();
         noReactivePanel = data;
         setPanel(data);
@@ -964,7 +965,7 @@ function Panel() {
     async function deletePanel() {
         noReactivePanel.notes = [];
         noReactivePanel.panelParticipants = [];
-        const response = await fetch("http://localhost:8080/Panel/Delete",{
+        const response = await fetch(BACKEND_PATH+"/Panel/Delete",{
             method: "DELETE",
             credentials: "include",
             headers: {

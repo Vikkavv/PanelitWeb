@@ -1,6 +1,8 @@
+import { BACKEND_PATH } from "../../App";
+
 export async function cookieSessionChecker(redirect = false){
     let userData = null;
-    const response = await fetch("http://localhost:8080/User/signInWithCookie",{
+    const response = await fetch(BACKEND_PATH+"/User/signInWithCookie",{
         method: "POST",
         credentials: "include"
     });

@@ -7,6 +7,7 @@ import UserProfileBtnComponent from "../components/UserProfileBtnComponent.jsx";
 import { capitalize } from "../assets/js/normalizeCamelCase";
 import { getUserById } from "../components/PanelCardComponent.jsx";
 import { UNLIMITED_PANELS } from "./WorkSpace.jsx";
+import { BACKEND_PATH } from "../App.jsx";
 
 let planDescriptions = {
     "basic": "Perfect for personal projects, passion ideas, or anything you’re building just for you.",
@@ -162,7 +163,7 @@ function UpdatePlan() {
         userData.plan.id = planId;
         formData.append("user", JSON.stringify(userData));
         formData.append("isMonthly", isMonthly);
-        const response = await fetch("http://localhost:8080/User/UpdatePlan",{
+        const response = await fetch(BACKEND_PATH+"/User/UpdatePlan",{
             method: "POST",
             credentials: "include",
             body: formData
@@ -174,7 +175,7 @@ function UpdatePlan() {
     }
 
     async function getSubscriptionPlans(){
-        const response = await fetch("http://localhost:8080/Plan/findAllNoUsers")
+        const response = await fetch(BACKEND_PATH+"/Plan/findAllNoUsers")
         const data = await response.json();
         setPlans(data);
     }

@@ -5,6 +5,7 @@ import { dynamicClasses } from "../assets/js/dynamicCssClasses";
 import LogoContainer from "../components/LogoContainerComponent";
 import parsePhoneNumber from "libphonenumber-js";
 import { capitalize, normalizeCamelCase } from "../assets/js/normalizeCamelCase";
+import { BACKEND_PATH } from "../App";
 
 let regExps = {
     "name":     "^[A-Za-zÑñÁÉÍÓÚÇáéíóúçÀÈÌÒÙàèìòùÂÊÎÔÛâêîôûÄËÏÖÜäëïöü]{1,25}$", 
@@ -157,7 +158,7 @@ function EditUserProfile() {
             formData.append("user", JSON.stringify(sendUser));
             formData.append("image", imageFileRef.current);
 
-            const response = await fetch("http://localhost:8080/User/editProfile",{
+            const response = await fetch(BACKEND_PATH+"/User/editProfile",{
                 method: "POST",
                 credentials: "include",
                 body: formData
@@ -304,7 +305,7 @@ function EditUserProfile() {
 
     async function isUniqueFieldUsed(input) {
         let fieldNameCapitalized = input.name.charAt(0).toUpperCase() + input.name.substring(1);
-        const response = await fetch("http://localhost:8080/User/existsUserWith"+ fieldNameCapitalized +"/" + input.value);
+        const response = await fetch(BACKEND_PATH+"/User/existsUserWith"+ fieldNameCapitalized +"/" + input.value);
         const data = await response.json();
         return data;
     }

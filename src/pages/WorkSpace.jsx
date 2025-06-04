@@ -5,6 +5,7 @@ import {dynamicClasses} from '../assets/js/dynamicCssClasses.js';
 import PanelCardComponent, { getUserById } from "../components/PanelCardComponent.jsx";
 import Navbar from "../components/NavbarComponent.jsx";
 import ModalComponent, { hiddePopUp } from "../components/ModalComponent.jsx";
+import { BACKEND_PATH } from "../App.jsx";
 
 document.getElementsByTagName("html")[0].classList = "html100";
 
@@ -178,7 +179,7 @@ function Worksapce() {
 
 export async function getUserPanels(opUserData = null) {
     let userInfo = opUserData !== null ? opUserData : userData ;
-    const response = await fetch("http://localhost:8080/Panel/ofUser/"+userInfo.nickname);
+    const response = await fetch(BACKEND_PATH+"/Panel/ofUser/"+userInfo.nickname);
     const data = await response.json();
     return data;
 }

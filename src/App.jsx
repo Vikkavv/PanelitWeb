@@ -11,7 +11,8 @@ import UserProfile from './pages/UserProfile'
 import CreatePanel from './pages/CreatePanel'
 import SubscriptionPlans from './pages/SubscriptionPlans'
 import Explore from './pages/Explore'
-import { useEffect } from 'react'
+
+export let BACKEND_PATH = 'http://localhost:8080';
 
 function App() {
   return (
