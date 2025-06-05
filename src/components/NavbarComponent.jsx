@@ -56,17 +56,21 @@ function Navbar(props) {
     function putUserInfo(){
         if(!hasUserBtns){
             return (
-                <div className="logoContainer z-index-1 positionRelative" id="logContainer">
+                <div className="logoContainer gap1 z-index-1 positionRelative" id="logContainer">
                     <span className="logoSeparator margin-auto-0 margin-right05"/>
                     <UserProfileBtnComponent userInfo={userInfo}/>
                 </div>
             )
         }else{
             return (
-                <div className="logoContainer gap1" id="logContainer">
+                <div className="logoContainer" id="logContainer">
                     <span className="logoSeparator margin-auto-0 margin-right05"/>
-                    <img className="iconSize" src="svgs/NotificationIcon.svg" alt="" />
-                    <img className="iconSize" src="svgs/MessagesIcon.svg" alt="" />
+                    {false && // Se impide forzosamente la aparición de los botones de manera temporal
+                        <>
+                            <img className="iconSize" src="svgs/NotificationIcon.svg" alt="" />
+                            <img className="iconSize" src="svgs/MessagesIcon.svg" alt="" />
+                        </>
+                    }
                     <UserProfileBtnComponent userInfo={userInfo}/>
                 </div>
             )

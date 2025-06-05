@@ -58,7 +58,7 @@ function Worksapce() {
     },[])
     return (
         <>  
-            <Navbar texts="Change Plan, Explore, My panel subscriptions" paths="/UpdatePlan, /Explore" hasSignBtns="false" hasLogoSeparator="false" hasUserInfo="true" userInfo={reactiveUser}/>
+            <Navbar texts="Change Plan, Explore" paths="/UpdatePlan, /Explore" hasSignBtns="false" hasLogoSeparator="false" hasUserBtns="false" hasUserInfo="true" userInfo={reactiveUser}/>
             <div id="noBg" className="workspace container padding-top-1 body-OverflowHidden">
                 {panels.length > 0 ? 
                 <>

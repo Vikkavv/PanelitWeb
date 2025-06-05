@@ -79,23 +79,27 @@ function UserProfileBtnComponent(props) {
                             <p className="margin-0 padding-0">Change plan</p>
                         </a>
                         <span className="popUpseparator" />
-                        <a href="#" className="flex gap2 navlink margin-0 padding-0 w100">
-                            <img className="iconSize" src="svgs/NotificationIcon.svg" alt="" />
-                            <p className="margin-0 padding-0">Notifications</p>
-                        </a>
-                        <a href="" className="flex gap2 navlink margin-0 padding-0 w100">
-                            <img className="iconSize" src="svgs/MessagesIcon.svg" alt="" />
-                            <p className="margin-0 padding-0">Messages</p>
-                        </a>
-                        <span className="popUpseparator"/>
-                        <a href="" className="flex gap2 navlink margin-0 padding-0 w100">
-                            <img className="iconSize" src="svgs/SubscribedPanelsIcon.svg" alt="" />
-                            <p className="margin-0 padding-0">Subscribed panels</p>
-                        </a>
-                        <a href="" className="flex gap2 navlink margin-0 padding-0 w100">
-                            <img className="iconSize" src="svgs/InvitedPanelsIcon.svg" alt="" />
-                            <p className="margin-0 padding-0">Invited panels</p>
-                        </a>
+                        { false && //Hide the useless buttons for now
+                            <>
+                                <a href="#" className="flex gap2 navlink margin-0 padding-0 w100">
+                                    <img className="iconSize" src="svgs/NotificationIcon.svg" alt="" />
+                                    <p className="margin-0 padding-0">Notifications</p>
+                                </a>
+                                <a href="" className="flex gap2 navlink margin-0 padding-0 w100">
+                                    <img className="iconSize" src="svgs/MessagesIcon.svg" alt="" />
+                                    <p className="margin-0 padding-0">Messages</p>
+                                </a>
+                                <span className="popUpseparator"/>
+                                <a href="" className="flex gap2 navlink margin-0 padding-0 w100">
+                                    <img className="iconSize" src="svgs/SubscribedPanelsIcon.svg" alt="" />
+                                    <p className="margin-0 padding-0">Subscribed panels</p>
+                                </a>
+                                <a href="" className="flex gap2 navlink margin-0 padding-0 w100">
+                                    <img className="iconSize" src="svgs/InvitedPanelsIcon.svg" alt="" />
+                                    <p className="margin-0 padding-0">Invited panels</p>
+                                </a>
+                            </>
+                        }
                     </div>
                     <div ref={signOutBtn} className="flex gap2 navlink justify-content-center popUpseparator">
                         <img className="iconSize" src="svgs/SignOutIcon.svg" alt="" />
