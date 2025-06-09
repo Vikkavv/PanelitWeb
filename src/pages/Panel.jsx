@@ -636,6 +636,7 @@ function Panel() {
                 note.owner.id = userData.id;
                 note.panel.id = panel.id;
                 note.title = inputRefs.current["noteTitle"].value.trim() === "" ? null : inputRefs.current["noteTitle"].value;
+                note.title = note.title.length > 40 ? note.title.substring(0, 39) : note.title;
                 note.bodyText = contentType !== "document" ? inputRefs.current["noteText"].value : null;
                 note.contentType = contentType;                
                 let columnNote = structuredClone(ARTICLE_STRUCTURE_SAMPLE);
