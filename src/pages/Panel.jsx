@@ -11,7 +11,7 @@ import PdfThumbnail from "../components/PdfThumbnail";
 import PdfViewer from "../components/PdfViewer";
 import { isLightImg } from "../assets/js/ImgDarkOrLight";
 import PanelSettingsMenuComponent, { deleteFriends, getPanelParticipantsByPanel } from "../components/PanelSettingsMenuComponent";
-import { BACKEND_PATH } from "../App";
+import { ABSOLUTE_IMAGES_URL, BACKEND_PATH } from "../App";
 
 let userData = {
     "id": 0,
@@ -193,7 +193,7 @@ function Panel() {
                             <div className="padding-1 padding-top-05 padding-bottom-05 flex ">
                                 <a title="Go back" href="#" onClick={(e) => goBack(e)} className="btn ArrowBtn flex justify-content-center align-items-center margin-auto-0 border-radius-50 padding-05 aspect-ratio-1 ">
                                     <div className="w-fitContent aspect-ratio-1">
-                                        <img className="iconSize-2 display-block margin-0-auto aspect-ratio-1" alt="" src="http://localhost:5173/svgs/leftPointingArrowIcon.svg"/>
+                                        <img className="iconSize-2 display-block margin-0-auto aspect-ratio-1" alt="" src={ ABSOLUTE_IMAGES_URL + "/svgs/leftPointingArrowIcon.svg" }   />
                                     </div>
                                 </a>
                             </div>
@@ -365,8 +365,8 @@ function Panel() {
             <div key={noteCounter++} id={`card${cardId}`} ref={(el) => {cardsRef.current[cardId] = el}} className="panelNoteCard bgWhite padding-05" style={{left: `${x}px`, top: `${y}px`}}>
                 {(isAdmin || isCreator) &&
                     <div className="noteOptions positionAbsolute gap02 top-0 right-0 bgWindow boxSize-Border padding-02 z-index-1">
-                        <img onClick={() => {editNote(cardId)}} title="Edit note" className="iconSize display-block cursor-pointer btnHover padding-01" src="http://localhost:5173/svgs/editPencilIcon.svg" alt="" />
-                        <img onClick={() => {deleteNote(cardId)}} title="Delete note" className="iconSize display-block cursor-pointer btnHover padding-01" src="http://localhost:5173/svgs/DeleteIcon.svg" alt="" />
+                        <img onClick={() => {editNote(cardId)}} title="Edit note" className="iconSize display-block cursor-pointer btnHover padding-01" src={ ABSOLUTE_IMAGES_URL + "/svgs/editPencilIcon.svg" }  alt="" />
+                        <img onClick={() => {deleteNote(cardId)}} title="Delete note" className="iconSize display-block cursor-pointer btnHover padding-01" src={ ABSOLUTE_IMAGES_URL + "/svgs/DeleteIcon.svg" }  alt="" />
                     </div>
                 }
                 {contentType === "text" &&
@@ -392,8 +392,8 @@ function Panel() {
             <div key={noteCounter++} id={`card${cardId}`} ref={(el) => {cardsRef.current[cardId] = el}} className="panelNoteCard panelpdfNoteCard bgWhite padding-05" style={{left: `${x}px`, top: `${y}px`}}>
                 {(isAdmin || isCreator) &&
                     <div className="noteOptions positionAbsolute gap02 top-0 right-0 bgWindow boxSize-Border padding-02 z-index-1">
-                        <img onClick={() => {editNote(cardId)}} title="Edit note" className="iconSize display-block cursor-pointer btnHover padding-01" src="http://localhost:5173/svgs/editPencilIcon.svg" alt="" />
-                        <img onClick={() => {deleteNote(cardId)}} title="Delete note" className="iconSize display-block cursor-pointer btnHover padding-01" src="http://localhost:5173/svgs/DeleteIcon.svg" alt="" />
+                        <img onClick={() => {editNote(cardId)}} title="Edit note" className="iconSize display-block cursor-pointer btnHover padding-01" src={ ABSOLUTE_IMAGES_URL + "/svgs/editPencilIcon.svg" }  alt="" />
+                        <img onClick={() => {deleteNote(cardId)}} title="Delete note" className="iconSize display-block cursor-pointer btnHover padding-01" src={ ABSOLUTE_IMAGES_URL + "/svgs/DeleteIcon.svg" }  alt="" />
                     </div>
                 }
                 <h2 className="margin-0 border-none textSNormal text-ellipsis overFlowHidden text-black text-noWrap" title={title}>{title}</h2>
@@ -774,8 +774,8 @@ function Panel() {
                         <div ref={(el) => {noteRefs.current[note.noteId] = el}} key={noteCounter++} className={(bdNote.contentType === "document" ? "aspect-ratio-A4 " : "padding-05 ") +"note bgWhite w100 boxSize-Border positionRelative"} title={"Last edited date: "+bdNote.lastEditedDate.replaceAll("-","/")+" - "+userOwner.nickname}>
                             {(isAdmin || isCreator) &&
                                 <div className="noteOptions positionAbsolute gap02 top-0 right-0 bgWindow boxSize-Border padding-02 z-index-1">
-                                    <img onClick={() => {editNote(note.noteId)}} title="Edit note" className="iconSize display-block cursor-pointer btnHover padding-01" src="http://localhost:5173/svgs/editPencilIcon.svg" alt="" />
-                                    <img onClick={() => {deleteNote(note.noteId, columnIndexClone)}} title="Delete note" className="iconSize display-block cursor-pointer btnHover padding-01" src="http://localhost:5173/svgs/DeleteIcon.svg" alt="" />
+                                    <img onClick={() => {editNote(note.noteId)}} title="Edit note" className="iconSize display-block cursor-pointer btnHover padding-01" src={ ABSOLUTE_IMAGES_URL + "/svgs/editPencilIcon.svg" }  alt="" />
+                                    <img onClick={() => {deleteNote(note.noteId, columnIndexClone)}} title="Delete note" className="iconSize display-block cursor-pointer btnHover padding-01" src={ ABSOLUTE_IMAGES_URL + "/svgs/DeleteIcon.svg" }  alt="" />
                                 </div>
                             }
                             {bdNote.contentType === "text" && 
@@ -800,8 +800,8 @@ function Panel() {
                 <div key={columnCounter++} className="panelColumn flex flex-direction-column gap1 overFlowHidden bgTransparent willChange">
                     {(isAdmin || isCreator) &&
                         <div className="columnOptions positionAbsolute gap02 top-0 right-0 bgWindow boxSize-Border padding-02">
-                            <img onClick={() => {editColumn(columnIndexClone)}} title="Edit column title" className="iconSize display-block cursor-pointer btnHover padding-01" src="http://localhost:5173/svgs/editPencilIcon.svg" alt="" />
-                            <img onClick={() => {showColumnDeleteModal(columnIndexClone)}} title="Delete column" className="iconSize display-block cursor-pointer btnHover padding-01" src="http://localhost:5173/svgs/DeleteIcon.svg" alt="" />
+                            <img onClick={() => {editColumn(columnIndexClone)}} title="Edit column title" className="iconSize display-block cursor-pointer btnHover padding-01" src={ ABSOLUTE_IMAGES_URL + "/svgs/editPencilIcon.svg" }  alt="" />
+                            <img onClick={() => {showColumnDeleteModal(columnIndexClone)}} title="Delete column" className="iconSize display-block cursor-pointer btnHover padding-01" src={ ABSOLUTE_IMAGES_URL + "/svgs/DeleteIcon.svg" }  alt="" />
                         </div>
                     }
                     <h2 ref={(el) => {columnRefs.current[columnIndexClone] = el}} className="text-white fontWeightNormal margin-0 text-centered w100">{column.columnTitle}</h2>

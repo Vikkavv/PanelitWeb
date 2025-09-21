@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { showPopUp } from "./ModalComponent";
 import { getUserById } from "./PanelCardComponent";
-import { BACKEND_PATH } from "../App";
+import { ABSOLUTE_IMAGES_URL, BACKEND_PATH } from "../App";
 
 let hasEvent = [false, false];
 let usersSelectedGlobal = [];
@@ -33,7 +33,7 @@ function PanelSettingsMenuComponent(props) {
                                     <p className="textLittle margin-0 text-white">Invite friends</p>
                                     <div ref={(el) => {accordionsRef.current["inviteFriendsArrow"] = el}} onClick={showSlide} className="btn ArrowBtn rotateNeg90Deg transition500 flex justify-content-center align-items-center margin-auto-0 border-radius-50 padding-03 aspect-ratio-1 ">
                                         <div className="w-fitContent aspect-ratio-1">
-                                            <img className="iconSize-2 display-block margin-0-auto aspect-ratio-1" alt="" src="http://localhost:5173/svgs/leftPointingArrowIcon.svg"/>
+                                            <img className="iconSize-2 display-block margin-0-auto aspect-ratio-1" alt="" src={ ABSOLUTE_IMAGES_URL + "/svgs/leftPointingArrowIcon.svg"}/>
                                         </div>
                                     </div>
                                 </div>
@@ -42,7 +42,7 @@ function PanelSettingsMenuComponent(props) {
                                         <form onSubmit={(e) => {searchUsers(e, null)}} className="flex gap1 padding-1px">
                                             <input id="inviteFriendsInput" type="text" className="display-block window text-white" placeholder="Search users" autoComplete="on"/> 
                                             <button type="submit" className="SearchBtn whiteIcon btnGradientBluePurple flex">
-                                                <img className="iconSize margin-auto" src="http://localhost:5173/svgs/SearchIcon.svg" alt="" />
+                                                <img className="iconSize margin-auto" src={ ABSOLUTE_IMAGES_URL + "/svgs/SearchIcon.svg"} alt="" />
                                             </button>
                                         </form>
                                         <button disabled id="inviteBtn" className="btn miniBtn btnGradientBluePurple btnNotHover cursor-notAllowed h-fitContent margin-auto-0 userSelectNone"><p className="margin-0">Invite</p></button>
@@ -62,7 +62,7 @@ function PanelSettingsMenuComponent(props) {
                                     <p className="textLittle margin-0 text-white">Delete friends</p>
                                     <div ref={(el) => {accordionsRef.current["kickFriendsArrow"] = el}} onClick={showSlide} className="btn ArrowBtn rotateNeg90Deg transition500 flex justify-content-center align-items-center margin-auto-0 border-radius-50 padding-03 aspect-ratio-1 ">
                                         <div className="w-fitContent aspect-ratio-1">
-                                            <img className="iconSize-2 display-block margin-0-auto aspect-ratio-1" alt="" src="http://localhost:5173/svgs/leftPointingArrowIcon.svg"/>
+                                            <img className="iconSize-2 display-block margin-0-auto aspect-ratio-1" alt="" src={ ABSOLUTE_IMAGES_URL + "/svgs/leftPointingArrowIcon.svg"}/>
                                         </div>
                                     </div>
                                 </div>
@@ -71,7 +71,7 @@ function PanelSettingsMenuComponent(props) {
                                         <form onSubmit={(e) => {searchUsers(e, null)}} className="flex gap1 padding-1px">
                                             <input id="kickFriendsInput" type="text" className="display-block window text-white" placeholder="Search users" autoComplete="on"/> 
                                             <button type="submit" className="SearchBtn whiteIcon btnGradientBluePurple flex">
-                                                <img className="iconSize margin-auto" src="http://localhost:5173/svgs/SearchIcon.svg" alt="" />
+                                                <img className="iconSize margin-auto" src={ ABSOLUTE_IMAGES_URL + "/svgs/SearchIcon.svg"} alt="" />
                                             </button>
                                         </form>
                                         <button disabled id="kickBtn" className="btn miniBtn btnGradientBluePurple btnNotHover cursor-notAllowed h-fitContent margin-auto-0 userSelectNone"><p className="margin-0">Delete</p></button>
@@ -86,7 +86,7 @@ function PanelSettingsMenuComponent(props) {
                         </div>
                     </div>
                     <div className="flex justify-content-center gap05 popUpseparator padding-top-2">
-                        <img onClick={() => {showPopUp("deletePanel")}} title="Delete note" className="iconSize display-block cursor-pointer padding-01" src="http://localhost:5173/svgs/DeleteIcon.svg" alt="" />
+                        <img onClick={() => {showPopUp("deletePanel")}} title="Delete note" className="iconSize display-block cursor-pointer padding-01" src={ ABSOLUTE_IMAGES_URL + "/svgs/DeleteIcon.svg"} alt="" />
                         <p onClick={() => {showPopUp("deletePanel")}} className="margin-0 textLittle text-white text-redHover cursor-pointer">Delete panel</p>
                     </div>
                 </div>
