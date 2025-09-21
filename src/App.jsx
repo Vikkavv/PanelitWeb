@@ -12,7 +12,7 @@ import CreatePanel from './pages/CreatePanel'
 import SubscriptionPlans from './pages/SubscriptionPlans'
 import Explore from './pages/Explore'
 
-export let BACKEND_PATH = "https://panelitapi.onrender.com/";
+export let BACKEND_PATH = "https://panelitapi.onrender.com";
 
 function App() {
   return (
