@@ -12,7 +12,7 @@ import CreatePanel from './pages/CreatePanel'
 import SubscriptionPlans from './pages/SubscriptionPlans'
 import Explore from './pages/Explore'
 
-export let BACKEND_PATH = process.env.REACT_APP_API_URL;
+export let BACKEND_PATH = process.env.VITE_API_URL;
 
 function App() {
   return (
