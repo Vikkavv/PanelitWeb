@@ -133,7 +133,7 @@ function PanelSettingsMenuComponent(props) {
                 return(
                     <div key={user.id} className="userList flex align-items-center justify-space-bwt padding-05 boxSize-Border">
                         <a href={"/UserProfile/" + user.nickname} className="flex gap1 text-decoration-none">
-                            <img className="miniUserPicture display-block cursor-pointer object-fit-cover margin-auto-0" src={user.profilePicture !== null && user.profilePicture !== undefined && user.profilePicture !== "" ? user.profilePicture : `http://localhost:5173/svgs/defaultProfileImage.svg`} alt="" />
+                            <img className="miniUserPicture display-block cursor-pointer object-fit-cover margin-auto-0" src={user.profilePicture !== null && user.profilePicture !== undefined && user.profilePicture !== "" ? user.profilePicture : ABSOLUTE_IMAGES_URL + `/defaultProfileImage.svg`} alt="" />
                             <p className="text-white textMini text-hover">{user.nickname}</p>
                         </a>
                         <div className="flex align-items-center containerCheckbox margin-0 padding-01 display-block">

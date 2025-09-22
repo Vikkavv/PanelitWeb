@@ -7,7 +7,7 @@ import PanelCardComponent, { getUserById } from "../components/PanelCardComponen
 import { getUserPanels } from "./WorkSpace";
 import { dynamicClasses } from "../assets/js/dynamicCssClasses";
 import ModalComponent, { showPopUp } from "../components/ModalComponent";
-import { BACKEND_PATH } from "../App";
+import { ABSOLUTE_IMAGES_URL, BACKEND_PATH } from "../App";
 
 let userData = {
     "id": 0,
@@ -79,7 +79,7 @@ function UserProfile() {
                 <LogoContainer isLink="true" url="/workspace" hasPadding="true" paddingClass="padding-08-2-08-2" isRotatable="true"/>
                 <div className="container">
                     <div className="flex gap5 margin-top-2">
-                        <img onClick={() => showPopUp("userImage")} className="btn padding-05 userProfilePicture object-fit-cover overFlowHidden cursor-pointer circular" src={reactiveUser !== null && reactiveUser.profilePicture !== undefined && reactiveUser.profilePicture !== null && reactiveUser.profilePicture !== "" ? reactiveUser.profilePicture : `/svgs/defaultProfileImage.svg`} alt="" />
+                        <img onClick={() => showPopUp("userImage")} className="btn padding-05 userProfilePicture object-fit-cover overFlowHidden cursor-pointer circular" src={reactiveUser !== null && reactiveUser.profilePicture !== undefined && reactiveUser.profilePicture !== null && reactiveUser.profilePicture !== "" ? reactiveUser.profilePicture : ABSOLUTE_IMAGES_URL + `/svgs/defaultProfileImage.svg`} alt="" />
                         <div className="flex flex-direction-column justify-content-center gap0">
                             <h1 className="text-white margin-0 margin-top-1">{reactiveUser?.nickname}</h1>
                             <p className="text-gray text-semiLight margin-0">{reactiveUser?.name + " " + reactiveUser?.lastName}</p>
@@ -164,7 +164,7 @@ function UserProfile() {
                     return(
                         <div key={counter++} className="userList flex align-items-center justify-space-bwt padding-05 boxSize-Border">
                             <a href={"/UserProfile/" + user.nickname} className="flex gap1 text-decoration-none">
-                                <img className="miniUserPicture display-block cursor-pointer object-fit-cover margin-auto-0" src={user.profilePicture !== null && user.profilePicture !== undefined && user.profilePicture !== "" ? user.profilePicture : `http://localhost:5173/svgs/defaultProfileImage.svg`} alt="" />
+                                <img className="miniUserPicture display-block cursor-pointer object-fit-cover margin-auto-0" src={user.profilePicture !== null && user.profilePicture !== undefined && user.profilePicture !== "" ? user.profilePicture : ABSOLUTE_IMAGES_URL + `/svgs/defaultProfileImage.svg`} alt="" />
                                 <p className="text-white textMini text-hover">{user.nickname}</p>
                             </a>
                             {(reactiveUser?.id === userData.id && !userFollowed.some(obj => obj.id === user.id)) || (reactiveUser?.id !== userData.id && !sessionUserFollowed.some(obj => obj.id === user.id)) ?  

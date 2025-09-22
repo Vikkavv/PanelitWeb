@@ -3,7 +3,7 @@ import LogoContainer from "../components/LogoContainerComponent"
 import UserProfileBtnComponent from "../components/UserProfileBtnComponent"
 import { cookieSessionChecker } from "../assets/js/SessionChecker";
 import PanelCardComponent, { getUserById } from "../components/PanelCardComponent";
-import { BACKEND_PATH } from "../App";
+import { ABSOLUTE_IMAGES_URL, BACKEND_PATH } from "../App";
 
 let userData = {}; 
 let counter = 0;
@@ -115,7 +115,7 @@ function Explore() {
             localUserList.push(
                 <div key={counter++} className="userList flex align-items-center justify-space-bwt padding-05 boxSize-Border">
                     <a href={"/UserProfile/" + user.nickname} className="flex gap1 text-decoration-none">
-                        <img className="miniUserPicture display-block cursor-pointer object-fit-cover margin-auto-0" src={user.profilePicture !== null && user.profilePicture !== undefined && user.profilePicture !== "" ? user.profilePicture : `http://localhost:5173/svgs/defaultProfileImage.svg`} alt="" />
+                        <img className="miniUserPicture display-block cursor-pointer object-fit-cover margin-auto-0" src={user.profilePicture !== null && user.profilePicture !== undefined && user.profilePicture !== "" ? user.profilePicture : ABSOLUTE_IMAGES_URL + `/svgs/defaultProfileImage.svg`} alt="" />
                         <p className="text-white textMini text-hover">{user.nickname}</p>
                     </a>
                 </div>
