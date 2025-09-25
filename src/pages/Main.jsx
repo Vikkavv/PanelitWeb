@@ -1,8 +1,9 @@
-import { useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 import Navbar from "../components/NavbarComponent"
 import {dynamicClasses} from '../assets/js/dynamicCssClasses.js'
 import { useNavigate } from 'react-router';
 import { cookieSessionChecker } from "../assets/js/SessionChecker.js";
+import LoadingComponent from "../components/LoadingComponent.jsx";
 
 function Main() {
 
@@ -12,9 +13,14 @@ function Main() {
         navigate(path);
     };
 
+    const [loadingBools, setLoadingBools] = useState([]);
+
     useEffect(() => {
+        let timeoutID = setTimeout(() => {
+                showOrHideLoadingComponent("startLoading", "s");
+        }, 500);
         const checkSession = async () => {
-            const data = await cookieSessionChecker();
+            const data = await cookieSessionChecker().finally(() => {showOrHideLoadingComponent("startLoading", "h"); clearTimeout(timeoutID)});
             if(data !== null){
                 redirect("/workspace");
             }
@@ -25,11 +31,24 @@ function Main() {
         document.body.removeAttribute("style");
         html.classList.remove("html100");
         dynamicClasses();
-    }, [])
+    }, []);
+
+    useEffect(() => {
+        console.log(loadingBools);
+    }, [loadingBools])
+
+    function showOrHideLoadingComponent(id, showOrHide){
+        let stringBool = showOrHide === "h" ? "true" : "false";
+        setLoadingBools(prev => ({
+            ...prev,
+            [id]: stringBool
+        }));
+    }
 
     return (
         <>
-            <Navbar texts="Subscription Plans, Explore" paths="/SubscriptionPlans, /Explore"/>
+            <Navbar texts="Subscription Plans, Explore" paths="/SubscriptionPlans, /Explore" blockButtonsForLoading={loadingBools['startLoading'] === undefined ? "false" : loadingBools['startLoading']}/>
+            <LoadingComponent hidden={loadingBools['startLoading']} loadingMessage="Please wait, the web app its starting up"/>
             <div className="container text-white">
                 <h1 className="header margin-0-auto margin-top-2">Let’s bring order and share knowledge!</h1>
                 <div className="margin-top-2">

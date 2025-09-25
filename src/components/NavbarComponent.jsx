@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import LogoContainer from "./LogoContainerComponent";
 import UserProfileBtnComponent from "./UserProfileBtnComponent";
 
-function createLinksObjects(names, paths){
+function createLinksObjects(names, paths, blockButtonsForLoading){
     let linkarray = [];
     for (const i in names) {
         linkarray.push({"id": i, "name": names[i],"path": paths[i] });
     }
     return linkarray.map((link) => {
         return(
-            <a key={link.id} href={link.path} className="navlink">{link.name}</a>
+            <a key={link.id} onClick={(e) => {if(blockButtonsForLoading) e.preventDefault()}} href={link.path} className={"navlink" + (blockButtonsForLoading ? " cursor-wait loadingNavBarLink " : "")}>{link.name}</a>
         )
     })
 }
@@ -22,12 +22,13 @@ function Navbar(props) {
     const hasUserInfo = props.hasUserInfo === "true" ? true : false;
     const userInfo = props.userInfo !== undefined ? props.userInfo : {};
     const hasUserBtns = props.hasUserBtns !== "true" ? true : false ;
+    const blockButtonsForLoading = props.blockButtonsForLoading === undefined ? false : props.blockButtonsForLoading === "true" ? false : true;
     let hasLogoSeparator = props.hasLogoSeparator === "false" ? "false" : "true";
     const [links, setLinks] = useState([]);
     useEffect(() => {
-        setLinks(createLinksObjects(names, paths));
+        setLinks(createLinksObjects(names, paths, blockButtonsForLoading));
         if(hiddnBool) document.getElementById("logContainer").classList += " hidden";
-    }, []);
+    }, [blockButtonsForLoading]); // This is used to reload all the sentences at the begining and every time that "blockButtonsForLoading" changes
 
     return (
         <nav className="navbar">
@@ -46,9 +47,9 @@ function Navbar(props) {
     function createSignBtns(){
         if(hasSignBtns) return (
             <div className="logoContainer" id="logContainer">
-                <a href="/signIn" className="navlink">Log in</a>
+                <a href="/signIn" onClick={(e) => {if(blockButtonsForLoading) e.preventDefault()}} className={"navlink" + (blockButtonsForLoading ? " cursor-wait loadingNavBarLink " : "")}>Log in</a>
                 <span className="logoSeparator"/>
-                <a href="/signUp" className="navlink">Sign up</a>
+                <a href="/signUp" onClick={(e) => {if(blockButtonsForLoading) e.preventDefault()}} className={"navlink" + (blockButtonsForLoading ? " cursor-wait loadingNavBarLink " : "")}>Sign up</a>
             </div>
         )
     }
@@ -67,7 +68,7 @@ function Navbar(props) {
                     <span className="logoSeparator margin-auto-0 margin-right05"/>
                     {false && // Se impide forzosamente la aparición de los botones de manera temporal
                         <>
-                            <img className="iconSize" src="svgs/NotificationIcon.svg" alt="" />
+                            <img className="isconSize" src="svgs/NotificationIcon.svg" alt="" />
                             <img className="iconSize" src="svgs/MessagesIcon.svg" alt="" />
                         </>
                     }

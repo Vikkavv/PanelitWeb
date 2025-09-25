@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { dynamicClasses } from "../assets/js/dynamicCssClasses";
 import { useNavigate } from "react-router";
 import { getFollowed, getFollowers } from "../assets/js/getFollowersAndFollowedOfAnUser";
-import { BACKEND_PATH } from "../App";
+import { ABSOLUTE_IMAGES_URL, BACKEND_PATH } from "../App";
 
 function UserProfileBtnComponent(props) {
     let userInfo = props.userInfo;
-    let profilePicture = props.userInfo.profilePicture !== undefined && props.userInfo.profilePicture !== null && props.userInfo.profilePicture !== "" ? props.userInfo.profilePicture : "svgs/defaultProfileImage.svg";
+    let profilePicture = props.userInfo.profilePicture !== undefined && props.userInfo.profilePicture !== null && props.userInfo.profilePicture !== "" ? props.userInfo.profilePicture : ABSOLUTE_IMAGES_URL + "svgs/defaultProfileImage.svg";
 
     const imgBtn = useRef();
     const divPopUp = useRef();
