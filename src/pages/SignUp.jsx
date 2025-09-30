@@ -4,6 +4,8 @@ import LogoContainer from "../components/LogoContainerComponent";
 import { useNavigate } from 'react-router';
 import { cookieSessionChecker } from "../assets/js/SessionChecker.js";
 import { BACKEND_PATH } from "../App.jsx";
+import LoadingComponent from "../components/LoadingComponent.jsx";
+import { dynamicClasses } from "../assets/js/dynamicCssClasses.js";
 
 document.getElementsByTagName("html")[0].classList = "html100";
 document.getElementById("root").classList = "html100";
@@ -37,6 +39,8 @@ function SignUp() {
 
     const navigate = useNavigate();
 
+    const [loadingBools, setLoadingBools] = useState([]);
+
     const redirect = (path) => {
         navigate(path);
     };
@@ -53,9 +57,10 @@ function SignUp() {
         document.title = "Sign up in Panelit"
 
         regExpMap = createRegExpMap(signUpDialog(setFormContent, refs));
-        document.getElementById("nextBtn").addEventListener("click", nextStep.bind(null, setFormContent, refs, redirect));
+        document.getElementById("nextBtn").addEventListener("click", nextStep.bind(null, setFormContent, refs, redirect, setLoadingBools));
         backBtn = document.getElementById("backBtn");
         backBtn.addEventListener("click", previusStep.bind(null, setFormContent, refs));
+        dynamicClasses();
     }, [])
 
     useEffect(() =>{
@@ -75,7 +80,12 @@ function SignUp() {
                         <div className="positionAbsolute btm-05 registerBtnWrapper flex justify-space-bwt">
                             <a href="/signIn" id="variable" className="navlink text-decoration-underline padding-1 textNano">Already have an account?, sign in</a>
                             <div className="btn btn-large h-fitContent margin-auto-0 userSelectNone hidden" id="backBtn"><p className="margin-0 text-white text-semiLight">Back</p></div>
-                            <div className="btn btn-large btnGradientBluePurple h-fitContent margin-auto-0 userSelectNone" id="nextBtn"><p className="margin-0">Next</p></div>
+                            <div className="btn btn-large positionRelative btnGradientBluePurple h-fitContent margin-auto-0 userSelectNone" id="nextBtn">
+                                <p className="margin-0">Next</p>
+                                <div className={ (loadingBools['signUpLoading'] === undefined || loadingBools['signUpLoading'] === "true" ? " display-none " : "") + "flex justify-content-center align-items-center Jh[2.684rem] w100 positionAbsolute left-0 top-0"}>
+                                    <LoadingComponent hidden="false" loadingIconSize=".75rem" loadingSpinningIconSize=".17rem" onlyLoadingIcon="true"/>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -84,7 +94,18 @@ function SignUp() {
     )
 }
 
-async function sendUserInfo(setFormContent, refs, redirect){
+function showOrHideLoadingComponent(setLoadingBools, id, showOrHide){
+    let stringBool = showOrHide === "h" ? "true" : "false";
+    setLoadingBools(prev => ({
+        ...prev,
+        [id]: stringBool
+    }));
+}
+
+async function sendUserInfo(setFormContent, refs, redirect, setLoadingBools){
+    let nextBtn = document.getElementById("nextBtn");
+    nextBtn.children[0].classList.add("hidden");
+    showOrHideLoadingComponent(setLoadingBools, "signUpLoading", "s");
     const response = await fetch(BACKEND_PATH+"/User/signUp",{
         method: "POST",
         credentials: "include",
@@ -94,12 +115,15 @@ async function sendUserInfo(setFormContent, refs, redirect){
         body: JSON.stringify(newUser)
     });
     errorData = await response.json();
-    if(!JSON.stringify(errorData).includes('"errors":null')) showFeedBackErrors(setFormContent, refs);
+    if(!JSON.stringify(errorData).includes('"errors":null')) showFeedBackErrors(setFormContent, refs, setLoadingBools);
     else redirect("/workspace");
 }
 
-function showFeedBackErrors(setFormContent, refs){
-    document.getElementById("nextBtn").textContent = "Next";
+function showFeedBackErrors(setFormContent, refs, setLoadingBools){
+    let nextBtn = document.getElementById("nextBtn");
+    nextBtn.children[0].classList.remove("hidden");
+    showOrHideLoadingComponent(setLoadingBools, "signUpLoading", "h");
+    nextBtn.children[0].textContent = "Next";
     for (const property in errorData) {
         let completeString = pageInputs.filter((inputName) => inputName.includes(property))[0];
         if(completeString !== undefined){
@@ -155,12 +179,12 @@ function previusStep(setFormContent, refs){
     if(registerStep > 0) registerStep--;
     if(registerStep == 0) backBtn.classList.add("hidden");
     if(registerStep < 3){
-        document.getElementById("nextBtn").textContent = "Next";
+        document.getElementById("nextBtn").children[0].textContent = "Next";
     }
     signUpDialog(setFormContent, refs);
 }
 
-function nextStep(setFormContent, refs, redirect){
+function nextStep(setFormContent, refs, redirect, setLoadingBools){
     let hasErrors = false;
     let inputNames = "";
     for (const input of document.getElementById("signUpForm").querySelectorAll("input")) {
@@ -198,14 +222,14 @@ function nextStep(setFormContent, refs, redirect){
     registerStep++;
     if(registerStep > 0) backBtn.classList.remove("hidden");
     if(registerStep < 3){
-        document.getElementById("nextBtn").textContent = "Next";
+        document.getElementById("nextBtn").children[0].textContent = "Next";
     }
     if(registerStep == 3){
-        document.getElementById("nextBtn").textContent = "Send";
+        document.getElementById("nextBtn").children[0].textContent = "Send";
     }
     if(registerStep > 3){
         registerStep--;
-        sendUserInfo(setFormContent, refs, redirect);
+        sendUserInfo(setFormContent, refs, redirect, setLoadingBools);
         return;
     }
     signUpDialog(setFormContent, refs);
@@ -215,18 +239,20 @@ function nextStep(setFormContent, refs, redirect){
 function signUpDialog(setFormContent, refs){
     setFormContent(() => []);
     /**
-     * This array has his own sintax to apply into titles, labels and inputs, every label-input pack should be separated with a comma (and one space next),
-     * then in each side can be diffent symbols:
+     * This array has his own sintax to apply into titles, labels and inputs, every label-input pack should be separated with a comma (and one space next).
+     * In this array, we are declaring the sign up process steps, in each position of the array, it has to be all the inputs that we want to appear in that step, with the following sintax that is explained bellow.
+     * Then in each side can be diffent symbols:
      *  text itselfs, its not a symbol but by typing text at the beggining, it will be applied to the name input attribute and in label text (It needs to be typed correctly following english lenguage capital sintax norms), then it will be formatted into camelCase. 
      *  [] All the text between the brackets (that needs to be next to the first text), is going to be applied into placeholder attribute (it's optional, it's no need to type it if you dont want a placeholder text)
-     *  * If an Asterisk symbol is typed next to the placeholder bracket, it would mean that input is optional (And if not present, it is mandatory)
+     *  <> The text in between the greater than and less than it going to be used as the error message if the info its incorrect when match with the regular expresions
+     *  * If an Asterisk symbol is typed next to the placeholder bracket or, if error message is present, next to the less than symbol, it would mean that input is optional (And if not present, it is mandatory)
      *  % This symbol if present next to the placeholder close bracket means that the type of this input is equal to the given text (Example, Email (to be converted into email) will be taken and covert the input into email one type (Logically, it only works if the text corresponds with one of the existent input types))
      *  ; The text following semicolon (it has to be next to the first text, the placeholder and/or % symbol if present and only on the first label-input pack) is going to be applied to the form text (it is optional, it can be omitted)
      * */
     let steps = [
         "Name[Shamash]<Name can not take special symbols and either numbers.>; What is your name?, Last name[Thot]<Last name can not take special symbols and either numbers.>", 
         "Nickname[Thotsha]<Nickname must be at least 6 characters long: include numbers: and common symbols and letters.>; What is your acronym?", 
-        "Email[superCognizance@example.com]<Use a valid email format>(F)%; What is your email and secret password?, Password[Choose carefully]<Password has to be between 8 and 12 characters long and must include common letters and symbols>%", 
+        "Email[superCognizance@example.com]<Use a valid email format>(F)%; What is your email and secret password?, Password[Choose carefully]<Password has to be between 8 and 12 characters long and must include common letters and symbols>(F)%", 
         "Phone number[Prefix and number]<If you provide a phone number: use a valid format>*; Do you want to add your phone number?"
     ];
     let regExps = [

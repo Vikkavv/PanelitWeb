@@ -12,6 +12,7 @@ import PdfViewer from "../components/PdfViewer";
 import { isLightImg } from "../assets/js/ImgDarkOrLight";
 import PanelSettingsMenuComponent, { deleteFriends, getPanelParticipantsByPanel } from "../components/PanelSettingsMenuComponent";
 import { ABSOLUTE_IMAGES_URL, BACKEND_PATH } from "../App";
+import LoadingComponent from "../components/LoadingComponent";
 
 let userData = {
     "id": 0,
@@ -70,6 +71,7 @@ function Panel() {
     const [HTMLNoteForm, setHTMLNoteForm] = useState(null);
     const [invertTextColors, setInvertTextColors] = useState(false);
     const [HTMLCardNotes, setHTMLCardNotes] = useState([]);
+    const [loadingBools, setLoadingBools] = useState([]);
 
     const [isCreator, setIsCreator] = useState(null);
     const [isAdmin, setIsAdmin] = useState(null);
@@ -92,6 +94,10 @@ function Panel() {
     };
 
     useEffect(() => {
+        let timeout = setTimeout(() => {
+            showOrHideLoadingComponent("panelLoading", "s");
+            clearTimeout(timeout);
+        }, 100);
         const checkSession = async () => {
             const data = await cookieSessionChecker();
             if(data !== null){
@@ -173,6 +179,10 @@ function Panel() {
 
     useEffect(() => {
         dynamicClasses();
+        let timeout = setTimeout(() => {
+            showOrHideLoadingComponent("panelLoading", "h");
+            clearTimeout(timeout);
+        }, 1950);
     },[HTMLcolumns])
 
     useEffect(() => {
@@ -182,6 +192,14 @@ function Panel() {
     useEffect(() => {
         if(JSON.stringify(HTMLCardNotes) !== "[]" && JSON.parse(panel.additionalInfo).type === CONNECTED_CARDS_TYPE_PANEL) draw();
     }, [HTMLCardNotes])
+
+    function showOrHideLoadingComponent(id, showOrHide){
+        let stringBool = showOrHide === "h" ? "true" : "false";
+        setLoadingBools(prev => ({
+            ...prev,
+            [id]: stringBool
+        }));
+    }
 
     return (
         <>
@@ -193,17 +211,18 @@ function Panel() {
                             <div className="padding-1 padding-top-05 padding-bottom-05 flex ">
                                 <a title="Go back" href="#" onClick={(e) => goBack(e)} className="btn ArrowBtn flex justify-content-center align-items-center margin-auto-0 border-radius-50 padding-05 aspect-ratio-1 ">
                                     <div className="w-fitContent aspect-ratio-1">
-                                        <img className="iconSize-2 display-block margin-0-auto aspect-ratio-1" alt="" src={ ABSOLUTE_IMAGES_URL + "/svgs/leftPointingArrowIcon.svg" }   />
+                                        <img className="iconSize-2 display-block margin-0-auto aspect-ratio-1 userSelectNone" alt="" src={ ABSOLUTE_IMAGES_URL + "/svgs/leftPointingArrowIcon.svg" }   />
                                     </div>
                                 </a>
                             </div>
                         </div>
                         <div className="flex align-items-center gap1">
                             <h1 className="textLittle fontWeightNormal text-white">{panel.name}</h1>
-                            <span className="text-gray">·</span>
+                            <span className="text-gray userSelectNone">·</span>
                             <a href={"/UserProfile/" + panelCreator.nickname} className="margin-0 textMini text-gray">{panelCreator.nickname}</a>
-                            <span className="text-gray">·</span>
+                            <span className="text-gray userSelectNone">·</span>
                             <p className="margin-0 textNano text-gray">Last edited date: {panel?.lastEditedDate?.replaceAll("-","/")}</p>
+                            <LoadingComponent hidden={loadingBools['panelLoading']} loadingIconSize=".8rem" loadingSpinningIconSize=".18rem" onlyLoadingIcon="true"/>
                         </div>
                     </div>
                     {isCreator === true &&
@@ -212,6 +231,7 @@ function Panel() {
                         </div>
                     }
                 </div>
+            
                 {panelContent !== null && panelContent}
                 {panel?.additionalInfo !== undefined && (isAdmin || isCreator) && JSON.parse(panel.additionalInfo).type === COLUMN_TYPE_PANEL && 
                     <div id="columnSlider" className="editSliderPanel flex-direction-column justify-space-bwt window bgWindow border-radius-inherit-0-0-0 padding-1 display-none">
@@ -693,12 +713,12 @@ function Panel() {
         let panelType = JSON.parse(panel.additionalInfo).type;
         let HTMLNote = panelType === COLUMN_TYPE_PANEL ? noteRefs.current[noteId] : cardsRef.current[noteId];
         let noteTitle = HTMLNote.getElementsByTagName("h2")[0].textContent;
-        let noteText = HTMLNote.getElementsByTagName("p")[0] !== undefined ? HTMLNote.getElementsByTagName("p")[0].textContent : null;
+        let noteText = HTMLNote.getElementsByTagName("pre")[0] !== undefined ? HTMLNote.getElementsByTagName("pre")[0].textContent : null;
         if(noteText !== null){
             HTMLNote.innerHTML = "";
             HTMLNote.innerHTML =
                 "<h2 id='noteTitleEdit' contenteditable class='border-none margin-0 text-black'>"+noteTitle+"</h2>"+
-                "<p id='noteTextEdit' contenteditable class='border-none margin-0 textMini text-black'>"+noteText+"</p>";
+                "<pre id='noteTextEdit' contenteditable class='border-none margin-0 text-black text-wrap'>"+noteText+"</pre>";
         }else{
             HTMLNote.getElementsByTagName("h2")[0].contentEditable = true;
             HTMLNote.getElementsByTagName("div")[0].classList.add("display-none");
@@ -715,7 +735,8 @@ function Panel() {
                     let dbNote = await findNoteById(noteId);
                     console.log(document.getElementById("noteTextEdit"), document.getElementById("noteTitleEdit"));
                     dbNote.title = document.getElementById("noteTitleEdit") !== null ? document.getElementById("noteTitleEdit").textContent : HTMLNote.getElementsByTagName("h2")[0].textContent;
-                    dbNote.bodyText = document.getElementById("noteTextEdit") !== null ? document.getElementById("noteTextEdit").textContent : null;
+                    let text = document.getElementById("noteTextEdit") !== null ? document.getElementById("noteTextEdit").textContent : null;
+                    dbNote.bodyText = text;
                     dbNote.owner = {"id": userData.id};
                     dbNote.panel = {"id": dbNote.panel.id};
                     await editNoteDB(dbNote);
@@ -781,7 +802,7 @@ function Panel() {
                             {bdNote.contentType === "text" && 
                                 <>
                                     <h2 className="margin-0 text-black">{bdNote.title}</h2>
-                                    <p className="margin-0 text-black">{bdNote.bodyText}</p>
+                                    <pre className="margin-0 text-black text-wrap">{bdNote.bodyText}</pre>
                                 </>
                             }
                             {bdNote.contentType === "document" &&

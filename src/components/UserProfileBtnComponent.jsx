@@ -6,7 +6,7 @@ import { ABSOLUTE_IMAGES_URL, BACKEND_PATH } from "../App";
 
 function UserProfileBtnComponent(props) {
     let userInfo = props.userInfo;
-    let profilePicture = props.userInfo.profilePicture !== undefined && props.userInfo.profilePicture !== null && props.userInfo.profilePicture !== "" ? props.userInfo.profilePicture : ABSOLUTE_IMAGES_URL + "svgs/defaultProfileImage.svg";
+    let profilePicture = props.userInfo.profilePicture !== undefined && props.userInfo.profilePicture !== null && props.userInfo.profilePicture !== "" ? props.userInfo.profilePicture : ABSOLUTE_IMAGES_URL + "/svgs/defaultProfileImage.svg";
 
     const imgBtn = useRef();
     const divPopUp = useRef();

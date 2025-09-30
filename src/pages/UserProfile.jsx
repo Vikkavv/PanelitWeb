@@ -78,7 +78,16 @@ function UserProfile() {
             <div id="noBg"> 
                 <LogoContainer isLink="true" url="/workspace" hasPadding="true" paddingClass="padding-08-2-08-2" isRotatable="true"/>
                 <div className="container">
-                    <div className="flex gap5 margin-top-2">
+                    <div className="flex gap5 margin-top-05">
+                        <div className="padding-1 padding-top-05 padding-bottom-05 flex ">
+                            <a title="Go back" href="#" onClick={(e) => goBack(e)} className="btn flex justify-content-center align-items-center border-radius-50 margin-auto-0 padding-1 aspect-ratio-1 ">
+                                <div className="w-fitContent aspect-ratio-1">
+                                    <img className="iconSize-2 display-block margin-0-auto aspect-ratio-1 userSelectNone" alt="" src={ ABSOLUTE_IMAGES_URL + "/svgs/leftPointingArrowIcon.svg" }   />
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div className="flex gap5 margin-top-05">
                         <img onClick={() => showPopUp("userImage")} className="btn padding-05 userProfilePicture object-fit-cover overFlowHidden cursor-pointer circular" src={reactiveUser !== null && reactiveUser.profilePicture !== undefined && reactiveUser.profilePicture !== null && reactiveUser.profilePicture !== "" ? reactiveUser.profilePicture : ABSOLUTE_IMAGES_URL + `/svgs/defaultProfileImage.svg`} alt="" />
                         <div className="flex flex-direction-column justify-content-center gap0">
                             <h1 className="text-white margin-0 margin-top-1">{reactiveUser?.nickname}</h1>
@@ -107,7 +116,7 @@ function UserProfile() {
                             {HTMLOwnedPanels.length < 1 ?
                                 (
                                     <div className="span-4 margin-bottom-2">
-                                        <h2 className="text-centered text-semiLight text-gray">{reactiveUser !== null && reactiveUser.nickname} hasn't created any panel yet.</h2>
+                                        <h2 className="text-centered text-semiLight text-gray">{reactiveUser !== null && userData !== null && reactiveUser.nickname === userData.nickname ? "You" : (reactiveUser !== null && reactiveUser.nickname)} hasn't created any panel yet.</h2>
                                     </div>
                                 )
                                 :
@@ -124,7 +133,7 @@ function UserProfile() {
                         {HTMLJoinedPanels.length < 1 ?
                             (
                                 <div className="span-4 margin-bottom-2">
-                                    <h2 className="text-centered text-semiLight text-gray">{reactiveUser !== null && reactiveUser.nickname} hasn't joined any panel yet.</h2>
+                                    <h2 className="text-centered text-semiLight text-gray">{reactiveUser !== null && reactiveUser.nickname === userData.nickname ? "You" : (reactiveUser !== null && reactiveUser.nickname)} hasn't joined any panel yet.</h2>
                                 </div>
                             )
                             :
@@ -146,6 +155,15 @@ function UserProfile() {
             </div>
         </>
     )
+
+    function goBack(e){
+        e.preventDefault();
+        if(document.referrer === ""){
+            if(userData.id === 0 || userData.id === undefined) redirect("/Explore");
+            else redirect("/workspace");
+        }
+        else history.go(-1);
+    }
 
     async function createHTMLUserList(userList){
         let HTMLUserList  = [];

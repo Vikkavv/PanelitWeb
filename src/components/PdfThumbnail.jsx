@@ -38,7 +38,7 @@ function PdfThumbnail(props) {
     return (
         <>
             {thumbnailUrl ? 
-                <img onClick={onClick} src={thumbnailUrl} alt="" className='display-block w100' />
+                <img onClick={onClick} src={thumbnailUrl} alt="" className='display-block w100 cursor-pointer' />
                 :
                 <div className='aspect-ratio-A4 w100 bgWhite' ></div>
             }

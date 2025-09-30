@@ -4,14 +4,17 @@ import UserProfileBtnComponent from "../components/UserProfileBtnComponent"
 import { cookieSessionChecker } from "../assets/js/SessionChecker";
 import PanelCardComponent, { getUserById } from "../components/PanelCardComponent";
 import { ABSOLUTE_IMAGES_URL, BACKEND_PATH } from "../App";
+import LoadingComponent from "../components/LoadingComponent";
 
 let userData = {}; 
 let counter = 0;
 
 function Explore() {
 
-    const [HTMLPanelCardsOrUsers, setHTMLPanelCardsOrUsers] = useState([]);
+    const [HTMLPanels, setHTMLPanels] = useState([]);
+    const [HTMLUsers, setHTMLUsers] = useState([]);
     const [currentOption, setCurrentOption] = useState(0);
+    const [loadingIconIsHidden, setLoadingIconIsHidden] = useState("false");
 
     const refs = useRef([]);
 
@@ -28,7 +31,7 @@ function Explore() {
     }, []);
 
     useEffect(() => {
-        setHTMLPanelCardsOrUsers([]);
+        setHTMLPanels([]);
         search();
     }, [currentOption])
 
@@ -62,14 +65,17 @@ function Explore() {
                             </div>
                         </div>
                     </div>
-                    {currentOption === 0 &&
+                    <div className={ (loadingIconIsHidden === "false" ? "" : "display-none " ) + "flex justify-content-center align-items-center ha70vh h70vh w100"}>
+                        <LoadingComponent hidden={loadingIconIsHidden} loadingIconSize="2.8rem" loadingSpinningIconSize=".5rem" onlyLoadingIcon="true"/>
+                    </div>
+                    {currentOption === 0 && loadingIconIsHidden !== "false" &&
                         <div className="grid col-5 overFlowYAuto darkscrollBar gap1 padding-top-1 ha70vhcalc">
-                            {HTMLPanelCardsOrUsers}
+                            {HTMLPanels}
                         </div>
                     }
-                    {currentOption === 1 &&
+                    {currentOption === 1 && loadingIconIsHidden !== "false" &&
                         <div className="container10 overFlowYAuto darkscrollBar padding-top-1 ha70vhcalc">
-                            {HTMLPanelCardsOrUsers}
+                            {HTMLUsers}
                         </div>
                     }
                 </div>
@@ -78,6 +84,7 @@ function Explore() {
     )
 
     function toggle(e){
+        setLoadingIconIsHidden("false");
         let divToToggle = e.target instanceof HTMLDivElement ? e.target : e.target.parentElement;
         let divPosition = [...divToToggle.parentElement.children].findIndex((div) => div === divToToggle);
         let actualTogglePosition = parseFloat(getComputedStyle(divToToggle.parentElement).getPropertyValue('--markerPos').trim());
@@ -95,22 +102,22 @@ function Explore() {
     }
 
     async function createPanelCards(searchText = null){
-        setHTMLPanelCardsOrUsers([]);
+        setHTMLPanels([]);
         let localHTMLPanelCards = [];
-        let panelList = searchText === null ? await get100Panels() : await getAllPanels();
+        let panelList = searchText === null ? await get100Panels().finally(setLoadingIconIsHidden("true")) : await getAllPanels().finally(setLoadingIconIsHidden("true"));
         for (const panel of panelList) {
             let userPanel = await getUserById(panel.creatorId);
             if(searchText === null || searchText.trim() === "" || (userPanel.nickname.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(searchText.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "")) || panel.name.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").includes(searchText.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "")))){
                 localHTMLPanelCards.push(<PanelCardComponent key={counter++} creatorId={panel.creatorId} panelId={panel.id} panelTitle={panel.name} panelLastEditedDate={panel.lastEditedDate} panelCoverPhoto={panel.coverPhoto} />);
             }
         }
-        setHTMLPanelCardsOrUsers(localHTMLPanelCards);
+        setHTMLPanels(localHTMLPanelCards);
     }
 
     async function createUserList(searchText = null) {
-        setHTMLPanelCardsOrUsers([]);
+        setHTMLUsers([]);
         let localUserList = [];
-        let userList = searchText === null ? await get100Users() : await searchUsers(searchText);
+        let userList = searchText === null ? await get100Users().finally(setLoadingIconIsHidden("true")) : await searchUsers(searchText).finally(setLoadingIconIsHidden("true"));
         for (const user of userList) {
             localUserList.push(
                 <div key={counter++} className="userList flex align-items-center justify-space-bwt padding-05 boxSize-Border">
@@ -121,7 +128,7 @@ function Explore() {
                 </div>
             );
         }
-        setHTMLPanelCardsOrUsers(localUserList);
+        setHTMLUsers(localUserList);
     }
 
     async function searchUsers(nickname){

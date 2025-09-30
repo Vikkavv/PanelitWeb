@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { showPopUp } from "./ModalComponent";
-import { BACKEND_PATH } from "../App";
+import { ABSOLUTE_IMAGES_URL, BACKEND_PATH } from "../App";
 
 function PanelCardComponent(props) {
     let creatorId = props.creatorId === undefined ? console.error("creatorId has to be given") : props.creatorId;
@@ -47,7 +47,7 @@ function PanelCardComponent(props) {
                 
             </a>
             <div onClick={() => {goToOwnerProfile(userData.nickname)}} className="authorInfo flex gap05 positionAbsolute position-l0-t0 cursor-pointer text-hover padding-05 boxSize-Border">
-                <img src={userData.profilePicture !== null && userData.profilePicture !== undefined && userData.profilePicture !== "" ? userData.profilePicture : `svgs/defaultProfileImage.svg`} alt="Default profile image" className={( userData.profilePicture !== null ? `profilePicture` : ``) + ` cardProfilePicture  object-fit-cover boxSize-Border hoverWhiteBorder`} />
+                <img src={userData.profilePicture !== null && userData.profilePicture !== undefined && userData.profilePicture !== "" ? userData.profilePicture : ABSOLUTE_IMAGES_URL + `/svgs/defaultProfileImage.svg`} alt="Default profile image" className={( userData.profilePicture !== null ? `profilePicture` : ``) + ` cardProfilePicture  object-fit-cover boxSize-Border hoverWhiteBorder`} />
                 <p className="margin-auto-0 display-block textNano padding-0 padding-left-05">{userData.nickname}</p>
             </div>
             <a href={`/Panel/`+panelId} className="panelInfo flex justify-space-bwt positionAbsolute btm-0 padding-05 boxSize-Border text-decoration-none">

@@ -9,7 +9,7 @@ function createLinksObjects(names, paths, blockButtonsForLoading){
     }
     return linkarray.map((link) => {
         return(
-            <a key={link.id} onClick={(e) => {if(blockButtonsForLoading) e.preventDefault()}} href={link.path} className={"navlink" + (blockButtonsForLoading ? " cursor-wait loadingNavBarLink " : "")}>{link.name}</a>
+            <a key={link.id} onClick={(e) => {if(blockButtonsForLoading) e.preventDefault()}} href={link.path} className={"navlink" + (blockButtonsForLoading ? " cursor-wait loadingNavBarLink text-gray text-hover-gray " : "")}>{link.name}</a>
         )
     })
 }
@@ -47,9 +47,9 @@ function Navbar(props) {
     function createSignBtns(){
         if(hasSignBtns) return (
             <div className="logoContainer" id="logContainer">
-                <a href="/signIn" onClick={(e) => {if(blockButtonsForLoading) e.preventDefault()}} className={"navlink" + (blockButtonsForLoading ? " cursor-wait loadingNavBarLink " : "")}>Log in</a>
+                <a href="/signIn" onClick={(e) => {if(blockButtonsForLoading) e.preventDefault()}} className={"navlink" + (blockButtonsForLoading ? " cursor-wait loadingNavBarLink text-gray text-hover-gray " : "")}>Log in</a>
                 <span className="logoSeparator"/>
-                <a href="/signUp" onClick={(e) => {if(blockButtonsForLoading) e.preventDefault()}} className={"navlink" + (blockButtonsForLoading ? " cursor-wait loadingNavBarLink " : "")}>Sign up</a>
+                <a href="/signUp" onClick={(e) => {if(blockButtonsForLoading) e.preventDefault()}} className={"navlink" + (blockButtonsForLoading ? " cursor-wait loadingNavBarLink text-gray text-hover-gray " : "")}>Sign up</a>
             </div>
         )
     }

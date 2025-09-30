@@ -6,12 +6,14 @@ import PanelCardComponent, { getUserById } from "../components/PanelCardComponen
 import Navbar from "../components/NavbarComponent.jsx";
 import ModalComponent, { hiddePopUp } from "../components/ModalComponent.jsx";
 import { BACKEND_PATH } from "../App.jsx";
+import LoadingComponent from "../components/LoadingComponent.jsx";
 
 document.getElementsByTagName("html")[0].classList = "html100";
 
 export const UNLIMITED_PANELS = 999;
 
 let userData = null;
+let staticIsLoading = true;
 
 function Worksapce() {
 
@@ -26,11 +28,12 @@ function Worksapce() {
     const [panels, setPanels] = useState([]);
     const [reactiveUser, setReactiveUser] = useState({});
     const [panelVisitModals, setPanelVisitModals] = useState([]);
-
+    const [isLoading, setIsLoading] = useState(true);
+ 
     useEffect(() => {
         if(JSON.stringify(reactiveUser).includes("nickname")) {            
             const getPanels = async () => {
-                const data = await getUserPanels();
+                const data = await getUserPanels().finally(() => {setIsLoading(false); staticIsLoading = false});
                 if(data !== null){
                     setPanels(data);
                 } 
@@ -41,7 +44,7 @@ function Worksapce() {
 
     useEffect(() => {
         createPanelCards(null);
-    }, [JSON.stringify(panels)]);
+    }, [JSON.stringify(panels), isLoading]);
 
     useEffect(() => {
         const checkSession = async () => {
@@ -60,6 +63,11 @@ function Worksapce() {
         <>  
             <Navbar texts="Change Plan, Explore" paths="/UpdatePlan, /Explore" hasSignBtns="false" hasLogoSeparator="false" hasUserBtns="false" hasUserInfo="true" userInfo={reactiveUser}/>
             <div id="noBg" className="workspace container padding-top-1 body-OverflowHidden">
+                {false && staticIsLoading && 
+                    <div key={0} className="flex justify-content-center align-items-center w100 h70vh margin-top-2 padding-top-1">
+                        <LoadingComponent hidden="false" loadingIconSize="2.8rem" loadingSpinningIconSize=".5rem" onlyLoadingIcon="true"/>
+                    </div>
+                }
                 {panels.length > 0 ? 
                 <>
                     <div className="flex justify-space-bwt">
@@ -164,22 +172,31 @@ function Worksapce() {
             }
         }
         else{
-            setHtmlPanels([
-                <div key={counter++} className="flex justify-content-center w100 h70vh margin-top-2 padding-top-1">
-                    <div className="flex flex-direction-column">
-                        <h1 className="panelMessageTitle text-white margin-top-2 padding-top-1 line-height-fitContent">You do not have any panels yet</h1>
-                        <a href="/CreatePanel" id="createPanelBtn" className="PlusBtn shadowBtnBorder margin-0-auto margin-top-2 btnGradientBluePurple whitePlus inverted"></a>
-                        <p className="text-gray margin-0-auto margin-top-2">Let's do something wonderful</p>
+            if(!staticIsLoading){
+                setHtmlPanels([
+                    <div key={counter++} className="flex justify-content-center w100 h70vh margin-top-2 padding-top-1">
+                        <div className="flex flex-direction-column">
+                            <h1 className="panelMessageTitle text-white margin-top-2 padding-top-1 line-height-fitContent">You do not have any panels yet</h1>
+                            <a href="/CreatePanel" id="createPanelBtn" className="PlusBtn shadowBtnBorder margin-0-auto margin-top-2 btnGradientBluePurple whitePlus inverted"></a>
+                            <p className="text-gray margin-0-auto margin-top-2">Let's do something wonderful</p>
+                        </div>
                     </div>
-                </div>
-            ]);
+                ]);
+            }
+            else{
+                setHtmlPanels([
+                    <div key={counter++} className="flex justify-content-center align-items-center w100 h70vh margin-top-2 padding-top-1">
+                        <LoadingComponent hidden="false" loadingIconSize="2.8rem" loadingSpinningIconSize=".5rem" onlyLoadingIcon="true"/>
+                    </div>
+                ]);
+            }
         }
     }
 }
 
 export async function getUserPanels(opUserData = null) {
     let userInfo = opUserData !== null ? opUserData : userData ;
-    const response = await fetch(BACKEND_PATH+"/Panel/ofUser/"+userInfo.nickname);
+    const response = await fetch(BACKEND_PATH + "/Panel/ofUser/"+userInfo.nickname);
     const data = await response.json();
     return data;
 }

@@ -6,6 +6,7 @@ import LogoContainer from "../components/LogoContainerComponent";
 import parsePhoneNumber from "libphonenumber-js";
 import { capitalize, normalizeCamelCase } from "../assets/js/normalizeCamelCase";
 import { BACKEND_PATH } from "../App";
+import LoadingComponent from "../components/LoadingComponent";
 
 let regExps = {
     "name":     "^[A-Za-zÑñÁÉÍÓÚÇáéíóúçÀÈÌÒÙàèìòùÂÊÎÔÛâêîôûÄËÏÖÜäëïöü]{1,25}$", 
@@ -53,6 +54,7 @@ function EditUserProfile() {
     const timeouRefs = useRef({});
 
     const [reactiveUser, setReactiveUser] = useState({});
+    const [loadingBools, setLoadingBools] = useState([]);
 
     useEffect(() => {
         const checkSession = async () => {
@@ -70,6 +72,14 @@ function EditUserProfile() {
         dynamicClasses();
         document.getElementById("noBg").addEventListener("dragenter", disableDragStyles);
     },[]);
+
+    function showOrHideLoadingComponent(id, showOrHide){
+        let stringBool = showOrHide === "h" ? "true" : "false";
+        setLoadingBools(prev => ({
+            ...prev,
+            [id]: stringBool
+        }));
+    }
 
     return (
         <>
@@ -130,7 +140,12 @@ function EditUserProfile() {
                             </div>
                             <div className="flex gap2 justify-content-end margin-bottom-1">
                                 <a href="/workspace" className="btn btn-large text-decoration-none h-fitContent margin-auto-0 userSelectNone" id="backBtn"><p className="margin-0 text-white text-semiLight">Cancel</p></a>
-                                <button onClick={sendUserToUpdate} className="btn btn-large btnGradientBluePurple h-fitContent margin-auto-0 userSelectNone" id="nextBtn"><p className="margin-0">Save</p></button>
+                                <button onClick={sendUserToUpdate} className="btn btn-large positionRelative btnGradientBluePurple h-fitContent margin-auto-0 userSelectNone" id="nextBtn">
+                                    <p className="margin-0">Save</p>
+                                    <div className={ (loadingBools['signInLoading'] === undefined || loadingBools['signInLoading'] === "true" ? " display-none " : "") + "flex justify-content-center align-items-center Jh[2.684rem] w100 positionAbsolute left-0 top-0"}>
+                                        <LoadingComponent hidden="false" loadingIconSize=".75rem" loadingSpinningIconSize=".17rem" onlyLoadingIcon="true"/>
+                                    </div>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -153,6 +168,9 @@ function EditUserProfile() {
     }
 
     async function sendUserToUpdate(){
+        let btn = document.getElementById("nextBtn");
+        btn.children[0].classList.add("hidden");
+        showOrHideLoadingComponent("signInLoading", "s");
         if(!formHasErrors){
             const formData = new FormData();
             formData.append("user", JSON.stringify(sendUser));

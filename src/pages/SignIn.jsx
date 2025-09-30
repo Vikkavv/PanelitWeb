@@ -1,8 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import LogoContainer from "../components/LogoContainerComponent";
 import { useNavigate } from 'react-router';
 import { cookieSessionChecker } from "../assets/js/SessionChecker.js";
 import { BACKEND_PATH } from "../App.jsx";
+import LoadingComponent from "../components/LoadingComponent.jsx";
+import { dynamicClasses } from "../assets/js/dynamicCssClasses.js";
 
 document.getElementsByTagName("html")[0].classList = "html100";
 
@@ -13,6 +15,8 @@ function SignIn() {
     let wrongValues = {};
     let fieldHasErrors = {};
 
+    const [loadingBools, setLoadingBools] = useState([]);
+
     const navigate = useNavigate();
 
     const redirect = (path) => {
@@ -21,6 +25,7 @@ function SignIn() {
 
 
     useEffect(() => {
+        dynamicClasses();
         const checkSession = async () => {
             const data = await cookieSessionChecker();
             if(data !== null){
@@ -37,6 +42,15 @@ function SignIn() {
             }
         });
     },[])
+
+    function showOrHideLoadingComponent(id, showOrHide){
+        let stringBool = showOrHide === "h" ? "true" : "false";
+        setLoadingBools(prev => ({
+            ...prev,
+            [id]: stringBool
+        }));
+    }
+
     return (
         <>
             <LogoContainer isLink="true" hasPadding="true" paddingClass="padding-08-2-08-2" isRotatable="true" classes="positionRelative z-index-1" />
@@ -60,7 +74,12 @@ function SignIn() {
                         </div>
                         <div className="positionAbsolute btm-05 registerBtnWrapper flex justify-space-bwt">
                             <a href="/signUp" id="variable" className="navlink text-decoration-underline padding-1 textNano">Don't have an account yet?, sign up</a>
-                            <div className="btn btn-large btnGradientBluePurple h-fitContent margin-auto-0 userSelectNone" id="nextBtn"><p className="margin-0">Sign in</p></div>
+                            <div className="btn btn-large positionRelative btnGradientBluePurple h-fitContent margin-auto-0 userSelectNone" id="nextBtn">
+                                <p className="margin-0">Sign in</p>
+                                <div className={ (loadingBools['signInLoading'] === undefined || loadingBools['signInLoading'] === "true" ? " display-none " : "") + "flex justify-content-center align-items-center Jh[2.684rem] w100 positionAbsolute left-0 top-0"}>
+                                    <LoadingComponent hidden="false" loadingIconSize=".75rem" loadingSpinningIconSize=".17rem" onlyLoadingIcon="true"/>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -69,6 +88,9 @@ function SignIn() {
     )
 
     async function send(emailInput, passInput, rememberMe = false){
+        let btn = document.getElementById("nextBtn");
+        btn.children[0].classList.add("hidden");
+        showOrHideLoadingComponent("signInLoading", "s");
         rememberMe = document.getElementById("rememberMe").checked;
         const formData = new URLSearchParams();
         formData.append(emailInput.name, emailInput.value);
@@ -85,6 +107,9 @@ function SignIn() {
     }
 
     function createWrongFieldsValuesObjects() {
+        let btn = document.getElementById("nextBtn");
+        btn.children[0].classList.remove("hidden");
+        showOrHideLoadingComponent("signInLoading", "h");
         for (const fieldName in errors) {
             wrongValues[fieldName] = document.getElementById(fieldName).value;
             fieldHasErrors[fieldName] = true;

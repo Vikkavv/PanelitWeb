@@ -33,10 +33,6 @@ function Main() {
         dynamicClasses();
     }, []);
 
-    useEffect(() => {
-        console.log(loadingBools);
-    }, [loadingBools])
-
     function showOrHideLoadingComponent(id, showOrHide){
         let stringBool = showOrHide === "h" ? "true" : "false";
         setLoadingBools(prev => ({
@@ -48,7 +44,7 @@ function Main() {
     return (
         <>
             <Navbar texts="Subscription Plans, Explore" paths="/SubscriptionPlans, /Explore" blockButtonsForLoading={loadingBools['startLoading'] === undefined ? "false" : loadingBools['startLoading']}/>
-            <LoadingComponent hidden={loadingBools['startLoading']} loadingMessage="Please wait, the web app its starting up"/>
+            <LoadingComponent hidden={loadingBools['startLoading']} loadingMessage="Please wait, This only happens once and can take 1~2 minutes"/>
             <div className="container text-white">
                 <h1 className="header margin-0-auto margin-top-2">Let’s bring order and share knowledge!</h1>
                 <div className="margin-top-2">
