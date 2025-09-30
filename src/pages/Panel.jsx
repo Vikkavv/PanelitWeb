@@ -734,8 +734,8 @@ function Panel() {
                 if((noteTitle.trim() !== HTMLNote.getElementsByTagName("h2")[0].innerHTML.trim() && noteText === null) || (noteText !== null && (noteTitle.trim() !== document.getElementById("noteTitleEdit").innerHTML.trim() || noteText.trim() !== document.getElementById("noteTextEdit").innerHTML.trim()))){
                     let dbNote = await findNoteById(noteId);
                     console.log(document.getElementById("noteTextEdit"), document.getElementById("noteTitleEdit"));
-                    dbNote.title = document.getElementById("noteTitleEdit") !== null ? document.getElementById("noteTitleEdit").innerHTML.replaceAll("<div>","\n").replaceAll("</div>","") : HTMLNote.getElementsByTagName("h2")[0].innerHTML;
-                    let text = document.getElementById("noteTextEdit") !== null ? document.getElementById("noteTextEdit").innerHTML.replaceAll("<div>","\n").replaceAll("</div>","") : null;
+                    dbNote.title = document.getElementById("noteTitleEdit") !== null ? document.getElementById("noteTitleEdit").innerHTML.replaceAll("<div>","\n").replaceAll("</div>","").replaceAll("<br>","\n") : HTMLNote.getElementsByTagName("h2")[0].innerHTML;
+                    let text = document.getElementById("noteTextEdit") !== null ? document.getElementById("noteTextEdit").innerHTML.replaceAll("<div>","\n").replaceAll("</div>","").replaceAll("<br>","\n") : null;
                     dbNote.bodyText = text;
                     dbNote.owner = {"id": userData.id};
                     dbNote.panel = {"id": dbNote.panel.id};
