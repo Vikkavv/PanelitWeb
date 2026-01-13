@@ -4,6 +4,8 @@ import { dynamicClasses } from "../assets/js/dynamicCssClasses";
 import { cookieSessionChecker } from "../assets/js/SessionChecker";
 import { useNavigate } from "react-router";
 import { BACKEND_PATH } from "../App";
+import { getUserPanels, UNLIMITED_PANELS } from "./WorkSpace";
+import { isMobileDevice, isMobileDeviceAndIsInPortrait } from "../components/NavbarComponent";
 
 export const COLUMN_TYPE_PANEL = "columns"; 
 export const CARDS_TYPE_PANEL = "cards";
@@ -79,6 +81,21 @@ function CreatePanel() {
     const imageRefs = useRef([]);
     const [HTMLContentSteps, setHTMLContentSteps] = useState([]);
     const [reactiveUser, setReactiveUser] = useState([]);
+    const [panels, setPanels] = useState(null);
+    let maxPanelsExceeded = false;
+
+    const [isMobileInPortrait, setIsMobileInPortrait] = useState(null);
+    const [isMobile, setIsMobile] = useState(null);
+    window.addEventListener("resize", () => {
+        if(!isMobileDevice()) setIsMobile(isMobileDevice());
+        if(!isMobileDeviceAndIsInPortrait()) setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
+    });
+
+    screen.orientation.addEventListener("change", () => {
+        if(isMobileDevice()){
+            setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
+        }
+    });
 
     useEffect(() => {
         const checkSession = async () => {
@@ -93,21 +110,51 @@ function CreatePanel() {
         createHTMLContentSteps();
         document.title = "Create new awsome panel! | Panelit"
         dynamicClasses();
+        setIsMobile(isMobileDevice());
+        setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
+                if(isMobileDevice()){
+            document.getElementById("root").classList.add("overFlowXHidden");
+        }
     }, [])
+
+    useEffect(() => {
+        if(!(Array.isArray(reactiveUser))) {            
+            const getPanels = async () => {
+                const data = await getUserPanels(reactiveUser);
+                if(data !== null){
+                    setPanels(data);
+                } 
+            };
+            getPanels();
+        }
+    }, [reactiveUser])
+
+    useEffect(() => {
+        createHTMLContentSteps();
+    }, [isMobile, isMobileInPortrait])
+
+    useEffect(() => {
+        if(panels) {
+            if(!(panels.filter((panel) => panel.creatorId === reactiveUser.id).length < reactiveUser.plan.nMaxPanels || reactiveUser.plan.nMaxPanels === UNLIMITED_PANELS)){
+                maxPanelsExceeded = true;
+                createHTMLContentSteps();
+            }
+        }
+    },[panels]);
 
     return (
         <>
             <div>
-                <div className="flex justify-space-bwt">
-                    <LogoContainer isLink="true" url="/workspace" hasPadding="true" paddingClass="padding-08-2-08-2" isRotatable="true" classes="positionRelative z-index-1"/>
+                <div className={(isMobile ? "positionSticky w-fitContent padding-right-1 top-0 bgWindowOriginal border-radius-0-0-h-0  border-raduis-1em z-index-1" : "flex justify-space-bwt") + " "}>
+                    <LogoContainer isLink="true" url="/workspace" hasPadding="true" paddingClass={(isMobile ? "padding-top-02 padding-left-05" : "padding-08-2-08-2") + " "} isRotatable="true" classes="positionRelative z-index-1"/>
                 </div>
-                <div className="container ">
-                    <a href="/workspace" ref={(el) => {refs.current["workspaceBtn"] = el}} className="btn ArrowBtn flex justify-content-center align-items-center border-radius-50 padding-1 aspect-ratio-1 ">
+                <div className={(isMobile ? (isMobileInPortrait ? "container2" : "container10 margin-top-1px") : "container") + " container"}>
+                    <a href="/workspace" ref={(el) => {refs.current["workspaceBtn"] = el}} className={(isMobile ? "cursor-none margin-top-1px" : "") + " btn ArrowBtn flex justify-content-center align-items-center border-radius-50 padding-1 aspect-ratio-1 shadowBtnBorder1px btnNotHoverNotGradient"}>
                         <div className="w-fitContent aspect-ratio-1">
                             <img className="iconSize display-block margin-0-auto aspect-ratio-1" alt="" src="svgs/leftPointingArrowIcon.svg"/>
                         </div>
                     </a>
-                    <div onClick={() => {step-- ;createHTMLContentSteps()}} ref={(el) => {refs.current["backStepBtn"] = el}} className="btn ArrowBtn flex justify-content-center align-items-center border-radius-50 padding-1 aspect-ratio-1 display-none">
+                    <div onClick={() => {step--; createHTMLContentSteps()}} ref={(el) => {refs.current["backStepBtn"] = el}} className={(isMobile ? "cursor-none" : "") + " btn ArrowBtn flex justify-content-center align-items-center border-radius-50 padding-1 aspect-ratio-1 display-none"}>
                         <div className="w-fitContent aspect-ratio-1">
                             <img className="iconSize display-block margin-0-auto aspect-ratio-1" alt="" src="svgs/leftPointingArrowIcon.svg"/>
                         </div>
@@ -119,12 +166,17 @@ function CreatePanel() {
     )
 
     function createHTMLContentSteps(typeSelected = null){
+        if(maxPanelsExceeded === true){
+            step = 0;
+            refs.current['maxPanelsExceededLabel'].classList.remove("display-none");
+        }
         setHTMLContentSteps([]);
         if(step === 0){
             setHTMLContentSteps(
-                <div className="flex align-items-center h70vh">
-                    <div className="grid col-3 gap2 h40vh margin-top-1 padding-bottom-1 w100">                
-                        <div onClick={() => {step = 1; createHTMLContentSteps(COLUMN_TYPE_PANEL)}} className="window overFlowHidden padding-0 flex creationCard">
+                <div className={(isMobile ? "" : "h70vh") + " flex align-items-center positionRelative"}>
+                    <div ref={(el) => {refs.current['maxPanelsExceededLabel'] = el}} className={(isMobile ? "btm-100Per right-0 w50" : "top-0 w100") + " positionAbsolute display-none"}><p className={(isMobile ? "textNano" : "") + " margin-0 text-red text-centered"}>You can not create more panels due to your current plan.</p></div>
+                    <div className={(isMobile ? (isMobileInPortrait ? "col-2 gap1 padding-bottom-5" : "col-1 gap1 padding-bottom-5") : "col-3 gap2 h40vh") + " grid margin-top-1 padding-bottom-1 w100"}>                
+                        <div onClick={() => {step = 1; createHTMLContentSteps(COLUMN_TYPE_PANEL)}} className={(isMobileInPortrait ? "" : "") + " window overFlowHidden padding-0 flex creationCard " + (maxPanelsExceeded ? "cursor-notAllowed" : "")}>
                             <div className="flex flex-direction-column gap0 justify-space-bwt w100">
                                 <div className="padding-1ch z-index-1 positionRelative">
                                     <h2 className="text-white loginTitle text-centered margin-top-1">Columns</h2>
@@ -135,7 +187,7 @@ function CreatePanel() {
                                 <img className="diagonalImgCard z-index-0" src="img/ColumnsLayout.png" alt="" />
                             </div>
                         </div>
-                        <div onClick={() => {step = 1; createHTMLContentSteps(CARDS_TYPE_PANEL)}} className="window overFlowHidden padding-0 flex creationCard">
+                        <div onClick={() => {step = 1; createHTMLContentSteps(CARDS_TYPE_PANEL)}} className={(isMobileInPortrait ? "" : "") + " window overFlowHidden padding-0 flex creationCard " + (maxPanelsExceeded ? "cursor-notAllowed" : "")}>
                             <div className="flex flex-direction-column gap0 justify-space-bwt w100">
                                 <div className="padding-1ch z-index-1 positionRelative">
                                     <h2 className="text-white loginTitle text-centered margin-top-1">Cards</h2>
@@ -146,7 +198,7 @@ function CreatePanel() {
                                 <img className="diagonalImgCard panelCardImg z-index-0" src="img/CardsLayout.png" alt="" />
                             </div>
                         </div>
-                        <div onClick={() => {step = 1; createHTMLContentSteps(CONNECTED_CARDS_TYPE_PANEL)}} className="window overFlowHidden padding-0 flex creationCard">
+                        <div onClick={() => {step = 1; createHTMLContentSteps(CONNECTED_CARDS_TYPE_PANEL)}} className={(isMobileInPortrait ? "span-2 w50Minus05 willChange margin-0-auto" : "") + " window overFlowHidden padding-0 flex creationCard " + (maxPanelsExceeded ? "cursor-notAllowed" : "")}>
                             <div className="flex flex-direction-column gap0 justify-space-bwt w100">
                                 <div className="padding-1ch positionRelative z-index-1">
                                     <h2 className="text-white loginTitle text-centered margin-top-1">Steps cards</h2>
@@ -218,7 +270,6 @@ function CreatePanel() {
             }
             reader.readAsDataURL(file);
             imageRefs.current[input.name+"File"] = file;
-            console.log(imageRefs.current[input.name+"File"]);
         }
         else{
             imageRefs.current[input.name].src = "/svgs/defaultProfileImage.svg";

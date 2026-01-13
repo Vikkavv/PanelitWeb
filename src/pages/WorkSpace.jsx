@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router';
 import { cookieSessionChecker } from "../assets/js/SessionChecker.js";
 import {dynamicClasses} from '../assets/js/dynamicCssClasses.js';
 import PanelCardComponent, { getUserById } from "../components/PanelCardComponent.jsx";
-import Navbar from "../components/NavbarComponent.jsx";
+import Navbar, { isMobileDevice, isMobileDeviceAndIsInPortrait } from "../components/NavbarComponent.jsx";
 import ModalComponent, { hiddePopUp } from "../components/ModalComponent.jsx";
 import { BACKEND_PATH } from "../App.jsx";
 import LoadingComponent from "../components/LoadingComponent.jsx";
+import { goBackUntilElementIsADiv } from "./Explore.jsx";
 
 document.getElementsByTagName("html")[0].classList = "html100";
 
@@ -28,7 +29,21 @@ function Worksapce() {
     const [panels, setPanels] = useState([]);
     const [reactiveUser, setReactiveUser] = useState({});
     const [panelVisitModals, setPanelVisitModals] = useState([]);
+    const [currentOption, setCurrentOption] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
+    
+    const [isMobileInPortrait, setIsMobileInPortrait] = useState(null);
+    const [isMobile, setIsMobile] = useState(null);
+    window.addEventListener("resize", () => {
+        if(!isMobileDevice()) setIsMobile(isMobileDevice());
+        if(!isMobileDeviceAndIsInPortrait()) setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
+    });
+
+    screen.orientation.addEventListener("change", () => {
+        if(isMobileDevice()){
+            setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
+        }
+    });
  
     useEffect(() => {
         if(JSON.stringify(reactiveUser).includes("nickname")) {            
@@ -47,6 +62,14 @@ function Worksapce() {
     }, [JSON.stringify(panels), isLoading]);
 
     useEffect(() => {
+        createPanelCards(null);
+    }, [currentOption]);
+
+    useEffect(() => {
+        dynamicClasses();
+    }, [isMobile])
+
+    useEffect(() => {
         const checkSession = async () => {
             const data = await cookieSessionChecker();
             if(data !== null){
@@ -57,12 +80,17 @@ function Worksapce() {
         };
         checkSession();
         document.title = "My Workspace | Panelit";
+        setIsMobile(isMobileDevice());
+        setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
         dynamicClasses();
+        if(isMobileDevice()){
+            document.getElementById("root").classList.add("overFlowXHidden");
+        }
     },[])
     return (
         <>  
-            <Navbar texts="Change Plan, Explore" paths="/UpdatePlan, /Explore" hasSignBtns="false" hasLogoSeparator="false" hasUserBtns="false" hasUserInfo="true" userInfo={reactiveUser}/>
-            <div id="noBg" className="workspace container padding-top-1 body-OverflowHidden">
+            <Navbar key={isMobile} texts="Change Plan, Explore" paths="/UpdatePlan, /Explore" hasSignBtns="false" hasLogoSeparator="false" hasUserBtns="false" hasUserInfo="true" userInfo={reactiveUser} hasMobileBottomMenu={""+isMobile} isSticky={""+isMobile} exceededNumMaxOfPanelsFunction={exceededNumMaxOfPanels} settingsInsteadOfLinks={""+isMobile}/>
+            <div id="noBg" className={(isMobile ? "container10" : "container") + " workspace padding-top-1 body-OverflowHidden"}>
                 {false && staticIsLoading && 
                     <div key={0} className="flex justify-content-center align-items-center w100 h70vh margin-top-2 padding-top-1">
                         <LoadingComponent hidden="false" loadingIconSize="2.8rem" loadingSpinningIconSize=".5rem" onlyLoadingIcon="true"/>
@@ -71,26 +99,40 @@ function Worksapce() {
                 {panels.length > 0 ? 
                 <>
                     <div className="flex justify-space-bwt">
-                        <div className="flex">
+                        <div className={(isMobile ? (isMobileInPortrait ? /*Mobile Portrait*/"align-items-center margin-bottom-1" : /*Mobile vertical*/"flex-direction-column gap07") : /*PC-exclusive*/"") + /*All*/" flex"}>
+                            { !isMobile &&
                             <select onChange={() => createPanelCards(null)} ref={(el) => {refs.current["panelsFilter"] = el}} className="window padding-0 margin-1-0 margin-left-1 text-gray" defaultValue="0">   
                                 <option value="0" className="bgWindow">All</option>
                                 <option value="1" className="bgWindow">Owned</option>
                                 <option value="2" className="bgWindow">Joined</option>
-                            </select>
-                            <form onSubmit={(e) => searchPanels(e)} className="flex">
-                                <input ref={(el) => {refs.current["searchInput"] = el}} type="text" className="display-block window text-white margin-bottom-1 margin-top-1 margin-0-1" placeholder="Search a Panel" autoComplete="on"/> 
-                                <button type="submit" className="SearchBtn whiteIcon margin-auto-0 btnGradientBluePurple flex">
+                            </select>}
+                            <form onSubmit={(e) => searchPanels(e)} className={(isMobile ? (isMobileInPortrait ? "align-items-center" : "align-items-center margin-top-05") : "") + " flex"}>
+                                <input ref={(el) => {refs.current["searchInput"] = el}} type="text" className={(isMobile ? "margin-right-1" : "margin-0-1 margin-bottom-1 margin-top-1") + " display-block window text-white"} placeholder="Search a Panel" autoComplete="on"/> 
+                                <button type="submit" className={(isMobile ? "cursor-none" : "margin-auto-0") + " SearchBtn whiteIcon btnGradientBluePurple flex"}>
                                     <img className="iconSize margin-auto" src="svgs/SearchIcon.svg" alt="" />
                                 </button>
                             </form>
+                            { isMobile &&
+                            <div className={(isMobile ? (isMobileInPortrait ? "margin-left-1" : "margin-bottom-1 margin-auto-0") : "margin-auto-0") + " flex w-fitContent align-items-center window toggleBtn boxSize-Border"}>
+                                <div onClick={(e) => toggle(e)} className={(isMobile ? "cursor-none userSelectNone" : "cursor-pointer") + " flex align-items-center justify-content-center toggleOption positionRelative z-index-1"}>
+                                    <p className="margin-0 text-semiLight text-white">All</p>
+                                </div>
+                                <div onClick={(e) => toggle(e)} className={(isMobile ? "cursor-none userSelectNone" : "cursor-pointer") + " flex align-items-center justify-content-center toggleOption positionRelative z-index-1"}>
+                                    <p className="margin-0 text-semiLight text-white">Owned</p>
+                                </div>
+                                <div onClick={(e) => toggle(e)} className={(isMobile ? "cursor-none userSelectNone" : "cursor-pointer") + " flex align-items-center justify-content-center toggleOption positionRelative z-index-1"}>
+                                    <p className="margin-0 text-semiLight text-white">Joined</p>
+                                </div>
+                            </div>}
                         </div>
+                        { !isMobile &&
                         <div className="flex gap1 align-items-center positionRelative">
                             <p className="margin-0 text-white">Create panel</p>
                             <a onClick={(e) => exceededNumMaxOfPanels(e)} href="/CreatePanel" className="PlusBtn smallPlusBtn searchSizeBtn shadowBtnBorder margin-auto-0 btnGradientBluePurple whitePlus inverted"></a>
                             <span id="panelExceededError" className="hidden textNano btm-Neg-1-3 text-red positionAbsolute w120 z-index-0">You can not create more panels due to your current plan.</span>
-                        </div>
+                        </div>}
                     </div>
-                    <div className="grid col-4 gap2 row-gap1 margin-top-2 overFlowYAuto darkscrollBar ha70vh padding-0-1">
+                    <div className={(isMobile ? (isMobileInPortrait ? "col-2 row-gap1-85 gap1 ha60vhcalc margin-bottom-4" : "col-1 gap1 ha60vhcalc") : "col-4 gap2 margin-top-2 ha70vh row-gap1") + " grid overFlowYAuto darkscrollBar padding-0-1"}>
                         {htmlPanels}
                     </div>
                 </>
@@ -101,6 +143,17 @@ function Worksapce() {
             {panelVisitModals}
         </>
     )
+
+    function toggle(e){
+        let divToToggle = goBackUntilElementIsADiv(e.target);
+        let divPosition = [...divToToggle.parentElement.children].findIndex((div) => div === divToToggle);
+        let actualTogglePosition = parseFloat(getComputedStyle(divToToggle.parentElement).getPropertyValue('--markerPos').trim());
+        let newTogglePosition = 100 * divPosition;
+        setCurrentOption(divPosition);
+        if(newTogglePosition !== actualTogglePosition){
+            divToToggle.parentElement.style.setProperty("--markerPos", newTogglePosition+"%");
+        }
+    }
 
     function exceededNumMaxOfPanels(e){
         e.preventDefault();
@@ -124,7 +177,7 @@ function Worksapce() {
         setHtmlPanels([]);
         setPanelVisitModals([]);
         let counter = 0;
-        let optionValue = refs.current["panelsFilter"]?.selectedOptions[0].value;
+        let optionValue = refs.current["panelsFilter"] !== undefined ? refs.current["panelsFilter"].selectedOptions[0].value : currentOption;
         if(panels.length > 0){
             for (const panel of panels) {
                 let userPanel = await getUserById(panel.creatorId);
@@ -163,7 +216,7 @@ function Worksapce() {
             }
             if(optionValue == 2 && !panels.some(panel => panel.creatorId !== userData.id)){
                 setHtmlPanels([
-                    <div key={counter++} className="flex justify-content-center w100 h70vh span-4">
+                    <div key={counter++} className={(isMobile ? "h60vh text-centered" : "h70vh") + " flex justify-content-center w100 span-4"}>
                         <div className="flex flex-direction-column">
                             <h1 className="panelMessageTitle text-white margin-top-2 padding-top-1 line-height-fitContent">You have not joined a panel yet</h1>
                         </div>
@@ -174,11 +227,11 @@ function Worksapce() {
         else{
             if(!staticIsLoading){
                 setHtmlPanels([
-                    <div key={counter++} className="flex justify-content-center w100 h70vh margin-top-2 padding-top-1">
+                    <div key={counter++} className={(isMobile ? "h60vh text-centered" : "h70vh margin-top-2 padding-top-1") + " flex justify-content-center w100 "}>
                         <div className="flex flex-direction-column">
                             <h1 className="panelMessageTitle text-white margin-top-2 padding-top-1 line-height-fitContent">You do not have any panels yet</h1>
-                            <a href="/CreatePanel" id="createPanelBtn" className="PlusBtn shadowBtnBorder margin-0-auto margin-top-2 btnGradientBluePurple whitePlus inverted"></a>
-                            <p className="text-gray margin-0-auto margin-top-2">Let's do something wonderful</p>
+                            <a href="/CreatePanel" id="createPanelBtn" className={(isMobile ? "" : "margin-top-2") + " PlusBtn shadowBtnBorder margin-0-auto  btnGradientBluePurple whitePlus inverted"}></a>
+                            <p className={(isMobile ? "text-white margin-top-1" : " text-gray margin-top-2") + " margin-0-auto "}>Let's do something wonderful</p>
                         </div>
                     </div>
                 ]);

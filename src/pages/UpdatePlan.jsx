@@ -8,6 +8,7 @@ import { capitalize } from "../assets/js/normalizeCamelCase";
 import { getUserById } from "../components/PanelCardComponent.jsx";
 import { UNLIMITED_PANELS } from "./WorkSpace.jsx";
 import { BACKEND_PATH } from "../App.jsx";
+import { isMobileDevice, isMobileDeviceAndIsInPortrait } from "../components/NavbarComponent.jsx";
 
 let planDescriptions = {
     "basic": "Perfect for personal projects, passion ideas, or anything you’re building just for you.",
@@ -34,9 +35,23 @@ function UpdatePlan() {
         navigate(path);
     };
 
+    screen.orientation.addEventListener("change", () => {
+        if(isMobileDevice()){
+            setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
+        }
+    });
+
+    const [isMobileInPortrait, setIsMobileInPortrait] = useState(null);
+    const [isMobile, setIsMobile] = useState(null);
+    window.addEventListener("resize", () => {
+        if(!isMobileDevice()) setIsMobile(isMobileDevice());
+        if(!isMobileDeviceAndIsInPortrait()) setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
+    });
+
     const [reactiveUser, setReactiveUser] = useState(null);
     const [plans, setPlans] = useState(null);
     const [HTMLPlans, setHTMLplans] = useState([]);
+
 
     useEffect(() => {
         if(plans !== null){
@@ -62,26 +77,42 @@ function UpdatePlan() {
         checkSession();
         document.title = "Update my plan | Panelit";
         dynamicClasses();
+        setIsMobile(isMobileDevice());
+        setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
+        if(isMobileDevice()){
+            document.getElementById("root").classList.add("overFlowXHidden");
+        }
     },[]);
 
     return (
     <>
         <div className="body-OverFlowXHidden">
-            <div className="flex justify-space-bwt">
-                <LogoContainer isLink="true" url="/workspace" hasPadding="true" paddingClass="padding-08-2-08-2" isRotatable="true"/>
-                <div className="flex w-fitContnent aspect-ratio-1 padding-08-2-08-2">
-                    <UserProfileBtnComponent userInfo={userData}/>
+            {!isMobile ? 
+                <div className="flex justify-space-bwt">
+                    <LogoContainer isLink="true" url="/" hasPadding="true" paddingClass="padding-08-2-08-2" isRotatable="true"/>
+                    <div className="flex w-fitContnent aspect-ratio-1 padding-08-2-08-2">
+                        <UserProfileBtnComponent userInfo={userData}/>
+                    </div>
                 </div>
-            </div>
-            <div className="container ">
-                <a href="/workspace" className="btn flex justify-content-center align-items-center border-radius-50 padding-1 aspect-ratio-1 ">
+                : 
+                <div className="flex justify-space-bwt align-items-start positionSticky top-0 z-index-1 margin-bottom-2">
+                    <div className="positionSticky w-fitContent padding-right-1 top-0 bgWindowOriginal border-radius-0-0-h-0  border-raduis-1em z-index-1">
+                        <LogoContainer isLink="true" url="/" hasPadding="true" paddingClass="padding-left-05 padding-top-02" classes="cursor-none" isRotatable="true"/>
+                    </div>
+                    <div className="flex w-fitContnent aspect-ratio-1 padding-right-1 padding-top-05">
+                        <UserProfileBtnComponent userInfo={userData} onlyImage={"true"}/>
+                    </div>
+                </div>
+            }
+            <div className={(isMobile ? "container10 positionRelative z-index-0" : "container") + " "}>
+                <a href="/workspace" className={(isMobile ? "cursor-none" : "") + " btn flex justify-content-center align-items-center border-radius-50 padding-1 aspect-ratio-1 "}>
                     <div className="w-fitContent aspect-ratio-1">
                         <img className="iconSize display-block margin-0-auto Jw[20px] Jpr[r:2px] aspect-ratio-1" alt="" src="svgs/leftPointingArrowIcon.svg"/>
                     </div>
                 </a>
                 <h1 className="margin-0 margin-top-1 text-white">Let’s find the plan that fits you best!</h1>
-                <p className="margin-0 margin-top-1 text-white text-semiLight">Not every plan fits everyone—and that’s the point! Take a peek and choose the one that feels right for you.</p>
-                <div className="grid col-4 gap2 h70vh margin-top-1 padding-bottom-1">                
+                <p className={(isMobile ? "margin-bottom-2" : "") + " margin-0 margin-top-1 text-white text-semiLight"}>Not every plan fits everyone—and that’s the point! Take a peek and choose the one that feels right for you.</p>
+                <div className={(isMobile ? (isMobileInPortrait ? "col-2 margin-bottom-4" : "col-1 margin-bottom-4") : "col-4 h70vh") + " grid gap2 margin-top-1 padding-bottom-1"}>                
                     {HTMLPlans}
                 </div>
             </div>
@@ -122,7 +153,7 @@ function UpdatePlan() {
 
                         <div className={ planColors[plan.name] + " planColoredPart w100 padding-2 flex justify-content-center align-items-center gap3 boxSize-Border"}>
                             <div className="flex flex-direction-column gap0 align-items-center">
-                                <div onClick={() => {sendNewPlan(plan.id, false)}} className="btn h-fitContent"><span className="text-white textMicro">Free</span></div>
+                                <div onClick={() => {sendNewPlan(plan.id, false)}} className={(isMobile ? "cursor-none" : "") + " btn h-fitContent"}><span className="text-white textMicro">Free</span></div>
                                 <p className="margin-0 text-gray textMicro text-semiLight text-centered margin-top-05">Forever</p>
                                 {reactiveUser.plan.id === plan.id &&
                                     <div className="padding-top-05 positionAbsolute btm-1">
@@ -137,17 +168,17 @@ function UpdatePlan() {
 
                         <div className={ planColors[plan.name] + " planColoredPart w100 padding-2 flex justify-content-center align-items-center gap3 boxSize-Border"}>
                             <div className="flex flex-direction-column gap0 align-items-center">
-                                <div onClick={() => {sendNewPlan(plan.id, true)}} className="btn h-fitContent"><span className="text-white textMicro">$ {plan.monthPrice}</span></div>
+                                <div onClick={() => {sendNewPlan(plan.id, true)}} className={(isMobile ? "cursor-none" : "") + " btn h-fitContent"}><span className="text-white textMicro">$ {plan.monthPrice}</span></div>
                                 <p className="margin-0 text-gray textMicro text-semiLight text-centered margin-top-05">Per month</p>
                             </div>
                             <div className="flex flex-direction-column gap0 align-items-center">
-                                <div onClick={() => {sendNewPlan(plan.id, false)}} className="btn h-fitContent"><span className="text-white textMicro">$ {plan.yearPrice}</span></div>
+                                <div onClick={() => {sendNewPlan(plan.id, false)}} className={(isMobile ? "cursor-none" : "") + " btn h-fitContent"}><span className="text-white textMicro">$ {plan.yearPrice}</span></div>
                                 <p className="margin-0 text-gray textMicro text-semiLight text-centered margin-top-05">Per year</p>
                             </div>
                             {reactiveUser.plan.id === plan.id &&
                                 <div className="padding-top-05 positionAbsolute btm-05">
                                     <p className="margin-0 text-white text-centered textNano">Your current plan</p>
-                                    <p className="margin-0 text-gray text-centered textNano">Expires: {reactiveUser.planExpirationDate.replaceAll("T", " ").replaceAll("-", "/")}</p>
+                                    <p className="margin-0 text-gray text-centered textNano">Expires: {reactiveUser.planExpirationDate.substring(0, reactiveUser.planExpirationDate.length-10).replaceAll("T", " ").replaceAll("-", "/")}</p>
                                 </div>
                             }
                         </div>

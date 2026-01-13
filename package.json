@@ -7,7 +7,11 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "host": "vite --host",
+    "dev:https": "vite --host 192.168.1.59 --https --port 5174",
+    "dev:http": "vite --host 192.168.1.59 --port 5173",
+    "dev:both": "npm run dev:https & npm run dev:http"
   },
   "dependencies": {
     "libphonenumber-js": "^1.12.6",

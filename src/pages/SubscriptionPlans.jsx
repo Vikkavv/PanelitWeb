@@ -1,29 +1,54 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import LogoContainer from "../components/LogoContainerComponent"
 import { dynamicClasses } from "../assets/js/dynamicCssClasses"
+import { isMobileDevice, isMobileDeviceAndIsInPortrait } from "../components/NavbarComponent"
 
 function SubscriptionPlans() {
+
+    screen.orientation.addEventListener("change", () => {
+        if(isMobileDevice()){
+            setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
+        }
+    });
+
+    const [isMobileInPortrait, setIsMobileInPortrait] = useState(null);
+    const [isMobile, setIsMobile] = useState(null);
+        window.addEventListener("resize", () => {
+        if(!isMobileDevice()) setIsMobile(isMobileDevice());
+        if(!isMobileDeviceAndIsInPortrait()) setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
+    });
 
     useEffect(() => {
         document.title = "Subscription plans | Panelit";
         dynamicClasses();
+        if(isMobileDevice()){
+            document.getElementById("root").classList.add("overFlowXHidden");
+        }
+        setIsMobile(isMobileDevice());
+        setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
     }, [])
 
     return (
         <>
-            <div className="body-OverFlowXHidden">
-                <div className="flex justify-space-bwt">
-                    <LogoContainer isLink="true" url="/" hasPadding="true" paddingClass="padding-08-2-08-2" isRotatable="true"/>
-                </div>
-                <div className="container">
-                    <a href="/" className="btn flex justify-content-center align-items-center border-radius-50 padding-1 aspect-ratio-1 ">
+            <div>
+                {!isMobile ? 
+                    <div className="flex justify-space-bwt">
+                        <LogoContainer isLink="true" url="/" hasPadding="true" paddingClass="padding-08-2-08-2" isRotatable="true"/>
+                    </div>
+                    : 
+                    <div className="positionSticky w-fitContent padding-right-1 top-0 bgWindowOriginal border-radius-0-0-h-0  border-raduis-1em z-index-1">
+                        <LogoContainer isLink="true" url="/" hasPadding="true" paddingClass="padding-left-05 padding-top-02" classes="cursor-none margin-bottom-2" isRotatable="true"/>
+                    </div>
+                }
+                <div className={(isMobile ? "container10 positionRelative z-index-0" : "container") + " "}>
+                    <a href="/" className={(isMobile ? "cursor-none" : "") + " btn flex justify-content-center align-items-center border-radius-50 padding-1 aspect-ratio-1"}>
                         <div className="w-fitContent aspect-ratio-1">
                             <img className="iconSize display-block margin-0-auto Jw[20px] Jpr[r:2px] aspect-ratio-1" alt="" src="svgs/leftPointingArrowIcon.svg"/>
                         </div>
                     </a>
                     <h1 className="margin-0 margin-top-1 text-white">Let’s find the plan that fits you best!</h1>
                     <p className="margin-0 margin-top-1 text-white text-semiLight">Not every plan fits everyone—and that’s the point! Take a peek and choose the one that feels right for you.</p>
-                    <div className="grid col-4 gap2 h70vh margin-top-1 padding-bottom-1">                
+                    <div className={(isMobile ? (isMobileInPortrait ? "col-2 margin-bottom-4" : "col-1 margin-bottom-4") : "col-4 h70vh") + " grid gap2 margin-top-1 padding-bottom-1"}>                
                         
                         <div className="window overFlowHidden padding-0 flex">
                             <div className="flex flex-direction-column gap0 justify-space-bwt w100">

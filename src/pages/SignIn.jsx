@@ -5,6 +5,7 @@ import { cookieSessionChecker } from "../assets/js/SessionChecker.js";
 import { BACKEND_PATH } from "../App.jsx";
 import LoadingComponent from "../components/LoadingComponent.jsx";
 import { dynamicClasses } from "../assets/js/dynamicCssClasses.js";
+import { isMobileDevice } from "../components/NavbarComponent.jsx";
 
 document.getElementsByTagName("html")[0].classList = "html100";
 
@@ -15,7 +16,12 @@ function SignIn() {
     let wrongValues = {};
     let fieldHasErrors = {};
 
+    window.addEventListener("resize", () => {
+        if(!isMobileDevice()) setIsMobile(isMobileDevice());
+    });
+
     const [loadingBools, setLoadingBools] = useState([]);
+    const [isMobile, setIsMobile] = useState(null);
 
     const navigate = useNavigate();
 
@@ -41,6 +47,7 @@ function SignIn() {
                 checkFields();
             }
         });
+        setIsMobile(isMobileDevice());
     },[])
 
     function showOrHideLoadingComponent(id, showOrHide){
@@ -53,7 +60,11 @@ function SignIn() {
 
     return (
         <>
-            <LogoContainer isLink="true" hasPadding="true" paddingClass="padding-08-2-08-2" isRotatable="true" classes="positionRelative z-index-1" />
+            {!isMobile ? 
+                <LogoContainer isLink="true" hasPadding="true" paddingClass="padding-08-2-08-2" isRotatable="true" classes="positionRelative z-index-1"/>
+              : 
+                <LogoContainer isLink="true" hasPadding="true" paddingClass="padding-left-05 padding-top-02" classes="cursor-none margin-bottom-2 positionRelative z-index-1" isRotatable="true"/>
+            }
             <div className="flex positionAbsolute position-l0-t0 w100 h100 z-index-0">
                 <div className="window login padding-1 positionRelative">
                     <h1 className="textMini text-gray text-normal margin-0 margin-bottom-1 text-end text-italic">Sign in to Panelit</h1>
@@ -66,16 +77,16 @@ function SignIn() {
                             <label className="labelTitle display-block text-white margin-0-auto margin-bottom-05 w75" htmlFor="password">Password</label>
                             <input className="display-block window text-white w75 margin-0-auto margin-bottom-1" id="password" placeholder="Don't let anyone see it" type="password" name="password" autoComplete="off"/>
                             <span id="passwordErr" className="hidden errorMessageLabel display-block margin-0-auto w75 btm-1"></span>
-                            <div className="containerCheckbox padding-01 w75 display-block margin-0-auto">
+                            <div className={(isMobile ? "cursor-none" : "") + " containerCheckbox padding-01 w75 display-block margin-0-auto"}>
                                 <input id="rememberMe" type="checkbox" className="hidden"/>
-                                <label htmlFor="rememberMe" className="checkmark cursor-pointer w-fitContent"></label>
+                                <label htmlFor="rememberMe" className={(isMobile ? "cursor-none" : "cursor-pointer") + " checkmark w-fitContent"}></label>
                                 <label htmlFor="rememberMe" className="textNano text-white w-fitContent fontWeightNormal">Remember me</label>
                             </div>
                         </div>
                         <div className="positionAbsolute btm-05 registerBtnWrapper flex justify-space-bwt">
-                            <a href="/signUp" id="variable" className="navlink text-decoration-underline padding-1 textNano">Don't have an account yet?, sign up</a>
+                            <a href="/signUp" id="variable" className={(isMobile ? "cursor-none" : "") + " navlink text-decoration-underline padding-1 textNano"}>Don't have an account yet?, sign up</a>
                             <div className="btn btn-large positionRelative btnGradientBluePurple h-fitContent margin-auto-0 userSelectNone" id="nextBtn">
-                                <p className="margin-0">Sign in</p>
+                                <p className={(isMobile ? "textNanoMobileOriginal cursor-none" : "") + " margin-0"}>Sign in</p>
                                 <div className={ (loadingBools['signInLoading'] === undefined || loadingBools['signInLoading'] === "true" ? " display-none " : "") + "flex justify-content-center align-items-center Jh[2.684rem] w100 positionAbsolute left-0 top-0"}>
                                     <LoadingComponent hidden="false" loadingIconSize=".75rem" loadingSpinningIconSize=".17rem" onlyLoadingIcon="true"/>
                                 </div>

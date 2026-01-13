@@ -2,12 +2,13 @@ import { useEffect, useState } from "react"
 import { cookieSessionChecker } from "../assets/js/SessionChecker";
 import LogoContainer from "../components/LogoContainerComponent";
 import { getFollowed, getFollowers } from "../assets/js/getFollowersAndFollowedOfAnUser";
-import { redirect, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import PanelCardComponent, { getUserById } from "../components/PanelCardComponent";
 import { getUserPanels } from "./WorkSpace";
 import { dynamicClasses } from "../assets/js/dynamicCssClasses";
 import ModalComponent, { showPopUp } from "../components/ModalComponent";
 import { ABSOLUTE_IMAGES_URL, BACKEND_PATH } from "../App";
+import { isMobileDevice, isMobileDeviceAndIsInPortrait } from "../components/NavbarComponent";
 
 let userData = {
     "id": 0,
@@ -20,7 +21,7 @@ let userData = {
     "profilePicture":null
 };
 
-let counter;
+let counter = 0;
 
 function UserProfile() {
 
@@ -34,6 +35,25 @@ function UserProfile() {
     const [panels, setPanels] = useState(null);
     const [HTMLOwnedPanels, setHTMLOwnedPanels] = useState([]);
     const [HTMLJoinedPanels, setHTMLJoinedPanels] = useState([]);
+    
+    const [isMobileInPortrait, setIsMobileInPortrait] = useState(null);
+    const [isMobile, setIsMobile] = useState(null);
+    window.addEventListener("resize", () => {
+        if(!isMobileDevice()) setIsMobile(isMobileDevice());
+        if(!isMobileDeviceAndIsInPortrait()) setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
+    });
+
+    screen.orientation.addEventListener("change", () => {
+        if(isMobileDevice()){
+            setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
+        }
+    });
+
+    const navigate = useNavigate();
+
+    const redirect = (path) => {
+        navigate(path);
+    };
 
     useEffect(() => {
         if(reactiveUser !== null){
@@ -44,12 +64,12 @@ function UserProfile() {
             };
             getFollowingInfo();
         }   
-    }, [JSON.stringify(reactiveUser)])
+    }, [reactiveUser])
 
     useEffect(() => {
         if(panels !== null)
             createPanelCards();
-    }, [JSON.stringify(panels)])
+    }, [panels])
 
     useEffect(() => {
         const checkSession = async () => {
@@ -59,42 +79,48 @@ function UserProfile() {
                 setSessionUserFollowed(await getFollowed(userData));
                 setSessionUserFollowers(await getFollowers(userData));
             } 
-            else redirect("/signIn");
         };
         checkSession();
         const getUser = async () => {
             let parsedId = Number.parseInt(id);
             let user = !Number.isNaN(parsedId) ? await getUserById(id) : await getUserByNickname(id);
             setReactiveUser(setOnlyRelevantUserValues(userData, user));
-            document.title = user.nickname + "'s profile | Panelit";
+            if(user?.nickname)
+                document.title = user.nickname + "'s profile | Panelit";
         }
         getUser();
         document.getElementsByTagName("html")[0].classList.add("darkscrollBar");
         dynamicClasses();
+        setIsMobile(isMobileDevice());
+        setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
     }, [])
+
+    useEffect(() => {
+        dynamicClasses();
+    }, [isMobile, isMobileInPortrait])
 
     return (
         <>
             <div id="noBg"> 
-                <LogoContainer isLink="true" url="/workspace" hasPadding="true" paddingClass="padding-08-2-08-2" isRotatable="true"/>
-                <div className="container">
+                <LogoContainer isLink="true" url="/workspace" hasPadding="true" paddingClass={isMobile ? "padding-top-02 padding-left-05" : "padding-08-2-08-2"} isRotatable="true"/>
+                <div className={(isMobile ? "container10" : "container") + ""}>
                     <div className="flex gap5 margin-top-05">
                         <div className="padding-1 padding-top-05 padding-bottom-05 flex ">
-                            <a title="Go back" href="#" onClick={(e) => goBack(e)} className="btn flex justify-content-center align-items-center border-radius-50 margin-auto-0 padding-1 aspect-ratio-1 ">
+                            <a title="Go back" href="#" onClick={(e) => goBack(e)} className={(isMobile ? "padding-05 margin-left-3Neg cursor-none btnOnlyHover" : "padding-1") + " btn flex justify-content-center align-items-center border-radius-50 margin-auto-0 aspect-ratio-1 "}>
                                 <div className="w-fitContent aspect-ratio-1">
-                                    <img className="iconSize-2 display-block margin-0-auto aspect-ratio-1 userSelectNone" alt="" src={ ABSOLUTE_IMAGES_URL + "/svgs/leftPointingArrowIcon.svg" }   />
+                                    <img className={(isMobile ? "Jpr[l:-1px]" : "") + " iconSize-2 display-block margin-0-auto aspect-ratio-1 userSelectNone"} alt="" src={ ABSOLUTE_IMAGES_URL + "/svgs/leftPointingArrowIcon.svg" }/>
                                 </div>
                             </a>
                         </div>
                     </div>
-                    <div className="flex gap5 margin-top-05">
-                        <img onClick={() => showPopUp("userImage")} className="btn padding-05 userProfilePicture object-fit-cover overFlowHidden cursor-pointer circular" src={reactiveUser !== null && reactiveUser.profilePicture !== undefined && reactiveUser.profilePicture !== null && reactiveUser.profilePicture !== "" ? reactiveUser.profilePicture : ABSOLUTE_IMAGES_URL + `/svgs/defaultProfileImage.svg`} alt="" />
+                    <div className={(isMobile ? "gap1 margin-top-1" : "gap5 margin-top-05") + " flex"}>
+                        <img onClick={() => showPopUp("userImage")} className={(isMobile ? "mobileProfilePicture padding-01 btnNotHoverNotGradient shadowBtnBorder" : "padding-05") + " btn userProfilePicture object-fit-cover overFlowHidden cursor-pointer circular"} src={reactiveUser !== null && reactiveUser.profilePicture !== undefined && reactiveUser.profilePicture !== null && reactiveUser.profilePicture !== "" ? reactiveUser.profilePicture : ABSOLUTE_IMAGES_URL + `/svgs/defaultProfileImage.svg`} alt="" />
                         <div className="flex flex-direction-column justify-content-center gap0">
-                            <h1 className="text-white margin-0 margin-top-1">{reactiveUser?.nickname}</h1>
-                            <p className="text-gray text-semiLight margin-0">{reactiveUser?.name + " " + reactiveUser?.lastName}</p>
-                            <div className="flex gap4 margin-top-3">
-                                <p onClick={() => showPopUp("followers")} className="margin-0 text-white text-hover cursor-pointer">{userFollowers.length} Followers</p>
-                                <p onClick={() => showPopUp("followed")} className="margin-0 text-white text-hover cursor-pointer">{userFollowed.length} Followed</p>
+                            <h1 className={(isMobile ? "" : "margin-top-1") + " text-white margin-0"}>{reactiveUser?.nickname}</h1>
+                            <p className="text-gray text-semiLight margin-0">{`${reactiveUser?.name ?? ""} ${reactiveUser?.lastName ?? ""}`}</p>
+                            <div className={(isMobile ? "gap1 margin-top-1" : "gap4 margin-top-3") + " flex"}>
+                                <p onClick={() => showPopUp("followers")} className="margin-0 text-white text-hover cursor-pointer text-noWrap text-ellipsis overFlowHidden">{userFollowers.length} Followers</p>
+                                <p onClick={() => showPopUp("followed")} className="margin-0 text-white text-hover cursor-pointer text-noWrap text-ellipsis overFlowHidden">{userFollowed.length} Followed</p>
                             </div>
                             {reactiveUser !== null && userData.id !== 0 && reactiveUser.id !== userData.id && !userFollowers.some(obj => obj.id === userData.id) ?
                                 <div onClick={() => follow(null)} className="btn btn-large padding-05 btnGradientBluePurple h-fitContent margin-top-3 userSelectNone"><p className="margin-0">Follow</p></div>
@@ -112,11 +138,11 @@ function UserProfile() {
                                 <span className="popUpseparator display-block"></span>
                             </div>
                         </div>
-                        <div className="grid col-4 gap2 row-gap1 margin-top-2 margin-bottom-2 overFlowYAuto darkscrollBar padding-0-1">
+                        <div className={(isMobile ? (isMobileInPortrait ? "col-2 gap1" : "col-1 gap1") : "col-4 gap2") + " grid row-gap1 margin-top-2 margin-bottom-2 overFlowYAuto darkscrollBar padding-0-1"}>
                             {HTMLOwnedPanels.length < 1 ?
                                 (
                                     <div className="span-4 margin-bottom-2">
-                                        <h2 className="text-centered text-semiLight text-gray">{reactiveUser !== null && userData !== null && reactiveUser.nickname === userData.nickname ? "You" : (reactiveUser !== null && reactiveUser.nickname)} hasn't created any panel yet.</h2>
+                                        <h2 className="text-centered text-semiLight text-gray">{reactiveUser ? (reactiveUser.nickname === userData.nickname ? "You" : reactiveUser.nickname ?? "Unknown") : "This user" } hasn't created any panel yet.</h2>
                                     </div>
                                 )
                                 :
@@ -129,11 +155,11 @@ function UserProfile() {
                                 <span className="popUpseparator display-block"></span>
                             </div>
                         </div>
-                        <div className="grid col-4 gap2 row-gap1 margin-top-2 padding-bottom-2 overFlowYAuto darkscrollBar padding-0-1">
+                        <div className={(isMobile ? (isMobileInPortrait ? "col-2" : "col-1 gap1") : "col-4 gap2") + " grid row-gap1 margin-top-2 padding-bottom-2 overFlowYAuto darkscrollBar padding-0-1"}>
                         {HTMLJoinedPanels.length < 1 ?
                             (
                                 <div className="span-4 margin-bottom-2">
-                                    <h2 className="text-centered text-semiLight text-gray">{reactiveUser !== null && reactiveUser.nickname === userData.nickname ? "You" : (reactiveUser !== null && reactiveUser.nickname)} hasn't joined any panel yet.</h2>
+                                    <h2 className="text-centered text-semiLight text-gray">{reactiveUser ? (reactiveUser.nickname === userData.nickname ? "You" : reactiveUser.nickname ?? "Unknown") : "This user" } hasn't joined any panel yet.</h2>
                                 </div>
                             )
                             :
@@ -146,9 +172,9 @@ function UserProfile() {
                 <ModalComponent id="followed" content={createHTMLUserList(userFollowed)}/>
                 <ModalComponent id="userImage" content={
                     reactiveUser?.profilePicture !== null ? 
-                    <img className="w100" src={reactiveUser?.profilePicture}/> 
+                    <img key={counter++} className="w100" src={reactiveUser?.profilePicture}/> 
                     :                 
-                    <div className="positionAbsolute top-0 w100 h100 flex justify-content-center align-items-center z-index-0">
+                    <div key={counter++} className="positionAbsolute top-0 w100 h100 flex justify-content-center align-items-center z-index-0">
                         <h2 className="text-white">{reactiveUser?.nickname} has not profile picture.</h2>
                     </div>
                 }/>
@@ -173,7 +199,7 @@ function UserProfile() {
         else{
             if(userList.length < 1){
                 HTMLUserList = 
-                <div className="positionAbsolute top-0 w100 h100 flex justify-content-center align-items-center z-index-0">
+                <div key={counter++} className="positionAbsolute top-0 w100 h100 flex justify-content-center align-items-center z-index-0">
                     <h2 className="text-white">{reactiveUser?.nickname} has nobody here yet.</h2>
                 </div>;
             }

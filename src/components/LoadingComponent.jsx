@@ -10,14 +10,15 @@ function LoadingComponent(props) {
     let loadingSpinningIconSize = props.loadingSpinningIconSize === undefined ? ".3rem" : props.loadingSpinningIconSize;
     let hasLoadingText = props.hasLoadingText === undefined ? true : (props.hasLoadingText === "false") ? false : true;
     let floatLeft = props.floatLeft === undefined ? false : (props.floatLeft === "true" ? true : false);
+    let isSticky = props.isSticky !== "true" ? false : true;
 
     let letterSize = loadingMessage.length > 20 ? (loadingMessage.length > 25 ? " textNano " : " textMicro ") : " textLittle ";
 
     const loadingIconRef = useRef(null);
 
-    useEffect(() => {
+    /*useEffect(() => {
       dynamicClasses();
-    }, []);
+    }, []);*/
 
     useEffect(() => {
       if(loadingIconRef.current) changeLoadingIconSize();
@@ -25,7 +26,7 @@ function LoadingComponent(props) {
 
   return (!onlyLoadingIcon 
      ?
-      <div className={ (hidden === true ? " display-none " : "")  + (floatLeft ? " float-left margin-left-05 " : " float-right margin-right-05 ") + (hasLoadingText ? " Jw[i9rem] padding-left-1-important padding-right-1-important justify-space-bwt " : " aspect-ratio-1 padding-05 justify-content-center ") + " LoadingComponent window flex  align-items-center gap2 margin-top-05 boxSize-border Jw[a15rem] Jh[2.5rem] text-white"}>
+      <div className={ (isSticky ? "positionFixed z-index-1" : "") + (hidden === true ? " display-none " : "")  + (floatLeft ? " float-left margin-left-05 left-0" : " float-right margin-right-05 right-0") + (hasLoadingText ? " Jw[i9rem] padding-left-1-important padding-right-1-important justify-space-bwt " : " aspect-ratio-1 padding-05 justify-content-center ") + " LoadingComponent window flex align-items-center gap2 margin-top-05 boxSize-border Jw[a15rem] Jh[2.5rem] text-white"}>
         {hasLoadingText && <p className={"margin-0" + letterSize + "text-white Jw[a15ch]"}>{loadingMessage}</p>}
         <span ref={loadingIconRef} className="loadingSpinner"></span>
       </div>

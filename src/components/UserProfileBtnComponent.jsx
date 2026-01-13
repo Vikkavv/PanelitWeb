@@ -7,6 +7,7 @@ import { ABSOLUTE_IMAGES_URL, BACKEND_PATH } from "../App";
 function UserProfileBtnComponent(props) {
     let userInfo = props.userInfo;
     let profilePicture = props.userInfo.profilePicture !== undefined && props.userInfo.profilePicture !== null && props.userInfo.profilePicture !== "" ? props.userInfo.profilePicture : ABSOLUTE_IMAGES_URL + "/svgs/defaultProfileImage.svg";
+    let onlyImage = props.onlyImage === undefined ? false : (props.onlyImage === "true" ? true : false);
 
     const imgBtn = useRef();
     const divPopUp = useRef();
@@ -14,8 +15,8 @@ function UserProfileBtnComponent(props) {
 
     const navigate = useNavigate();
 
-    const [userFollowed, setUserFollowed] = useState({});
-    const [userFollowers, setUserFollowers] = useState({});
+    const [userFollowed, setUserFollowed] = useState([]);
+    const [userFollowers, setUserFollowers] = useState([]);
 
     const redirect = (path) => {
         navigate(path);
@@ -32,7 +33,7 @@ function UserProfileBtnComponent(props) {
     }, [JSON.stringify(userInfo)])
 
     useEffect(() => {
-        imgBtn.current.addEventListener("click", showOrHideUserPopUp);
+        imgBtn.current?.addEventListener("click", showOrHideUserPopUp);
 
         const closeSession = async () => {
             const data = await signOut();
@@ -41,13 +42,20 @@ function UserProfileBtnComponent(props) {
             }
         };
         
-        signOutBtn.current.addEventListener("click", closeSession);
+        signOutBtn.current?.addEventListener("click", closeSession);
         dynamicClasses();
     },[]);
 
     return (
         <>
-            <img ref={imgBtn} className="miniUserPicture display-block cursor-pointer object-fit-cover margin-auto-0" src={profilePicture} alt="" />
+            {!onlyImage ?
+                    <img ref={imgBtn} className="miniUserPicture display-block object-fit-cover margin-auto-0" src={profilePicture} alt="" />
+                :
+                    <a href={"/UserProfile/" + userInfo.nickname}>
+                        <img className="miniUserPicture display-block cursor-none object-fit-cover margin-auto-0" src={profilePicture} alt="" />
+                    </a>
+            }
+            {!onlyImage &&
             <div ref={divPopUp} className="userPopUp positionAbsolute top-0 border-radius-0 window h100vh boxSize-Border z-index-1">
                 <div className="flex flex-direction-column">
                     <div className="flex justify-space-bwt">
@@ -106,18 +114,9 @@ function UserProfileBtnComponent(props) {
                         <p className="cursor-pointer">Sign out</p>
                     </div>
                 </div>
-            </div>
+            </div>}
         </>
     )
-
-    async function signOut(){
-        const response = await fetch(BACKEND_PATH+"/User/signOut",{
-            method: "POST",
-            credentials: "include"
-        })
-        const data = response.text();
-        return data;
-    }
 
     function showOrHideUserPopUp() {
         if(!divPopUp.current.classList.contains("userPopUpToggled"))
@@ -126,6 +125,13 @@ function UserProfileBtnComponent(props) {
     }
 }
 
-
+export async function signOut(){
+    const response = await fetch(BACKEND_PATH+"/User/signOut",{
+        method: "POST",
+        credentials: "include"
+    })
+    const data = response.text();
+    return data;
+}
 
 export default UserProfileBtnComponent

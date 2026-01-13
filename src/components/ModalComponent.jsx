@@ -1,4 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { isMobileDevice, isMobileDeviceAndIsInPortrait } from "./NavbarComponent";
+
+let counter = 0; 
 
 function ModalComponent(props) {
     let id = props.id !== undefined ? props.id : "modalPopUp";
@@ -10,17 +13,37 @@ function ModalComponent(props) {
 
     const modalRef = useRef(null);
 
+    const [isMobileInPortrait, setIsMobileInPortrait] = useState(null);
+    const [isMobile, setIsMobile] = useState(null);
+    window.addEventListener("resize", () => {
+        if(!isMobileDevice()) setIsMobile(isMobileDevice());
+        if(!isMobileDeviceAndIsInPortrait()) setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
+    });
+
+    screen.orientation.addEventListener("change", () => {
+        if(isMobileDevice()){
+            setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
+        }
+    });
+
     useEffect(() => {
-        setHTMLContent(props.content !== undefined ? 
-            props.content 
-            : 
-            (
-                <div className="positionAbsolute top-0 w100 h100 flex justify-content-center align-items-center z-index-0">
+        setIsMobile(isMobileDevice());
+        setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
+    }, []);
+
+    useEffect(() => {
+        const showContent = async () => {
+            let content = await props.content;
+            setHTMLContent(props.content !== undefined ? 
+                content 
+                : 
+                <div key={counter++} className="positionAbsolute top-0 w100 h100 flex justify-content-center align-items-center z-index-0">
                     <h2 className="text-white">Add HTML content here</h2>
                 </div>
             )
-        )
+        }
 
+        showContent();
     }, [props.content])
 
     useEffect(() => {
@@ -35,8 +58,8 @@ function ModalComponent(props) {
     }
 
     return ( 
-        <div ref={modalRef} id={id} className="flex w100 h100vh positionFixed top-0 justify-content-center align-items-center display-none z-index-2">
-            <div className={(isMini ? "miniPopUpwindow " : "") + `window popUpWindow ${hasScroll ? "overFlowYScroll" : "overFlowYHidden"} darkscrollBar overFlowXHidden` + (isFullScreen ? " fullScreenPopUpwindow" : "")}>
+        <div ref={modalRef} id={id} className="flex w100 h100dvh positionFixed top-0 justify-content-center align-items-center display-none z-index-2">
+            <div className={(isMini ? (isMobile ? (isMobileInPortrait ? "miniPopUpwindowMobilePortrait" : "miniPopUpwindowMobile") : "miniPopUpwindow") : "") + ` window popUpWindow ${hasScroll ? "overFlowYScroll" : "overFlowYHidden"} darkscrollBar overFlowXHidden` + (isFullScreen ? " fullScreenPopUpwindow" : "")}>
                 <div className="flex justify-content-end z-index-1 positionRelative">
                     <button onClick={hiddePopUp} onWheel={(e) => {preventZoom(e)}} className="PlusBtn whitePlus transparentBtn diagonal medium-size margin-auto-0"/>
                 </div>
@@ -50,7 +73,7 @@ function ModalComponent(props) {
     }
 
     function showPopUp(){
-        document.getElementById(id).classList.add("display-none");
+        document.getElementById(id).classList.remove("display-none");
     }
 }
 

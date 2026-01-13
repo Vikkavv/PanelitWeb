@@ -13,6 +13,8 @@ import { isLightImg } from "../assets/js/ImgDarkOrLight";
 import PanelSettingsMenuComponent, { deleteFriends, getPanelParticipantsByPanel } from "../components/PanelSettingsMenuComponent";
 import { ABSOLUTE_IMAGES_URL, BACKEND_PATH } from "../App";
 import LoadingComponent from "../components/LoadingComponent";
+import { isMobileDevice, isMobileDeviceAndIsInPortrait } from "../components/NavbarComponent";
+import { goBackUntilElementIsADiv } from "./Explore";
 
 let userData = {
     "id": 0,
@@ -87,6 +89,19 @@ function Panel() {
     const dbCardNotesRef = useRef([]);
     const cardsContainerRef = useRef(null);
 
+    const [isMobileInPortrait, setIsMobileInPortrait] = useState(null);
+    const [isMobile, setIsMobile] = useState(null);
+    window.addEventListener("resize", () => {
+        if(!isMobileDevice()) setIsMobile(isMobileDevice());
+        if(!isMobileDeviceAndIsInPortrait()) setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
+    });
+
+    screen.orientation.addEventListener("change", () => {
+        if(isMobileDevice()){
+            setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
+        }
+    });
+
     const navigate = useNavigate();
 
     const redirect = (path) => {
@@ -112,6 +127,8 @@ function Panel() {
         checkSession();
         noteTypeForm(null, "text");
         document.body.addEventListener("wheel", (e) => handleResize(e), {passive: false});
+        setIsMobile(isMobileDevice());
+        setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
     }, [])
 
     useEffect(() => {
@@ -191,7 +208,25 @@ function Panel() {
 
     useEffect(() => {
         if(JSON.stringify(HTMLCardNotes) !== "[]" && JSON.parse(panel.additionalInfo).type === CONNECTED_CARDS_TYPE_PANEL) draw();
-    }, [HTMLCardNotes])
+    }, [HTMLCardNotes]);
+
+    useEffect(() => {
+        let containerDiv = divRefs.current["columnContainer"];
+        if(containerDiv !== undefined){
+            if(isMobileInPortrait) {
+                containerDiv.classList.remove("container15", "container10", "h80vh", "padding-top-2");
+                containerDiv.classList.add("container5", "h75vh", "padding-top-05");
+            }
+            else if(isMobile){
+                containerDiv.classList.remove("container15", "container5", "h75vh", "padding-top-05");
+                containerDiv.classList.add("container10", "h80vh", "padding-top-2");
+            }
+            else if(!(containerDiv.classList.contains("container15"))){
+                containerDiv.classList.remove("container10", "container5", "h75vh", "padding-top-05");
+                containerDiv.classList.add("container15", "h80vh", "padding-top-2");
+            }
+        }
+    }, [isMobile, isMobileInPortrait]);
 
     function showOrHideLoadingComponent(id, showOrHide){
         let stringBool = showOrHide === "h" ? "true" : "false";
@@ -205,11 +240,11 @@ function Panel() {
         <>
             <div className="opacity100 body-OverFlowXHidden">
                 <div ref={(el) => {refs.current["navbar"] = el}} className="navbar navbarTranslucent padding-0 flex justify-space-bwt">
-                    <div className="flex justify-content-start gap1">
-                        <div className="flex">
-                            <LogoContainer isLink="true" hasTitle="false" url="/workspace" hasPadding="true" paddingClass="padding-08-2-08-2 padding-top-05 padding-bottom-05" isRotatable="true" classes="positionRelative z-index-1"/>
+                    <div className={(isMobile ? "" : "gap1") + " flex justify-content-start"}>
+                        <div className={(isMobile ? "align-items-center" : "") + " flex"}>
+                            <LogoContainer isLink="true" hasTitle="false" url="/workspace" hasPadding="true" paddingClass={(isMobile ? "padding-top-0 padding-left-05 cursor-none" : "padding-08-2-08-2 padding-top-05 padding-bottom-05") + " "} isRotatable="true" classes="positionRelative z-index-1"/>
                             <div className="padding-1 padding-top-05 padding-bottom-05 flex ">
-                                <a title="Go back" href="#" onClick={(e) => goBack(e)} className="btn ArrowBtn flex justify-content-center align-items-center margin-auto-0 border-radius-50 padding-05 aspect-ratio-1 ">
+                                <a title="Go back" href="#" onClick={(e) => goBack(e)} className={(isMobile ? "cursor-none" : "") + " btn ArrowBtn flex justify-content-center align-items-center margin-auto-0 border-radius-50 padding-05 aspect-ratio-1 btnNotHoverNotGradient shadowBtnBorder1px"}>
                                     <div className="w-fitContent aspect-ratio-1">
                                         <img className="iconSize-2 display-block margin-0-auto aspect-ratio-1 userSelectNone" alt="" src={ ABSOLUTE_IMAGES_URL + "/svgs/leftPointingArrowIcon.svg" }   />
                                     </div>
@@ -217,16 +252,20 @@ function Panel() {
                             </div>
                         </div>
                         <div className="flex align-items-center gap1">
-                            <h1 className="textLittle fontWeightNormal text-white">{panel.name}</h1>
-                            <span className="text-gray userSelectNone">·</span>
-                            <a href={"/UserProfile/" + panelCreator.nickname} className="margin-0 textMini text-gray">{panelCreator.nickname}</a>
-                            <span className="text-gray userSelectNone">·</span>
-                            <p className="margin-0 textNano text-gray">Last edited date: {panel?.lastEditedDate?.replaceAll("-","/")}</p>
+                            <h1 className={(isMobile ? "textNano text-noWrap overFlowHidden" : "textLittle") + " fontWeightNormal text-white"}>{!isMobile ? (panel.name) : <span className="textCarrousel">{panel.name}</span> }</h1>
+                            {!isMobile && 
+                                <>
+                                    <span className="text-gray userSelectNone">·</span>
+                                    <a href={"/UserProfile/" + panelCreator.nickname} className="margin-0 textMini text-gray">{panelCreator.nickname}</a>
+                                    <span className="text-gray userSelectNone">·</span>
+                                    <p className="margin-0 textNano text-gray">Last edited date: {panel?.lastEditedDate?.replaceAll("-","/")}</p>
+                                </>
+                            }
                             <LoadingComponent hidden={loadingBools['panelLoading']} loadingIconSize=".8rem" loadingSpinningIconSize=".18rem" onlyLoadingIcon="true"/>
                         </div>
                     </div>
                     {isCreator === true &&
-                        <div className="flex align-items-center padding-08-2-08-2 padding-top-05 padding-bottom-05">
+                        <div className={(isMobile ? "padding-right-1-important " : "padding-08-2-08-2") + " flex align-items-center padding-top-05 padding-bottom-05"}>
                             <PanelSettingsMenuComponent panel={panel} />
                         </div>
                     }
@@ -237,13 +276,13 @@ function Panel() {
                     <div id="columnSlider" className="editSliderPanel flex-direction-column justify-space-bwt window bgWindow border-radius-inherit-0-0-0 padding-1 display-none">
                         <div className="flex justify-space-bwt">
                             <h2 className="margin-0 text-white fontWeightNormal">New Column</h2>
-                            <button onClick={() => showHideSlider("columnSlider")} className="PlusBtn whitePlus transparentBtn diagonal medium-size margin-auto-0"/>
+                            <button onClick={() => showHideSlider("columnSlider")} className={(isMobile ? "cursor-none shadowBtnBorder1px" : "") + " PlusBtn whitePlus transparentBtn diagonal medium-size margin-auto-0"}/>
                         </div>
                         <form onSubmit={(e) => {createNewColumn(e)}} className="margin-top-1">
                             <label className="display-block text-white textMini  margin-bottom-05 w-fitContent" htmlFor="name">Column title</label>
                             <input ref={(el) => {inputRefs.current["columnName"] = el}} type="text" id="name" name="name" className="display-block window text-white margin-bottom-1 margin-top-0 Jw[11rem]" placeholder="Column title" autoComplete="off"/>
                             <div className="flex justify-content-end">
-                                <button className="btn miniBtn btnGradientBluePurple h-fitContent margin-auto-0 userSelectNone"><p className="margin-0">Create</p></button>
+                                <button className={(isMobile ? "cursor-none" : "") + " btn miniBtn btnGradientBluePurple h-fitContent margin-auto-0 userSelectNone"}><p className="margin-0">Create</p></button>
                             </div>
                         </form>
                     </div>
@@ -253,10 +292,10 @@ function Panel() {
                         <div className="flex justify-space-bwt align-items-center">
                             <h2 className="margin-0 text-white fontWeightNormal">New note</h2>
                             <div className="flex">
-                                <div onClick={(e) => {noteTypeForm(e)}} id="text" className="underlinedBtn underlinedBtnToggled">Text</div>
-                                <div onClick={(e) => {noteTypeForm(e)}} id="document" className="underlinedBtn">Pdf</div>
+                                <div onClick={(e) => {noteTypeForm(e)}} id="text" className={(isMobile ? "cursor-none" : "") + " underlinedBtn underlinedBtnToggled"}>Text</div>
+                                <div onClick={(e) => {noteTypeForm(e)}} id="document" className={(isMobile ? "cursor-none" : "") + " underlinedBtn"}>Pdf</div>
                             </div>
-                            <button onClick={() => {showHideSlider("noteSlider"); currentColumn = -1}} className="PlusBtn whitePlus transparentBtn diagonal medium-size margin-auto-0"/>
+                            <button onClick={() => {showHideSlider("noteSlider"); currentColumn = -1}} className={(isMobile ? "cursor-none" : "") + " PlusBtn whitePlus transparentBtn diagonal medium-size margin-auto-0 shadowBtnBorder1px"}/>
                         </div>
                         <form onSubmit={(e) => {createNewNote(e)}} className="flex flex-direction-column gap1 margin-top-1">
                             {HTMLNoteForm}
@@ -301,23 +340,23 @@ function Panel() {
             let nColumns = JSON.parse(panel.additionalInfo).columns.length;
             let content = nColumns === 0 ?
 
-            <div ref={(el) => {divRefs.current["columnContainer"] = el}} className="container15 overFlowAuto darkscrollBar padding-top-2 margin-bottom-2 h80vh gap2">
+            <div ref={(el) => {divRefs.current["columnContainer"] = el}} className={(isMobile ? (isMobileInPortrait ? "container5 h75vh padding-top-05" : "container10 h80vh padding-top-2") : "container15 h80vh padding-top-2") + " overFlowAuto darkscrollBar margin-bottom-2 gap2"}>
                 {(isAdmin || isCreator) && 
-                    <div onClick={() => {showHideSlider("columnSlider")}} className="flex gap1 flex-direction-column h75vh justify-content-center align-items-center btnHover cursor-pointer">
+                    <div onClick={() => {showHideSlider("columnSlider")}} className={(isMobile ? "cursor-none" : "") + " flex gap1 flex-direction-column h75vh justify-content-center align-items-center btnHover cursor-pointer"}>
                         <h2 className="text-gray textLittle fontWeightNormal textShadowBlack margin-0">Add column</h2>
-                        <div className="PlusBtn smallPlusBtn btnHover whitePlus bgWindow"></div>
+                        <div className={(isMobile ? "cursor-none" : "") + " PlusBtn smallPlusBtn btnHover whitePlus bgWindow"}></div>
                     </div>
                 }
             </div>
 
             : 
             
-            <div ref={(el) => {divRefs.current["columnContainer"] = el}} className="container15 overFlowAuto darkscrollBar padding-top-2 margin-bottom-2 h80vh grid gap2">
+            <div ref={(el) => {divRefs.current["columnContainer"] = el}} className={(isMobile ? (isMobileInPortrait ? "container5 h75vh padding-top-05" : "container10 h80vh padding-top-2") : "container15 h80vh padding-top-2") + " overFlowAuto darkscrollBar margin-bottom-2 grid gap2"}>
                 {paramHTMLNotes === null ? HTMLcolumns : paramHTMLNotes}
                 {(isAdmin || isCreator) && 
-                    <div onClick={() => {showHideSlider("columnSlider")}} className="flex gap1 flex-direction-column justify-content-center align-items-center btnHover cursor-pointer">
+                    <div onClick={() => {showHideSlider("columnSlider")}} className={(isMobile ? "cursor-none" : "") + " flex gap1 flex-direction-column justify-content-center align-items-center btnHover cursor-pointer"}>
                         <h2 className="text-gray textLittle fontWeightNormal margin-0">Add column</h2>
-                        <div className="PlusBtn smallPlusBtn btnHover whitePlus bgWindow"></div>
+                        <div className={(isMobile ? "cursor-none" : "") + " PlusBtn smallPlusBtn btnHover whitePlus bgWindow"}></div>
                     </div>
                 }
             </div>;
@@ -333,14 +372,14 @@ function Panel() {
             <div className="cardCanvas positionRelative">
                 { (isCreator || isAdmin) &&
                     <div className="positionAbsolute right-0 padding-05 z-index-1">
-                        <div onClick={() => showHideSlider("noteSlider")} className="flex padding-05 gap1 align-items-center window bgWindow btnHover border1px cursor-pointer">
+                        <div onClick={() => showHideSlider("noteSlider")} className={(isMobile ? "cursor-none" : "") + " flex padding-05 gap1 align-items-center window bgWindow btnHover border1px cursor-pointer"}>
                             <p className="margin-0 textNano text-white">Add note</p>
-                            <button className="PlusBtn nanoPlusBtn shadowBtnBorder margin-auto-0 btnGradientBluePurple whitePlus inverted"></button>
+                            <button className={(isMobile ? "cursor-none" : "") + " PlusBtn nanoPlusBtn shadowBtnBorder margin-auto-0 btnGradientBluePurple whitePlus inverted"}></button>
                         </div>
                     </div>
                 }
                 <canvas ref={canvasRef} className="cardCanvas display-block"></canvas>
-                <div id="cardsContainer" onMouseDown={(e) => handleMouseDown(e)} onMouseMove={(e) => handleMouseMove(e)} onMouseUp={handleMouseUp} ref={cardsContainerRef.current} className="w100 h100 positionAbsolute top-0">
+                <div id="cardsContainer" onScroll={draw} onPointerDown={(e) => handleMouseDown(e)} onPointerMove={(e) => handleMouseMove(e)} onPointerUp={(e) => handleMouseUp(e)} ref={cardsContainerRef.current} className={(isMobile ? ( "overFlowAuto h100Less50pxF") : "") + " w100 h100 positionAbsolute top-0"}>
                     {paramHTMLNotes === null ? HTMLCardNotes : paramHTMLNotes}
                 </div>
             </div>;
@@ -430,6 +469,7 @@ function Panel() {
     }
 
     function draw() {
+        console.log("redibujado!");
         clearCanvas();
         connectAllCards();
         requestAnimationFrame(draw);
@@ -465,10 +505,17 @@ function Panel() {
     function handleMouseDown(event){
         if(!isCreator && !isAdmin || editingACard) return;
         const div = event.target;
+        event.preventDefault();
+        event.target.setPointerCapture(event.pointerId);
         if(div.classList.contains("panelNoteCard") || div.parentElement.classList.contains("panelNoteCard")){
             isDragging = true;
             document.getElementsByTagName("body")[0].classList.add("userSelectNone");
             draggedCard = div.classList.contains("panelNoteCard") ? div : div.parentElement;
+            if(isMobile){
+                document.getElementById("cardsContainer").classList.add("touch-action-none");
+                draggedCard.classList.add("touch-action-none");
+                document.getElementsByTagName("html")[0].classList.add("touch-action-none");
+            }
             offsetX = event.clientX - draggedCard.offsetLeft;
             offsetY = event.clientY - draggedCard.offsetTop;
         }
@@ -476,6 +523,7 @@ function Panel() {
 
     function handleMouseMove(event){
         if(!isCreator && !isAdmin || editingACard) return;
+        event.preventDefault();
         if(isDragging && draggedCard){
             const rect = canvasRef.current.getBoundingClientRect();
             const clampedX = Math.min(Math.max(event.clientX - offsetX, 0), rect.width - draggedCard.offsetWidth);
@@ -489,9 +537,17 @@ function Panel() {
         }
     }
 
-    async function handleMouseUp(){
+    async function handleMouseUp(event){
         if(!isCreator && !isAdmin || editingACard) return;
+        event.preventDefault();
+        event.target.releasePointerCapture(event.pointerId);
+        if(isMobile) document.getElementById("root").classList.remove("touch-action-none");
         if(draggedCard !== null){
+            if(isMobile){
+                document.getElementById("cardsContainer").classList.remove("touch-action-none");
+                draggedCard.classList.remove("touch-action-none");
+                document.getElementsByTagName("html")[0].classList.remove("touch-action-none");
+            } 
             document.getElementsByTagName("body")[0].classList.remove("userSelectNone");
             let noteId = parseInt(draggedCard.id.replaceAll("card",""));
 
@@ -581,7 +637,7 @@ function Panel() {
     function noteTypeForm(e, type = null){
         setHTMLNoteForm(<></>);
         let btn = null;
-        if(type === null) btn = e.target;
+        if(type === null) btn = goBackUntilElementIsADiv(e.target);
         if(type !== null || !btn.classList.contains("underlinedBtnToggled")){
             if(btn !== null){
                 btn.classList.add("underlinedBtnToggled");
@@ -612,9 +668,9 @@ function Panel() {
                             <input ref={(el) => {inputRefs.current["noteTitle"] = el}} type="text" id="noteTitle" className="display-block window text-white margin-top-0 Jw[13rem]" placeholder="Note title" autoComplete="off"/>
                         </div>
                         <div>
-                            <label htmlFor="pdfInput" className="flex gap1 flex-direction-column justify-content-center align-items-center padding-top-2 padding-bottom-2 btnHover cursor-pointer">
+                            <label htmlFor="pdfInput" className={(isMobile ? "cursor-none" : "") + " flex gap1 flex-direction-column justify-content-center align-items-center padding-top-2 padding-bottom-2 btnHover cursor-pointer"}>
                                 <h2 className="text-gray textLittle fontWeightNormal margin-0">Upload Pdf</h2>
-                                <div className="PlusBtn smallPlusBtn btnHover whitePlus bgWindow"></div>
+                                <div className={(isMobile ? "cursor-none" : "") + " PlusBtn smallPlusBtn btnHover whitePlus bgWindow"}></div>
                             </label>
                             <p ref={(el) => {refs.current["pdfName"] = el}} className="text-white textNano margin-0 margin-top-05 Jh[ia16px] text-ellipsis text-noWrap overFlowHidden text-centered"></p>
                         </div>
@@ -829,9 +885,9 @@ function Panel() {
                     <div className="flex flex-direction-column gap1 overFlowAuto darkscrollBar">
                         {HTMLcolumnNotes}
                         {(isAdmin || isCreator) &&
-                            <div onClick={() => {showHideSlider("noteSlider", columnIndexClone)}} className="flex gap1 flex-direction-column justify-content-center align-items-center padding-top-2 padding-bottom-2 btnHover cursor-pointer">
+                            <div onClick={() => {showHideSlider("noteSlider", columnIndexClone)}} className={(isMobile ? "cursor-none" : "") + " flex gap1 flex-direction-column justify-content-center align-items-center padding-top-2 padding-bottom-2 btnHover cursor-pointer"}>
                                 <h2 className="text-gray textLittle fontWeightNormal margin-0">Add note</h2>
-                                <div className="PlusBtn smallPlusBtn btnHover whitePlus bgWindow"></div>
+                                <div className={(isMobile ? "cursor-none" : "") + " PlusBtn smallPlusBtn btnHover whitePlus bgWindow"}></div>
                             </div>
                         }
                     </div>

@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from 'react';
 import { PDFViewer, EventBus, PDFLinkService } from 'pdfjs-dist/web/pdf_viewer.mjs';
 import 'pdfjs-dist/web/pdf_viewer.css';
 import { dynamicClasses } from '../assets/js/dynamicCssClasses';
+import { isMobileDevice, isMobileDeviceAndIsInPortrait } from './NavbarComponent';
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
     'pdfjs-dist/build/pdf.worker.mjs',
@@ -21,10 +22,29 @@ function PdfViewer(props) {
     const divRef = useRef(null);
     const viewerRef = useRef(null);
 
+    const [isMobileInPortrait, setIsMobileInPortrait] = useState(null);
+    const [isMobile, setIsMobile] = useState(null);
+    window.addEventListener("resize", () => {
+        if(!isMobileDevice()) setIsMobile(isMobileDevice());
+        if(!isMobileDeviceAndIsInPortrait()) setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
+    });
+
+    screen.orientation.addEventListener("change", () => {
+        if(isMobileDevice()){
+            setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
+        }
+    });
+
+    useEffect(() => {
+        setIsMobile(isMobileDevice());
+        setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
+    }, []);
+
     useEffect(() => {
         setInputZoomValue((scale*100).toFixed(0)+`%`);
         if(viewerRef.current !== null && viewerRef.current !== undefined){
-            viewerRef.current.currentScale = scale;
+            console.log(scale / (!isMobileDevice() ? 1 : 3.33));
+            viewerRef.current.currentScale = scale / (!isMobileDevice() ? 1 : 3.33);
         }
     }, [scale])    
 
@@ -83,6 +103,8 @@ function PdfViewer(props) {
                 linkService
             });
 
+            pdfViewer._currentScale = 1 / (!isMobileDevice() ? 1 : 3.33);
+
             viewerRef.current = pdfViewer;
 
             linkService.setViewer(pdfViewer);
@@ -105,7 +127,6 @@ function PdfViewer(props) {
     )
 
     function substractScale(){
-        console.log(scale);
         if(scale > 0.500000000000000000001){
             let size = scale - 0.1 < 0.5 ? 0.5 : scale - 0.1;
             setScale(size);

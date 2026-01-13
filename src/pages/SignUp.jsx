@@ -6,6 +6,7 @@ import { cookieSessionChecker } from "../assets/js/SessionChecker.js";
 import { BACKEND_PATH } from "../App.jsx";
 import LoadingComponent from "../components/LoadingComponent.jsx";
 import { dynamicClasses } from "../assets/js/dynamicCssClasses.js";
+import { isMobileDevice } from "../components/NavbarComponent.jsx";
 
 document.getElementsByTagName("html")[0].classList = "html100";
 document.getElementById("root").classList = "html100";
@@ -37,6 +38,11 @@ function SignUp() {
     const [formContent, setFormContent] = useState([<h2 key="0"></h2>]);
     const refs = useRef({});
 
+    const [isMobile, setIsMobile] = useState(null);
+    window.addEventListener("resize", () => {
+        if(!isMobileDevice()) setIsMobile(isMobileDevice());
+    });
+
     const navigate = useNavigate();
 
     const [loadingBools, setLoadingBools] = useState([]);
@@ -61,6 +67,7 @@ function SignUp() {
         backBtn = document.getElementById("backBtn");
         backBtn.addEventListener("click", previusStep.bind(null, setFormContent, refs));
         dynamicClasses();
+        setIsMobile(isMobileDevice());
     }, [])
 
     useEffect(() =>{
@@ -69,7 +76,11 @@ function SignUp() {
 
     return (
         <>
-            <LogoContainer isLink="true" hasPadding="true" paddingClass="padding-08-2-08-2" isRotatable="true" classes="positionRelative z-index-1"/>
+            {!isMobile ? 
+                <LogoContainer isLink="true" hasPadding="true" paddingClass="padding-08-2-08-2" isRotatable="true" classes="positionRelative z-index-1"/>
+              : 
+                <LogoContainer isLink="true" hasPadding="true" paddingClass="padding-left-05 padding-top-02" classes="cursor-none margin-bottom-2 positionRelative z-index-1" isRotatable="true"/>
+            }
             <div className="flex positionAbsolute position-l0-t0 w100 h100 z-index-0">
                 <div className="window login padding-1 positionRelative">
                     <h1 className="textMini text-gray text-normal margin-0 margin-bottom-1 text-end text-italic">Sign up in Panelit</h1>
@@ -78,10 +89,10 @@ function SignUp() {
                             {formContent}
                         </div>
                         <div className="positionAbsolute btm-05 registerBtnWrapper flex justify-space-bwt">
-                            <a href="/signIn" id="variable" className="navlink text-decoration-underline padding-1 textNano">Already have an account?, sign in</a>
-                            <div className="btn btn-large h-fitContent margin-auto-0 userSelectNone hidden" id="backBtn"><p className="margin-0 text-white text-semiLight">Back</p></div>
+                            <a href="/signIn" id="variable" className={(isMobile ? "padding-left-05 cursor-none" : "") + " navlink text-decoration-underline padding-1 textNano"}>Already have an account?, sign in</a>
+                            <div className="btn btn-large h-fitContent margin-auto-0 userSelectNone hidden" id="backBtn"><p className={(isMobile ? "textNanoMobileOriginal" : "") + " margin-0 text-white text-semiLight"}>Back</p></div>
                             <div className="btn btn-large positionRelative btnGradientBluePurple h-fitContent margin-auto-0 userSelectNone" id="nextBtn">
-                                <p className="margin-0">Next</p>
+                                <p className={(isMobile ? "textNanoMobileOriginal" : "") + " margin-0"}>Next</p>
                                 <div className={ (loadingBools['signUpLoading'] === undefined || loadingBools['signUpLoading'] === "true" ? " display-none " : "") + "flex justify-content-center align-items-center Jh[2.684rem] w100 positionAbsolute left-0 top-0"}>
                                     <LoadingComponent hidden="false" loadingIconSize=".75rem" loadingSpinningIconSize=".17rem" onlyLoadingIcon="true"/>
                                 </div>

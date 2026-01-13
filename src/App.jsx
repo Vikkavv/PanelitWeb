@@ -11,6 +11,7 @@ import UserProfile from './pages/UserProfile'
 import CreatePanel from './pages/CreatePanel'
 import SubscriptionPlans from './pages/SubscriptionPlans'
 import Explore from './pages/Explore'
+import ErrorBoundary from './components/ErrorBoundary'
 
 export let BACKEND_PATH = "https://panelitapi.onrender.com";
 export let ABSOLUTE_IMAGES_URL = "https://panelit-web.vercel.app"
@@ -26,7 +27,7 @@ function App() {
       <Route path='/EditUserProfile' element={<EditUserProfile/>}/>
       <Route path='/UpdatePlan' element={<UpdatePlan/>}/>
       <Route path='/SubscriptionPlans' element={<SubscriptionPlans/>}/>
-      <Route path='/UserProfile/:id' element={<UserProfile/>}/>
+      <Route path='/UserProfile/:id' element={<ErrorBoundary><UserProfile/></ErrorBoundary>}/>
       <Route path='/CreatePanel' element={<CreatePanel/>} />
       <Route path='/Explore' element={<Explore/>}/>
     </Routes>

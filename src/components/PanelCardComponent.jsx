@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { showPopUp } from "./ModalComponent";
 import { ABSOLUTE_IMAGES_URL, BACKEND_PATH } from "../App";
+import { isMobileDevice } from "./NavbarComponent";
 
 function PanelCardComponent(props) {
     let creatorId = props.creatorId === undefined ? console.error("creatorId has to be given") : props.creatorId;
@@ -42,15 +43,14 @@ function PanelCardComponent(props) {
 
     return (
         <div className="panelCard overFlowHidden positionRelative text-decoration-none text-white">
-            <a href={`/Panel/`+panelId}>
-                {panelCoverPhoto !== null ? <img className="coverPhoto" src={panelCoverPhoto} alt=""/> : <div className={"coverPhoto " + (JSON.stringify(panel) !== "{}" ? JSON.parse(panel.additionalInfo).background.cssBackground : "")}></div>}
-                
+            <a href={panelId && `/Panel/`+panelId}>
+                {panelCoverPhoto !== null ? <img className="coverPhoto" src={panelCoverPhoto} alt=""/> : <div className={(isMobileDevice() ? "cursor-none" : "") + " coverPhoto " + (JSON.stringify(panel) !== "{}" ? JSON.parse(panel.additionalInfo).background.cssBackground : "")}></div>}
             </a>
-            <div onClick={() => {goToOwnerProfile(userData.nickname)}} className="authorInfo flex gap05 positionAbsolute position-l0-t0 cursor-pointer text-hover padding-05 boxSize-Border">
+            <div onClick={() => {goToOwnerProfile(userData.nickname)}} className={(isMobileDevice() ? "cursor-none" : "") + " authorInfo flex gap05 positionAbsolute position-l0-t0 cursor-pointer text-hover padding-05 boxSize-Border"}>
                 <img src={userData.profilePicture !== null && userData.profilePicture !== undefined && userData.profilePicture !== "" ? userData.profilePicture : ABSOLUTE_IMAGES_URL + `/svgs/defaultProfileImage.svg`} alt="Default profile image" className={( userData.profilePicture !== null ? `profilePicture` : ``) + ` cardProfilePicture  object-fit-cover boxSize-Border hoverWhiteBorder`} />
-                <p className="margin-auto-0 display-block textNano padding-0 padding-left-05">{userData.nickname}</p>
+                <p className="margin-auto-0 display-block textNano padding-0 padding-left-05 text-noWrap text-ellipsis overFlowHidden" title={userData.nickname}>{userData.nickname}</p>
             </div>
-            <a href={`/Panel/`+panelId} className="panelInfo flex justify-space-bwt positionAbsolute btm-0 padding-05 boxSize-Border text-decoration-none">
+            <a href={panelId && `/Panel/`+panelId} className={(isMobileDevice() ? "cursor-none" : "") + " panelInfo flex justify-space-bwt positionAbsolute btm-0 padding-05 boxSize-Border text-decoration-none"}>
                 <p title={panelTitle} className="margin-0 text-white textMini text-noWrap text-ellipsis overFlowHidden padding-right-1">{panelTitle}</p>
                 <p className="textNano text-gray margin-auto-0">{panelLastEditedDate}</p>
             </a>
@@ -63,7 +63,8 @@ function PanelCardComponent(props) {
     )
 
     function goToOwnerProfile(userId){
-        redirect("/UserProfile/"+userId);
+        if(userId)
+            redirect("/UserProfile/"+userId);
     }
 
     async function getPanel(){

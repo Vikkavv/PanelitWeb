@@ -1,7 +1,8 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { showPopUp } from "./ModalComponent";
 import { getUserById } from "./PanelCardComponent";
 import { ABSOLUTE_IMAGES_URL, BACKEND_PATH } from "../App";
+import { isMobileDevice, isMobileDeviceAndIsInPortrait } from "./NavbarComponent";
 
 let hasEvent = [false, false];
 let usersSelectedGlobal = [];
@@ -18,34 +19,52 @@ function PanelSettingsMenuComponent(props) {
     const [HTMLUserSearchList, setHTMLUserSearchList] = useState([]);
     const [errorMessage, setErrorMessage] = useState();
 
+    const [isMobileInPortrait, setIsMobileInPortrait] = useState(null);
+    const [isMobile, setIsMobile] = useState(null);
+    window.addEventListener("resize", () => {
+        if(!isMobileDevice()) setIsMobile(isMobileDevice());
+        if(!isMobileDeviceAndIsInPortrait()) setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
+    });
+
+    screen.orientation.addEventListener("change", () => {
+        if(isMobileDevice()){
+            setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
+        }
+    });
+
+    useEffect(() => {
+        setIsMobile(isMobileDevice());
+        setIsMobileInPortrait(isMobileDeviceAndIsInPortrait());
+    }, []);
+
     return (
         <>
-            <img onClick={showSlide} title="Settings" src="/svgs/SettingsIcon.svg" className="iconSize cursor-pointer shadowBtnBorder1px padding-03 border-radius-50" alt="" />
-            <div ref={popUpRef} className="panelSettingsPopUp bgWindow positionAbsolute top-0 h100vh z-index-2">
+            <img onClick={showSlide} title="Settings" src="/svgs/SettingsIcon.svg" className={(isMobile ? "cursor-none" : "") + " iconSize cursor-pointer shadowBtnBorder1px padding-03 border-radius-50"} alt="" />
+            <div ref={popUpRef} className={(isMobile ? "panelSettingsPopUpMobile h100dvh" : "panelSettingsPopUp h100vh") + " bgWindow positionAbsolute top-0 z-index-2"}>
                 <div className="flex justify-content-end padding-1 positionRelative z-index-1">
-                    <div onClick={hiddeSlide} title="close" className="PlusBtn whitePlus transparentBtn diagonal medium-size margin-auto-0"></div>
+                    <div onClick={hiddeSlide} title="close" className={(isMobile ? "cursor-none shadowBtnBorder1px" : "") + " PlusBtn whitePlus transparentBtn diagonal medium-size margin-auto-0"}></div>
                 </div>
-                <div className="flex flex-direction-column h100 w100 positionAbsolute boxSize-Border padding-2 top-0 justify-space-bwt">
-                    <div className="padding-left-2 padding-right-2 padding-top-2-25">
-                        <div className="flex flex-direction-column gap1">
+                <div className={(isMobile ? "padding-1" : "padding-2") + " flex flex-direction-column h100 w100 positionAbsolute boxSize-Border top-0 justify-space-bwt"}>
+                    <div className="margin-bottom-2 padding-left-2 padding-right-2 padding-top-2-25 overFlowYAuto">
+                        <div className={(isMobile ? "padding-top-1" : "") + " flex flex-direction-column gap1"}>
                             <div className="flex flex-direction-column">
-                                <div onClick={() => {showHiddeAccordion("inviteFriends")}} className="flex justify-space-bwt align-items-center window cursor-pointer">
+                                <div onClick={() => {showHiddeAccordion("inviteFriends")}} className={(isMobile ? "cursor-none shadowBtnBorder1px" : "cursor-pointer") + " flex justify-space-bwt align-items-center window"}>
                                     <p className="textLittle margin-0 text-white">Invite friends</p>
-                                    <div ref={(el) => {accordionsRef.current["inviteFriendsArrow"] = el}} onClick={showSlide} className="btn ArrowBtn rotateNeg90Deg transition500 flex justify-content-center align-items-center margin-auto-0 border-radius-50 padding-03 aspect-ratio-1 ">
+                                    <div ref={(el) => {accordionsRef.current["inviteFriendsArrow"] = el}} onClick={showSlide} className={(isMobile ? "cursor-none btnNotHoverNotGradient" : "") + " btn ArrowBtn rotateNeg90Deg transition500 flex justify-content-center align-items-center margin-auto-0 border-radius-50 padding-03 aspect-ratio-1"}>
                                         <div className="w-fitContent aspect-ratio-1">
                                             <img className="iconSize-2 display-block margin-0-auto aspect-ratio-1" alt="" src={ ABSOLUTE_IMAGES_URL + "/svgs/leftPointingArrowIcon.svg"}/>
                                         </div>
                                     </div>
                                 </div>
-                                <div ref={(el) => {accordionsRef.current["inviteFriends"] = el}} id="inviteFriends" className="fadeSlide fadeSlideUnToggled positionRelative">
+                                <div ref={(el) => {accordionsRef.current["inviteFriends"] = el}} id="inviteFriends" className={(isMobileInPortrait ? "fadeSlideHeightMobilePortrait" : "") + " fadeSlide fadeSlideUnToggled positionRelative"}>
                                     <div className="flex justify-space-bwt">
-                                        <form onSubmit={(e) => {searchUsers(e, null)}} className="flex gap1 padding-1px">
-                                            <input id="inviteFriendsInput" type="text" className="display-block window text-white" placeholder="Search users" autoComplete="on"/> 
-                                            <button type="submit" className="SearchBtn whiteIcon btnGradientBluePurple flex">
-                                                <img className="iconSize margin-auto" src={ ABSOLUTE_IMAGES_URL + "/svgs/SearchIcon.svg"} alt="" />
+                                        <form onSubmit={(e) => {searchUsers(e, null)}} className={(isMobile ? "padding-right-05 gap05" : "gap1") + " flex padding-1px"}>
+                                            <input id="inviteFriendsInput" type="text" className={(isMobile ? "w75" : "") + " display-block window text-white"} placeholder="Search users" autoComplete="on"/> 
+                                            <button type="submit" className={(isMobile ? "cursor-none" : "") + " SearchBtn padding-1 whiteIcon btnGradientBluePurple flex circular justify-content-center align-items-center"}>
+                                                <img className="iconSize" src={ ABSOLUTE_IMAGES_URL + "/svgs/SearchIcon.svg"} alt="" />
                                             </button>
                                         </form>
-                                        <button disabled id="inviteBtn" className="btn miniBtn btnGradientBluePurple btnNotHover cursor-notAllowed h-fitContent margin-auto-0 userSelectNone"><p className="margin-0">Invite</p></button>
+                                        <button disabled id="inviteBtn" className="btn miniBtn btnGradientBluePurple btnNotHoverNotGradientNoBlackText cursor-notAllowed h-fitContent margin-auto-0 userSelectNone btnDisabled"><p className="margin-0">Invite</p></button>
                                     </div>
                                     <div className="positionAbsolute btm-0 accordionUserList w100 borderLR bgWindow overFlowHidden boxSize-Border">
                                         <div className="overFlowYAuto darkscrollBar accordionUserList">
@@ -58,23 +77,23 @@ function PanelSettingsMenuComponent(props) {
                                 </div>
                             </div>
                             <div className="flex flex-direction-column">
-                                <div onClick={() => {showHiddeAccordion("kickFriends")}} className="flex justify-space-bwt align-items-center window cursor-pointer">
+                                <div onClick={() => {showHiddeAccordion("kickFriends")}} className={(isMobile ? "cursor-none shadowBtnBorder1px" : "cursor-pointer") + " flex justify-space-bwt align-items-center window"}>
                                     <p className="textLittle margin-0 text-white">Delete friends</p>
-                                    <div ref={(el) => {accordionsRef.current["kickFriendsArrow"] = el}} onClick={showSlide} className="btn ArrowBtn rotateNeg90Deg transition500 flex justify-content-center align-items-center margin-auto-0 border-radius-50 padding-03 aspect-ratio-1 ">
+                                    <div ref={(el) => {accordionsRef.current["kickFriendsArrow"] = el}} onClick={showSlide} className={(isMobile ? "cursor-none btnNotHoverNotGradient" : "") + " btn ArrowBtn rotateNeg90Deg transition500 flex justify-content-center align-items-center margin-auto-0 border-radius-50 padding-03 aspect-ratio-1 "}>
                                         <div className="w-fitContent aspect-ratio-1">
                                             <img className="iconSize-2 display-block margin-0-auto aspect-ratio-1" alt="" src={ ABSOLUTE_IMAGES_URL + "/svgs/leftPointingArrowIcon.svg"}/>
                                         </div>
                                     </div>
                                 </div>
-                                <div ref={(el) => {accordionsRef.current["kickFriends"] = el}} id="kickFriends" className="fadeSlide fadeSlideUnToggled positionRelative">
+                                <div ref={(el) => {accordionsRef.current["kickFriends"] = el}} id="kickFriends" className={(isMobileInPortrait ? "fadeSlideHeightMobilePortrait" : "") + " fadeSlide fadeSlideUnToggled positionRelative"}>
                                     <div className="flex justify-space-bwt">
-                                        <form onSubmit={(e) => {searchUsers(e, null)}} className="flex gap1 padding-1px">
-                                            <input id="kickFriendsInput" type="text" className="display-block window text-white" placeholder="Search users" autoComplete="on"/> 
-                                            <button type="submit" className="SearchBtn whiteIcon btnGradientBluePurple flex">
-                                                <img className="iconSize margin-auto" src={ ABSOLUTE_IMAGES_URL + "/svgs/SearchIcon.svg"} alt="" />
+                                        <form onSubmit={(e) => {searchUsers(e, null)}} className={(isMobile ? "padding-right-05 gap05" : "gap1") + " flex padding-1px"}>
+                                            <input id="kickFriendsInput" type="text" className={(isMobile ? "w75" : "") + " display-block window text-white"} placeholder="Search users" autoComplete="on"/> 
+                                            <button type="submit" className={(isMobile ? "cursor-none" : "") + " SearchBtn padding-1 whiteIcon btnGradientBluePurple flex circular justify-content-center align-items-center"}>
+                                                <img className="iconSize" src={ ABSOLUTE_IMAGES_URL + "/svgs/SearchIcon.svg"} alt="" />
                                             </button>
                                         </form>
-                                        <button disabled id="kickBtn" className="btn miniBtn btnGradientBluePurple btnNotHover cursor-notAllowed h-fitContent margin-auto-0 userSelectNone"><p className="margin-0">Delete</p></button>
+                                        <button disabled id="kickBtn" className="btn miniBtn btnGradientBluePurple btnNotHoverNotGradientNoBlackText cursor-notAllowed h-fitContent margin-auto-0 userSelectNone btnDisabled"><p className="margin-0">Delete</p></button>
                                     </div>
                                     <div className="positionAbsolute btm-0 accordionUserList w100 borderLR bgWindow overFlowHidden boxSize-Border">
                                         <div className="overFlowYAuto darkscrollBar accordionUserList">
@@ -85,7 +104,7 @@ function PanelSettingsMenuComponent(props) {
                             </div>
                         </div>
                     </div>
-                    <div className="flex justify-content-center gap05 popUpseparator padding-top-2">
+                    <div className={(isMobile ? "padding-top-1 padding-bottom-05" : "padding-top-2") + " flex justify-content-center gap05 popUpseparator"}>
                         <img onClick={() => {showPopUp("deletePanel")}} title="Delete note" className="iconSize display-block cursor-pointer padding-01" src={ ABSOLUTE_IMAGES_URL + "/svgs/DeleteIcon.svg"} alt="" />
                         <p onClick={() => {showPopUp("deletePanel")}} className="margin-0 textLittle text-white text-redHover cursor-pointer">Delete panel</p>
                     </div>
@@ -128,6 +147,16 @@ function PanelSettingsMenuComponent(props) {
                 setErrorMessage(`Your current plan only allows you to select 0 friends`);
             }
         }
+
+        if(userList.length < 2){
+            setHTMLUserSearchList(
+                <div key={1} className="flex align-items-center justify-content-center h100">
+                    <p className="margin-0 text-gray">No users to show.</p>
+                </div>
+            );
+            return;
+        }
+
         HTMLUserList = userList.map((user) => {
             if((!notPushUsersAlreadyInPanel && !(panelParticipants.some(panelParticipant => panelParticipant.participant.id === user.id))) || (notPushUsersAlreadyInPanel && panelParticipants.some(panelParticipant => panelParticipant.participant.id === user.id) && user.id !== panel.creatorId)){
                 return(
@@ -166,8 +195,7 @@ function PanelSettingsMenuComponent(props) {
         if(nChecked > nMaxParticipants || nChecked + panelParticipants.length > nMaxParticipants+1 && !([...document.getElementsByClassName("fadeSlide")].filter((element) => !element.classList.contains("fadeSlideUnToggled"))[0].id === "kickFriends")){
             document.getElementById("maxErr").classList.remove("hidden");
             if(!inviteBtn.classList.contains("cursor-notAllowed")){
-                inviteBtn.classList.add("cursor-notAllowed");
-                inviteBtn.classList.add("btnNotHover");
+                inviteBtn.classList.add("btnNotHoverNotGradientNoBlackText", "cursor-notAllowed", "btnDisabled");
                 inviteBtn.disabled = true;
                 return;
             }
@@ -175,16 +203,14 @@ function PanelSettingsMenuComponent(props) {
         else{
             if(nChecked > 0){
                 document.getElementById("maxErr").classList.add("hidden");
-                inviteBtn.classList.remove("cursor-notAllowed");
-                inviteBtn.classList.add("cursor-pointer");
-                inviteBtn.classList.remove("btnNotHover");
+                if(!isMobile) inviteBtn.classList.add("cursor-pointer");
+                inviteBtn.classList.remove("btnNotHoverNotGradientNoBlackText", "btnDisabled", "cursor-notAllowed");
                 inviteBtn.disabled = false;
             }
         }
         if(nChecked < 1){
             if(!inviteBtn.classList.contains("cursor-notAllowed")){
-                inviteBtn.classList.add("cursor-notAllowed");
-                inviteBtn.classList.add("btnNotHover");
+                inviteBtn.classList.add("btnNotHoverNotGradientNoBlackText", "cursor-notAllowed", "btnDisabled");
                 inviteBtn.disabled = true;
                 return;
             }
@@ -265,15 +291,23 @@ function PanelSettingsMenuComponent(props) {
 
     function showSlide(){
         let popUp = popUpRef.current;
-        if(!popUp.classList.contains("panelSettingsPopUpToggled")){
+        if(!popUp.classList.contains("panelSettingsPopUpToggled") && !isMobile){
             popUp.classList.add("panelSettingsPopUpToggled");
+        }
+
+        if(isMobile && !popUp.classList.contains("Mobile")){
+            popUp.classList.add("panelSettingsPopUpToggledMobile");
         }
     }
 
     function hiddeSlide(){
         let popUp = popUpRef.current;
-        if(popUp.classList.contains("panelSettingsPopUpToggled")){
+        if(popUp.classList.contains("panelSettingsPopUpToggled") && !isMobile){
             popUp.classList.remove("panelSettingsPopUpToggled");
+        }
+
+        if(isMobile && popUp.classList.contains("panelSettingsPopUpToggledMobile")){
+            popUp.classList.remove("panelSettingsPopUpToggledMobile");
         }
     }
 }
