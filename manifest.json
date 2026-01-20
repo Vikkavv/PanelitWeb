@@ -7,18 +7,18 @@
     "theme_color": "#000000",
     "icons":[
         {
-            "src": "/img/PanelitLogo-144.png",
+            "src": "/img/PanelitLogo-144px.png",
             "sizes": "144x144",
             "purpose": "any",
             "type": "image/png"
         },
         {
-            "src": "/img/PanelitLogo-192.png",
+            "src": "/img/PanelitLogo-192px.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "src": "/img/PanelitLogo-512.png",
+            "src": "/img/PanelitLogo-512px.png",
             "sizes": "512x512",
             "type": "image/png"
         }

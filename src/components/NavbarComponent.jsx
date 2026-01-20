@@ -219,4 +219,10 @@ export function isMobileDeviceAndIsInPortrait(){
     return isMobileDevice() && (window.innerWidth > window.innerHeight);
 }
 
+export function isSamsungExplorer(){
+    var isSamsung = /SamsungBrowser/i.test(navigator.userAgent);
+    if (isSamsung) return true;
+    return false;
+}
+
 export default Navbar

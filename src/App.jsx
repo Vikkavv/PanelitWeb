@@ -13,7 +13,7 @@ import SubscriptionPlans from './pages/SubscriptionPlans'
 import Explore from './pages/Explore'
 import ErrorBoundary from './components/ErrorBoundary'
 
-export let BACKEND_PATH = "https://panelitapi.onrender.com";
+export let BACKEND_PATH = "/api";
 export let ABSOLUTE_IMAGES_URL = "https://panelit-web.vercel.app"
 
 function App() {

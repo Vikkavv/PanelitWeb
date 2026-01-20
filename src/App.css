@@ -34,7 +34,7 @@ body{
     margin: 0;
     /*background-color: #101010;*/
     /*background-color: hsl(0, 100%, 36%);*/
-    /*background-color: #000000ed;*/
+    background-color: #000000ed;
     background-image:  repeating-radial-gradient( circle at 0 0, transparent 0, rgba(0, 0, 0, 0.93) 33px ), repeating-linear-gradient( #00000055, #000000 );
     background-repeat: no-repeat;
 }
