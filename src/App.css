@@ -1,3 +1,7 @@
+:root{
+    all: unset;
+}
+
 *{
     font-family: DM-Sans;
 }
@@ -26,10 +30,6 @@ html:has(noscript#vh100){
     height: 100vh;
 }
 
-:root{
-    all: unset !important;
-}
-
 @media (prefers-color-scheme: light) {
     body{
         background-color: #000000ed;
@@ -46,6 +46,10 @@ body{
 
 body:has(*.body-OverFlowXHidden){
     overflow-x: hidden;
+}
+
+body:has(*.body-OverFlowYHidden){
+    overflow-y: hidden !important;
 }
 
 body:has(*.body-OverflowHidden) {
@@ -295,7 +299,11 @@ body:has(.spinningLogo:hover) .logoHeader{
     overflow-wrap: break-word; /* (moderno) lo mismo que word-wrap */
 }
 
-
+.text-noWrap-Overflow-textWrap {
+  white-space: nowrap;         /* Normalmente no hace wrap */
+  overflow-wrap: break-word;   /* Pero rompe palabras si se desborda */
+  word-break: break-word;      /* Para compatibilidad extra */
+}
 
 .text-hover{
     color: white;
@@ -361,6 +369,11 @@ body:has(.spinningLogo:hover) .logoHeader{
 
     .wi25{
         min-width: 25%;
+    }
+
+    .wia100Minus10vW{
+        min-width: calc(100vW - 10vW);
+        max-width: calc(100vW - 10vW);
     }
 
     .aspect-ratio-1{
