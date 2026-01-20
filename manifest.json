@@ -21,6 +21,11 @@
             "src": "/img/PanelitLogo-512px.png",
             "sizes": "512x512",
             "type": "image/png"
+        },
+        {
+            "src": "/img/PanelitLogo-1024px.png",
+            "sizes": "1024x1024",
+            "type": "image/png"
         }
     ]
 }
